@@ -8,12 +8,12 @@
  *  Contributors:
  *  Angelo Zerr <angelo.zerr@gmail.com> - initial API and implementation
  */
-package org.eclipse.ec4e.services.dom;
+package org.eclipse.ec4j;
 
 import java.io.IOException;
 import java.io.StringReader;
 
-import org.eclipse.ec4e.services.model.EditorConfig;
+import org.eclipse.ec4j.model.EditorConfig;
 import org.junit.Assert;
 import org.junit.Test;
 
