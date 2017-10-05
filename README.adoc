@@ -22,6 +22,7 @@ Prerequisites:
 
 * Java 7+
 * Optionally Maven 3.5.0+, unless you want to use `./mvnw` or `mvnw.bat` delivered by the project
+* cmake 2.6+ to run the https://github.com/editorconfig/editorconfig-core-test[editorconfig-core-test] testsuite (optional).
 
 The most common build with unit tests:
 
@@ -31,9 +32,19 @@ The most common build with unit tests:
 ----
 
 On Windows:
+
 [source,shell]
 ----
 mvnw.bat clean instal
+----
+
+A build with https://github.com/editorconfig/editorconfig-core-test[editorconfig-core-test] testsuite:
+
+[source,shell]
+----
+git submodule init
+git submodule update
+mvn -Pcore-test clean install && cmake . && ctest .
 ----
 
 

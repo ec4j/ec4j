@@ -1,4 +1,7 @@
 language: java
+# Enable container-based infrastructure
+# see https://docs.travis-ci.com/user/reference/overview/
+sudo: false
 
 jdk:
   - oraclejdk8
@@ -6,5 +9,10 @@ jdk:
 notifications:
   email: true
 
+install:
+- cmake --version
+- git submodule init
+- git submodule update
+
 script:
-- ./mvnw clean install
+- ./mvnw -Pcore-test clean install && cmake . && ctest .
