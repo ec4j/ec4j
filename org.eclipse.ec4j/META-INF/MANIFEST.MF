@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
+Bundle-SymbolicName: org.eclipse.ec4j;singleton:=true
+Bundle-Version: 0.1.0.qualifier
+Require-Bundle: org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+Export-Package: org.eclipse.ec4j,
+ org.eclipse.ec4j.completion,
+ org.eclipse.ec4j.model,
+ org.eclipse.ec4j.model.optiontypes,
+ org.eclipse.ec4j.parser,
+ org.eclipse.ec4j.parser.handlers,
+ org.eclipse.ec4j.validation
+
