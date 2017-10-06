@@ -1,13 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<groupId>org.eclipse</groupId>
 	<artifactId>org.eclipse.ec4j</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
-	<scm>
-		<connection>scm:git:https://github.com/angelozerr/ec4j.git</connection>
-		<developerConnection>scm:git:https://github.com/angelozerr/ec4j.git</developerConnection>
-		<url>https://github.com/angelozerr/ec4j</url>
-	</scm>
+
 	<licenses>
 		<license>
 			<name>MIT License</name>
@@ -15,6 +13,22 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+
+	<scm>
+		<connection>scm:git:https://github.com/angelozerr/ec4j.git</connection>
+		<developerConnection>scm:git:https://github.com/angelozerr/ec4j.git</developerConnection>
+		<url>https://github.com/angelozerr/ec4j</url>
+	</scm>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -66,23 +80,10 @@
 				</configuration>
 			</plugin>
 			<plugin>
-		        <groupId>org.apache.maven.plugins</groupId>
-		        <artifactId>maven-surefire-plugin</artifactId>
-		        <version>2.12.4</version>
-		        <configuration>
-		          <!-- <includes>
-		            <include>**/AllMinimatchTests.java</include>
-		          </includes> -->
-		        </configuration>
-		    </plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.12.4</version>
+			</plugin>
 		</plugins>
 	</build>
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
 </project>
