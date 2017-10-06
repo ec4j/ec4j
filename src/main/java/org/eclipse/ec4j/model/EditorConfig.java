@@ -11,16 +11,13 @@
 package org.eclipse.ec4j.model;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.ec4j.EditorConfigConstants;
+import org.eclipse.ec4j.ResourceProvider;
 import org.eclipse.ec4j.model.optiontypes.OptionTypeRegistry;
 import org.eclipse.ec4j.parser.EditorConfigParser;
 
@@ -30,9 +27,9 @@ public class EditorConfig {
 
 	private final List<Section> sections;
 
-	private File configFile;
-
 	private OptionTypeRegistry registry;
+
+	private String filePath;
 
 	public EditorConfig() {
 		this(OptionTypeRegistry.DEFAULT);
@@ -45,23 +42,6 @@ public class EditorConfig {
 
 	public OptionTypeRegistry getRegistry() {
 		return registry;
-	}
-
-	public static EditorConfig load(File configFile) throws IOException {
-		return load(configFile, OptionTypeRegistry.DEFAULT);
-	}
-
-	public static EditorConfig load(File configFile, OptionTypeRegistry registry) throws IOException {
-		return load(configFile, registry, EditorConfigConstants.VERSION);
-	}
-
-	public static EditorConfig load(File configFile, OptionTypeRegistry registry, String version) throws IOException {
-		try (BufferedReader reader = new BufferedReader(
-				new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8));) {
-			EditorConfig config = EditorConfig.load(reader, registry, version);
-			config.configFile = configFile;
-			return config;
-		}
 	}
 
 	public static EditorConfig load(Reader reader) throws IOException {
@@ -78,8 +58,13 @@ public class EditorConfig {
 		return handler.getEditorConfig();
 	}
 
-	public File getConfigFile() {
-		return configFile;
+	public static <T> EditorConfig load(T configFile, ResourceProvider<T> provider, OptionTypeRegistry registry,
+			String version) throws IOException {
+		try (BufferedReader reader = new BufferedReader(provider.getReader(configFile));) {
+			EditorConfig config = load(reader, registry, version);
+			config.filePath = provider.getPath(configFile);
+			return config;
+		}
 	}
 
 	public void addSection(Section section) {
@@ -121,4 +106,7 @@ public class EditorConfig {
 		return s.toString();
 	}
 
+	public String getFilePath() {
+		return filePath;
+	}
 }

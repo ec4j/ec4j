@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class EditorConfigException extends Exception {
 
-	public EditorConfigException(String message, IOException e) {
+	public EditorConfigException(String message, Exception e) {
 		super(message, e);
 	}
 

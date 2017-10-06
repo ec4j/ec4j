@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.ec4j.ResourceProvider;
+
 public class Section {
 
 	private final EditorConfig editorConfig;
@@ -29,10 +31,6 @@ public class Section {
 		this.editorConfig = editorConfig;
 		this.patterns = new ArrayList<>();
 		this.options = new ArrayList<>();
-	}
-
-	public boolean match(File file) {
-		return match(file.toString().replaceAll("[\\\\]", "/"));
 	}
 
 	public void addOption(Option option) {
@@ -92,9 +90,9 @@ public class Section {
 		return s.toString();
 	}
 
-	private boolean match(String filePath) {
+	public boolean match(String filePath) {
 		if (regex == null) {
-			String configDirname = editorConfig.getConfigFile().toString();
+			String configDirname = editorConfig.getFilePath();
 			String pattern = toString(patterns);
 			pattern = pattern.replace(File.separatorChar, '/');
 			pattern = pattern.replaceAll("\\\\#", "#");
@@ -125,4 +123,5 @@ public class Section {
 		}
 		return false;
 	}
+
 }

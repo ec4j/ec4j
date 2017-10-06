@@ -1,100 +1,49 @@
-/**
- *  Copyright (c) 2017 Angelo ZERR.
- *  All rights reserved. This program and the accompanying materials
- *  are made available under the terms of the Eclipse Public License v1.0
- *  which accompanies this distribution, and is available at
- *  http://www.eclipse.org/legal/epl-v10.html
- *
- *  Contributors:
- *  Angelo Zerr <angelo.zerr@gmail.com> - initial API and implementation
- */
 package org.eclipse.ec4j;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 
-import org.eclipse.ec4j.model.EditorConfig;
-import org.eclipse.ec4j.model.Option;
-import org.eclipse.ec4j.model.Section;
 import org.eclipse.ec4j.model.optiontypes.OptionTypeRegistry;
 
-public class EditorConfigManager {
+public class EditorConfigManager extends AbstractEditorConfigManager<File> {
 
-	private final String configFilename;
-	private final String version;
-	private final OptionTypeRegistry registry;
+	public static final ResourceProvider<File> FILE_RESOURCE_PROVIDER = new ResourceProvider<File>() {
 
-	/**
-	 * Creates EditorConfig handler with default configuration filename
-	 * (.editorconfig) and version {@link EditorConfig#VERSION}
-	 */
-	public EditorConfigManager() {
-		this(OptionTypeRegistry.DEFAULT, EditorConfigConstants.EDITORCONFIG, EditorConfigConstants.VERSION);
-	}
-
-	/**
-	 * Creates EditorConfig handler with specified configuration filename and
-	 * version. Used mostly for debugging/testing.
-	 * 
-	 * @param option
-	 *            type registry
-	 * @param configFilename
-	 *            configuration file name to be searched for instead of
-	 *            .editorconfig
-	 * @param version
-	 *            required version
-	 */
-	public EditorConfigManager(OptionTypeRegistry registry, String configFilename, String version) {
-		this.registry = registry;
-		this.configFilename = configFilename;
-		this.version = version;
-	}
-
-	public Collection<Option> getOptions(File file, Set<File> explicitRootDirs) throws EditorConfigException {
-		Map<String, Option> options = new LinkedHashMap<>();
-		try {
-			boolean root = false;
-			File dir = file.getParentFile();
-			while (dir != null && !root) {
-				File configFile = new File(dir, getConfigFilename());
-				if (configFile.exists()) {
-					EditorConfig config = EditorConfig.load(configFile, getRegistry(), getVersion());
-					root = config.isRoot();
-					List<Section> sections = config.getSections();
-					for (Section section : sections) {
-						if (section.match(file)) {
-							// Section matches the editor file, collect options of the section
-							List<Option> o = section.getOptions();
-							for (Option option : o) {
-								options.put(option.getName(), option);
-							}
-						}
-					}
-				}
-				root |= explicitRootDirs != null && explicitRootDirs.contains(dir);
-				dir = dir.getParentFile();
-			}
-		} catch (IOException e) {
-			throw new EditorConfigException(null, e);
+		@Override
+		public File getParentFile(File file) {
+			return file.getParentFile();
 		}
 
-		return options.values();
+		@Override
+		public File getResource(File parent, String child) {
+			return new File(parent, child);
+		}
+
+		@Override
+		public boolean exists(File file) {
+			return file.exists();
+		}
+
+		@Override
+		public String getPath(File file) {
+			return file.toString().replaceAll("[\\\\]", "/");
+		}
+
+		@Override
+		public Reader getReader(File configFile) throws IOException {
+			return new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8);
+		}
+	};
+
+	public EditorConfigManager() {
+		super(FILE_RESOURCE_PROVIDER);
 	}
 
-	public OptionTypeRegistry getRegistry() {
-		return registry;
-	}
-
-	public String getVersion() {
-		return version;
-	}
-
-	public String getConfigFilename() {
-		return configFilename;
+	public EditorConfigManager(OptionTypeRegistry registry, String configFilename, String version) {
+		super(registry, FILE_RESOURCE_PROVIDER, configFilename, version);
 	}
 }
