@@ -29,6 +29,7 @@ public class EditorConfigParser<Section, Option> {
 	private int fill;
 	private int line;
 	private int lineOffset;
+	private int last;
 	private int current;
 	private StringBuilder captureBuffer;
 	private int captureStart;
@@ -129,6 +130,7 @@ public class EditorConfigParser<Section, Option> {
 		line = 1;
 		lineOffset = 0;
 		current = 0;
+		last = -1;
 		captureStart = -1;
 		readLines();
 		if (!isEndOfText()) {
@@ -240,23 +242,20 @@ public class EditorConfigParser<Section, Option> {
 	}
 
 	private String readString(StopReading stop) throws IOException {
-		// read();
 		startCapture();
-		// if (captureStart > 0) captureStart--;
 		while (!isStopReading(stop)) {
-			if (current == '\\') {
+			/*if (current == '\\') {
 				pauseCapture();
 				readEscape();
 				startCapture();
-			} else if (current < 0x20) {
+			} else*/ 
+			if (current < 0x20) {
 				throw expected("valid string character");
 			} else {
 				read();
-			}
+			}			
 		}
-		String string = endCapture();
-		// read();
-		return string;
+		return endCapture();
 	}
 
 	private boolean isStopReading(StopReading stop) {
@@ -270,6 +269,12 @@ public class EditorConfigParser<Section, Option> {
 			return current == ',' || current == '}';
 		case OptionName:
 			return isColonSeparator() || isWhiteSpace();
+		case OptionValue:
+			if ((current == ';' || current == '#') && isWhiteSpace(last)) {
+				// Inline comment
+				return true;
+			}
+			return false;	
 		default:
 			return isWhiteSpace();
 		}
@@ -362,6 +367,7 @@ public class EditorConfigParser<Section, Option> {
 			index = 0;
 			if (fill == -1) {
 				current = -1;
+				last = -1;
 				index++;
 				return;
 			}
@@ -370,9 +376,10 @@ public class EditorConfigParser<Section, Option> {
 			line++;
 			lineOffset = bufferOffset + index;
 		}
+		last = current;
 		current = buffer[index++];
 	}
-
+	
 	private void startCapture() {
 		if (captureBuffer == null) {
 			captureBuffer = new StringBuilder();
@@ -417,7 +424,11 @@ public class EditorConfigParser<Section, Option> {
 	}
 
 	private boolean isWhiteSpace() {
-		return current == ' ' || current == '\t';
+		return isWhiteSpace(current);
+	}
+	
+	private static boolean isWhiteSpace(int c) {
+		return c == ' ' || c == '\t';
 	}
 
 	private boolean isNewLine() {
