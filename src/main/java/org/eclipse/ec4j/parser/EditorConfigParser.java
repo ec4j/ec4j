@@ -15,6 +15,7 @@ import java.io.Reader;
 import java.io.StringReader;
 
 import org.eclipse.ec4j.EditorConfigConstants;
+import org.eclipse.ec4j.model.optiontypes.OptionNames;
 import org.eclipse.ec4j.parser.handlers.IEditorConfigHandler;
 
 public class EditorConfigParser<Section, Option> {
@@ -306,7 +307,7 @@ public class EditorConfigParser<Section, Option> {
 		// option value
 		skipWhiteSpace();
 		handler.startOptionValue(option, name);
-		String value = readString(StopReading.OptionValue);
+		String value = preprocessOptionValue(name, readString(StopReading.OptionValue));
 		if (value.length() < 1) {
 			throw new OptionValueMissingException(name, getLocation());
 		}
@@ -466,7 +467,37 @@ public class EditorConfigParser<Section, Option> {
 	 * @return the lowercased option name.
 	 */
 	private static String preprocessOptionName(String name) {
-		// According test : all property names are lowercased
+		if (name == null) {
+			return name;
+		}
+		// According test "lowercase_names" : all property names are lowercased.
 		return name.toLowerCase();
+	}
+
+	/**
+	 * Return the lowercased option value for certain options.
+	 * 
+	 * @param name
+	 * @param value
+	 * @return the lowercased option value for certain options.
+	 */
+	private static String preprocessOptionValue(String name, String value) {
+		if (name == null || value == null) {
+			return value;
+		}
+		// According test "lowercase_values1" a "lowercase_values2": test that same
+		// property values are lowercased (v0.9.0 properties)
+		OptionNames option = OptionNames.get(name);
+		switch (option) {
+		case end_of_line:
+		case indent_style:
+		case indent_size:
+		case insert_final_newline:
+		case trim_trailing_whitespace:
+		case charset:
+			return value.toLowerCase();
+		default:
+			return value;
+		}
 	}
 }
