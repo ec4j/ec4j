@@ -37,7 +37,7 @@ public class Cli {
 	public static void main(String[] args) throws Exception {
 		List<String> paths = new ArrayList<>();
 		String editorconfigFileName = EditorConfigConstants.EDITORCONFIG;
-		String version = EditorConfigManager.VERSION;
+		String version = EditorConfigConstants.VERSION;
 		for (int i = 0; i < args.length; i++) {
 			String arg = args[i];
 			switch (arg) {

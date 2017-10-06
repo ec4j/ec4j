@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
+import org.eclipse.ec4j.EditorConfigConstants;
 import org.eclipse.ec4j.parser.handlers.IEditorConfigHandler;
 
 public class EditorConfigParser<Section, Option> {
@@ -35,6 +36,7 @@ public class EditorConfigParser<Section, Option> {
 	private int captureStart;
 
 	private boolean tolerant;
+	private String version;
 	private Section currentSection;
 
 	public EditorConfigParser(IEditorConfigHandler<Section, Option> handler) {
@@ -44,14 +46,25 @@ public class EditorConfigParser<Section, Option> {
 		this.handler = handler;
 		handler.setParser(this);
 		setTolerant(false);
+		setVersion(EditorConfigConstants.VERSION);
 	}
 
-	public void setTolerant(boolean tolerant) {
+	public EditorConfigParser<Section, Option> setTolerant(boolean tolerant) {
 		this.tolerant = tolerant;
+		return this;
 	}
 
 	public boolean isTolerant() {
 		return tolerant;
+	}
+
+	public EditorConfigParser<Section, Option> setVersion(String version) {
+		this.version = version;
+		return this;
+	}
+
+	public String getVersion() {
+		return version;
 	}
 
 	/**
@@ -244,16 +257,14 @@ public class EditorConfigParser<Section, Option> {
 	private String readString(StopReading stop) throws IOException {
 		startCapture();
 		while (!isStopReading(stop)) {
-			/*if (current == '\\') {
-				pauseCapture();
-				readEscape();
-				startCapture();
-			} else*/ 
+			/*
+			 * if (current == '\\') { pauseCapture(); readEscape(); startCapture(); } else
+			 */
 			if (current < 0x20) {
 				throw expected("valid string character");
 			} else {
 				read();
-			}			
+			}
 		}
 		return endCapture();
 	}
@@ -274,7 +285,7 @@ public class EditorConfigParser<Section, Option> {
 				// Inline comment
 				return true;
 			}
-			return false;	
+			return false;
 		default:
 			return isWhiteSpace();
 		}
@@ -379,7 +390,7 @@ public class EditorConfigParser<Section, Option> {
 		last = current;
 		current = buffer[index++];
 	}
-	
+
 	private void startCapture() {
 		if (captureBuffer == null) {
 			captureBuffer = new StringBuilder();
@@ -426,7 +437,7 @@ public class EditorConfigParser<Section, Option> {
 	private boolean isWhiteSpace() {
 		return isWhiteSpace(current);
 	}
-	
+
 	private static boolean isWhiteSpace(int c) {
 		return c == ' ' || c == '\t';
 	}
@@ -442,7 +453,7 @@ public class EditorConfigParser<Section, Option> {
 	private boolean isEndOfText() {
 		return current == -1;
 	}
-	
+
 	private boolean isColonSeparator() {
 		return current == '=' || current == ':';
 	}

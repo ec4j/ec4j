@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.ec4j.EditorConfigConstants;
 import org.eclipse.ec4j.model.optiontypes.OptionTypeRegistry;
 import org.eclipse.ec4j.parser.EditorConfigParser;
 
@@ -51,9 +52,13 @@ public class EditorConfig {
 	}
 
 	public static EditorConfig load(File configFile, OptionTypeRegistry registry) throws IOException {
+		return load(configFile, registry, EditorConfigConstants.VERSION);
+	}
+
+	public static EditorConfig load(File configFile, OptionTypeRegistry registry, String version) throws IOException {
 		try (BufferedReader reader = new BufferedReader(
 				new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8));) {
-			EditorConfig config = EditorConfig.load(reader, registry);
+			EditorConfig config = EditorConfig.load(reader, registry, version);
 			config.configFile = configFile;
 			return config;
 		}
@@ -64,8 +69,12 @@ public class EditorConfig {
 	}
 
 	public static EditorConfig load(Reader reader, OptionTypeRegistry registry) throws IOException {
+		return load(reader, registry, EditorConfigConstants.VERSION);
+	}
+
+	public static EditorConfig load(Reader reader, OptionTypeRegistry registry, String version) throws IOException {
 		EditorConfigHandler handler = new EditorConfigHandler(registry);
-		new EditorConfigParser<Section, Option>(handler).parse(reader);
+		new EditorConfigParser<Section, Option>(handler).setVersion(version).parse(reader);
 		return handler.getEditorConfig();
 	}
 

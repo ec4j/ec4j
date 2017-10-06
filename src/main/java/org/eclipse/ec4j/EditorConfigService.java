@@ -67,11 +67,9 @@ public class EditorConfigService {
 	public static void validate(String content, IReporter reporter, ISeverityProvider provider,
 			OptionTypeRegistry registry) {
 		ValidationEditorConfigHandler handler = new ValidationEditorConfigHandler(reporter, provider, registry);
-		EditorConfigParser parser = new EditorConfigParser(handler);
 		// Set parser as tolerant to collect the full errors of each line of the
 		// editorconfig.
-		parser.setTolerant(true);
-		parser.parse(content);
+		new EditorConfigParser<Object, Object>(handler).setTolerant(true).parse(content);
 	}
 
 	// ------------- Completion service

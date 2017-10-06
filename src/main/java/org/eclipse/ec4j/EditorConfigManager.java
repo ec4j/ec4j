@@ -13,7 +13,6 @@ package org.eclipse.ec4j;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +25,6 @@ import org.eclipse.ec4j.model.optiontypes.OptionTypeRegistry;
 
 public class EditorConfigManager {
 
-	public static String VERSION = "0.12.0-final";
-
 	private final String configFilename;
 	private final String version;
 	private final OptionTypeRegistry registry;
@@ -37,7 +34,7 @@ public class EditorConfigManager {
 	 * (.editorconfig) and version {@link EditorConfig#VERSION}
 	 */
 	public EditorConfigManager() {
-		this(OptionTypeRegistry.DEFAULT, EditorConfigConstants.EDITORCONFIG, VERSION);
+		this(OptionTypeRegistry.DEFAULT, EditorConfigConstants.EDITORCONFIG, EditorConfigConstants.VERSION);
 	}
 
 	/**
@@ -59,16 +56,14 @@ public class EditorConfigManager {
 	}
 
 	public Collection<Option> getOptions(File file, Set<File> explicitRootDirs) throws EditorConfigException {
-		Map<String, Option> oldOptions = Collections.emptyMap();
 		Map<String, Option> options = new LinkedHashMap<>();
-
 		try {
 			boolean root = false;
 			File dir = file.getParentFile();
 			while (dir != null && !root) {
-				File configFile = new File(dir, configFilename);
+				File configFile = new File(dir, getConfigFilename());
 				if (configFile.exists()) {
-					EditorConfig config = EditorConfig.load(configFile, getRegistry());
+					EditorConfig config = EditorConfig.load(configFile, getRegistry(), getVersion());
 					root = config.isRoot();
 					List<Section> sections = config.getSections();
 					for (Section section : sections) {
@@ -93,5 +88,13 @@ public class EditorConfigManager {
 
 	public OptionTypeRegistry getRegistry() {
 		return registry;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public String getConfigFilename() {
+		return configFilename;
 	}
 }
