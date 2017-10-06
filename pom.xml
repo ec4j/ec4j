@@ -112,4 +112,14 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<!-- core-test profile to produce a jar file with a version-less name as it is expected by cmake tests -->
+		<profile>
+			<id>core-test</id>
+			<build>
+				<finalName>${project.artifactId}</finalName>
+			</build>
+		</profile>
+	</profiles>
 </project>

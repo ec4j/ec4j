@@ -26,3 +26,11 @@ nb-configuration.xml
 
 # OSX
 .DS_Store
+
+# CMake
+/CMakeFiles/
+/CMakeCache.txt
+/CTestTestfile.cmake
+/cmake_install.cmake
+/Makefile
+/Testing/
