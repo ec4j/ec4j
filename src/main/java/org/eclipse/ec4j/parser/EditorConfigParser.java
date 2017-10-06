@@ -269,7 +269,7 @@ public class EditorConfigParser<Section, Option> {
 		case MultiPattern:
 			return current == ',' || current == '}';
 		case OptionName:
-			return current == '=' || isWhiteSpace();
+			return isColonSeparator() || isWhiteSpace();
 		default:
 			return isWhiteSpace();
 		}
@@ -283,7 +283,7 @@ public class EditorConfigParser<Section, Option> {
 		String name = readString(StopReading.OptionName);
 		Option option = handler.endOptionName(name);
 		skipWhiteSpace();
-		if (!readChar('=')) {
+		if (!readChar('=') && !readChar(':')) {
 			throw new OptionAssignementMissingException(name, getLocation());
 		}
 		// option value
@@ -430,5 +430,9 @@ public class EditorConfigParser<Section, Option> {
 
 	private boolean isEndOfText() {
 		return current == -1;
+	}
+	
+	private boolean isColonSeparator() {
+		return current == '=' || current == ':';
 	}
 }
