@@ -19,6 +19,11 @@
 		<developerConnection>scm:git:https://github.com/angelozerr/ec4j.git</developerConnection>
 		<url>https://github.com/angelozerr/ec4j</url>
 	</scm>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
 
 	<dependencies>
 		<!-- Ordering: alphabetical by groupId and artifactId -->
