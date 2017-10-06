@@ -296,7 +296,8 @@ public class EditorConfigParser<Section, Option> {
 		// option name
 		skipWhiteSpace();
 		handler.startOptionName();
-		String name = readString(StopReading.OptionName);
+		// Get lowercase option name
+		String name = preprocessOptionName(readString(StopReading.OptionName));
 		Option option = handler.endOptionName(name);
 		skipWhiteSpace();
 		if (!readChar('=') && !readChar(':')) {
@@ -456,5 +457,16 @@ public class EditorConfigParser<Section, Option> {
 
 	private boolean isColonSeparator() {
 		return current == '=' || current == ':';
+	}
+
+	/**
+	 * Return the lowercased option name.
+	 * 
+	 * @param name
+	 * @return the lowercased option name.
+	 */
+	private static String preprocessOptionName(String name) {
+		// According test : all property names are lowercased
+		return name.toLowerCase();
 	}
 }
