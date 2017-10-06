@@ -60,7 +60,7 @@ public class EditorConfig {
 
 	public static <T> EditorConfig load(T configFile, ResourceProvider<T> provider, OptionTypeRegistry registry,
 			String version) throws IOException {
-		try (BufferedReader reader = new BufferedReader(provider.getReader(configFile));) {
+		try (BufferedReader reader = new BufferedReader(provider.getContent(configFile));) {
 			EditorConfig config = load(reader, registry, version);
 			config.filePath = provider.getPath(configFile);
 			return config;

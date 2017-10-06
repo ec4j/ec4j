@@ -60,7 +60,7 @@ public class AbstractEditorConfigManager<T> {
 		Map<String, Option> options = new LinkedHashMap<>();
 		try {
 			boolean root = false;
-			T dir = provider.getParentFile(file);
+			T dir = provider.getParent(file);
 			while (dir != null && !root) {
 				T configFile = provider.getResource(dir, getConfigFilename());
 				if (provider.exists(configFile)) {
@@ -78,7 +78,7 @@ public class AbstractEditorConfigManager<T> {
 					}
 				}
 				root |= explicitRootDirs != null && explicitRootDirs.contains(dir);
-				dir = provider.getParentFile(dir);
+				dir = provider.getParent(dir);
 			}
 		} catch (Exception e) {
 			throw new EditorConfigException(null, e);

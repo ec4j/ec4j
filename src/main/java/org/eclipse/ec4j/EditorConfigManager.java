@@ -14,7 +14,7 @@ public class EditorConfigManager extends AbstractEditorConfigManager<File> {
 	public static final ResourceProvider<File> FILE_RESOURCE_PROVIDER = new ResourceProvider<File>() {
 
 		@Override
-		public File getParentFile(File file) {
+		public File getParent(File file) {
 			return file.getParentFile();
 		}
 
@@ -34,7 +34,7 @@ public class EditorConfigManager extends AbstractEditorConfigManager<File> {
 		}
 
 		@Override
-		public Reader getReader(File configFile) throws IOException {
+		public Reader getContent(File configFile) throws IOException {
 			return new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8);
 		}
 	};
