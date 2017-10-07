@@ -150,6 +150,21 @@ THE SOFTWARE.</inlineHeader>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-clean-plugin</artifactId>
 				<version>3.0.0</version>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>${project.basedir}</directory>
+							<includes>
+								<include>Testing/**</include>
+								<include>CMakeFiles/**</include>
+								<include>cmake_install.cmake</include>
+								<include>CMakeCache.txt</include>
+								<include>CTestTestfile.cmake</include>
+								<include>Makefile</include>
+							</includes>
+						</fileset>
+					</filesets>
+				</configuration>
 			</plugin>
 
 			<plugin>
