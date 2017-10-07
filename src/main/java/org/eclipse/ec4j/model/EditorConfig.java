@@ -29,7 +29,7 @@ public class EditorConfig {
 
 	private OptionTypeRegistry registry;
 
-	private String filePath;
+	private String dirPath;
 
 	public EditorConfig() {
 		this(OptionTypeRegistry.DEFAULT);
@@ -62,7 +62,8 @@ public class EditorConfig {
 			String version) throws IOException {
 		try (BufferedReader reader = new BufferedReader(provider.getContent(configFile));) {
 			EditorConfig config = load(reader, registry, version);
-			config.filePath = provider.getPath(configFile);
+			T dir = provider.getParent(configFile);
+			config.dirPath = provider.getPath(dir) + "/";
 			return config;
 		}
 	}
@@ -106,7 +107,7 @@ public class EditorConfig {
 		return s.toString();
 	}
 
-	public String getFilePath() {
-		return filePath;
+	public String getDirPath() {
+		return dirPath;
 	}
 }

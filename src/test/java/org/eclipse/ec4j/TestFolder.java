@@ -22,6 +22,12 @@ public class TestFolder extends TestResource {
 		return file;
 	}
 
+	public TestFolder addFolder(String name) {
+		TestFolder folder = new TestFolder(name, this);
+		children.put(folder.getName(), folder);
+		return folder;
+	}
+
 	public TestFile addFile(String name) {
 		return addFile(name, null);
 	}

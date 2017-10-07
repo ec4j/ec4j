@@ -17,7 +17,7 @@ public class TestResourceProvider implements ResourceProvider<TestResource> {
 
 	@Override
 	public boolean exists(TestResource configFile) {
-		return configFile.exists();
+		return configFile != null && configFile.exists();
 	}
 
 	@Override

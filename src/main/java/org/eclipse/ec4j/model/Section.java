@@ -92,7 +92,7 @@ public class Section {
 
 	public boolean match(String filePath) {
 		if (regex == null) {
-			String configDirname = editorConfig.getFilePath();
+			String configDirname = editorConfig.getDirPath();
 			String pattern = toString(patterns);
 			pattern = pattern.replace(File.separatorChar, '/');
 			pattern = pattern.replaceAll("\\\\#", "#");

@@ -17,9 +17,38 @@ import org.eclipse.ec4j.model.Option;
 import org.junit.Assert;
 import org.junit.Test;
 
-
+/**
+ * Some glob test of
+ * https://github.com/editorconfig/editorconfig-core-test/tree/master/glob
+ *
+ */
 public class EditorConfigGlobTest {
 
+	@Test
+	public void star_after_slash() throws IOException, EditorConfigException {
+		String content = "; test *\r\n" + 
+				"\r\n" + 
+				"root=true\r\n" + 
+				"\r\n" + 
+				"[a*e.c]\r\n" + 
+				"key=value\r\n" + 
+				"\r\n" + 
+				"[Bar/*]\r\n" + 
+				"keyb=valueb\r\n" + 
+				"";
+		
+		TestEditorConfigManager manager = new TestEditorConfigManager();
+		
+		TestFolder root = new TestFolder("root");
+		root.addFile(".editorconfig", content);
+		TestFolder bar = root.addFolder("Bar");
+		TestFile file = bar.addFile("foo.txt");
+
+		Collection<Option> options = manager.getOptions(file, null);
+		Assert.assertEquals(1, options.size());
+		Assert.assertEquals("keyb = valueb", options.iterator().next().toString());
+	}
+	
 	@Test
 	public void utf_8_char() throws IOException, EditorConfigException {
 		String content = "; test EditorConfig files with UTF-8 characters larger than 127\r\n" + 
@@ -38,7 +67,6 @@ public class EditorConfigGlobTest {
 
 		Collection<Option> options = manager.getOptions(file, null);
 		Assert.assertEquals(1, options.size());
-		Option option = options.iterator().next();
-		Assert.assertEquals("key = value", option.toString());
+		Assert.assertEquals("key = value", options.iterator().next().toString());
 	}
 }
