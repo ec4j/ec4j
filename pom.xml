@@ -6,6 +6,10 @@
 	<artifactId>org.eclipse.ec4j</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
 
+	<name>ec4j</name>
+	<description>An EditorConfig parser for Java</description>
+	<url>https://github.com/angelozerr/ec4j</url>
+	<inceptionYear>2017</inceptionYear>
 	<licenses>
 		<license>
 			<name>MIT License</name>
@@ -23,6 +27,11 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<!-- license-maven-plugin -->
+		<license.failIfMissing>true</license.failIfMissing>
+		<license.failIfUnknown>true</license.failIfUnknown>
+		
 	</properties>
 
 	<dependencies>
@@ -39,16 +48,56 @@
 		<plugins>
 			<!-- Ordering: alphabetical by groupId and artifactId -->
 			<plugin>
-				<groupId>com.mycila.maven-license-plugin</groupId>
-				<artifactId>maven-license-plugin</artifactId>
-				<version>1.9.0</version>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>3.0</version>
 				<configuration>
-					<basedir>${basedir}</basedir>
-					<header>LICENSE</header>
-					<includes>
-						<include>src/**/*.java</include>
-					</includes>
+					<inlineHeader>The MIT License
+Copyright © ${project.inceptionYear} Angelo Zerr and other contributors as 
+indicated by the @author tags.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.</inlineHeader>
+					<excludes>
+						<exclude>**/*.adoc</exclude>
+						<exclude>**/README.*</exclude>
+						<exclude>**/.gitkeep</exclude>
+						<exclude>.mvn/wrapper/</exclude>
+						<exclude>CMakeFiles/</exclude>
+						<exclude>CMakeCache.txt</exclude>
+						<exclude>CMakeLists.txt</exclude>
+						<exclude>CTestTestfile.cmake</exclude>
+						<exclude>cmake_install.cmake</exclude>
+						<exclude>editorconfig-core-test/</exclude>
+						<exclude>LICENSE</exclude>
+						<exclude>Makefile</exclude>
+						<exclude>mvnw</exclude>
+						<exclude>mvnw.cmd</exclude>
+						<exclude>Testing/</exclude>
+					</excludes>
 				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 			<plugin>
