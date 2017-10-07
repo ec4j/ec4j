@@ -14,13 +14,15 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.eclipse.ec4j.model.Option;
+import org.junit.Assert;
 import org.junit.Test;
 
-public class EditorConfigTest2 {
+
+public class EditorConfigGlobTest {
 
 	@Test
-	public void load() throws IOException, EditorConfigException {
-		String s = "; test EditorConfig files with UTF-8 characters larger than 127\r\n" + 
+	public void utf_8_char() throws IOException, EditorConfigException {
+		String content = "; test EditorConfig files with UTF-8 characters larger than 127\r\n" + 
 				"\r\n" + 
 				"root = true\r\n" + 
 				"\r\n" + 
@@ -31,10 +33,12 @@ public class EditorConfigTest2 {
 		TestEditorConfigManager manager = new TestEditorConfigManager();
 		
 		TestFolder root = new TestFolder("root");
-		root.addFile(".editorconfig", s);
+		root.addFile(".editorconfig", content);
 		TestFile file = root.addFile("中文.txt");
 
 		Collection<Option> options = manager.getOptions(file, null);
-		System.err.println(options);
+		Assert.assertEquals(1, options.size());
+		Option option = options.iterator().next();
+		Assert.assertEquals("key = value", option.toString());
 	}
 }
