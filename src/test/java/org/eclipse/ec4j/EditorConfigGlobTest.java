@@ -82,4 +82,71 @@ public class EditorConfigGlobTest {
 		Assert.assertEquals(1, options.size());
 		Assert.assertEquals("key = value", options.iterator().next().toString());
 	}
+	
+	@Test
+	public void brackets_close_inside() throws IOException, EditorConfigException {
+		String content = "; test [ and ]\r\n" + 
+				"\r\n" + 
+				"root=true\r\n" + 
+				"\r\n" + 
+				"; Character choice\r\n" + 
+				"[[ab].a]\r\n" + 
+				"choice=true\r\n" + 
+				"\r\n" + 
+				"; Negative character choice\r\n" + 
+				"[[!ab].b]\r\n" + 
+				"choice=false\r\n" + 
+				"\r\n" + 
+				"; Character range\r\n" + 
+				"[[d-g].c]\r\n" + 
+				"range=true\r\n" + 
+				"\r\n" + 
+				"; Negative character range\r\n" + 
+				"[[!d-g].d]\r\n" + 
+				"range=false\r\n" + 
+				"\r\n" + 
+				"; Range and choice\r\n" + 
+				"[[abd-g].e]\r\n" + 
+				"range_and_choice=true\r\n" + 
+				"\r\n" + 
+				"; Choice with dash\r\n" + 
+				"[[-ab].f]\r\n" + 
+				"choice_with_dash=true\r\n" + 
+				"\r\n" + 
+				"; Close bracket inside\r\n" + 
+				"[[\\]ab].g]\r\n" + 
+				"close_inside=true\r\n" + 
+				"\r\n" + 
+				"; Close bracket outside\r\n" + 
+				"[[ab]].g]\r\n" + 
+				"close_outside=true\r\n" + 
+				"\r\n" + 
+				"; Negative close bracket inside\r\n" + 
+				"[[!\\]ab].g]\r\n" + 
+				"close_inside=false\r\n" + 
+				"\r\n" + 
+				"; Negative¬close bracket outside\r\n" + 
+				"[[!ab]].g]\r\n" + 
+				"close_outside=false\r\n" + 
+				"\r\n" + 
+				"; Slash inside brackets\r\n" + 
+				"[ab[e/]cd.i]\r\n" + 
+				"slash_inside=true\r\n" + 
+				"\r\n" + 
+				"; Slash after an half-open bracket\r\n" + 
+				"[ab[/c]\r\n" + 
+				"slash_half_open=true\r\n" + 
+				"";
+		
+		TestEditorConfigManager manager = new TestEditorConfigManager();
+		
+		TestFolder root = new TestFolder("root");
+		root.addFile(".editorconfig", content);
+		TestFolder bar = root.addFolder("Bar");
+		TestFile file = bar.addFile("foo.txt");
+
+		Collection<Option> options = manager.getOptions(file, null);
+		Assert.assertEquals(1, options.size());
+		Assert.assertEquals("close_inside = true", options.iterator().next().toString());
+	}	
 }
