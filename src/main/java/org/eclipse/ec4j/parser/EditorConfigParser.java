@@ -194,6 +194,9 @@ public class EditorConfigParser<Section, Option> {
 			return;
 		}
 		switch (current) {
+		case '\ufeff':
+			// BOM
+			break;
 		case '#':
 		case ';':
 			readComment();
