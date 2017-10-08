@@ -9,9 +9,13 @@ jdk:
 # Setting the same var twice in the env actually makes Travis create a matrix
 # - i.e. there will be two separate executions, one for each value
 env:
-  - CMD="./mvnw clean test"
-  - CMD="./mvnw -Pcore-test clean package -DskipTests && cmake . && ctest ."
-
+  global:
+  # GH_STATUS_USER_PASSWORD=<ghUser>:<ghAccessToken>
+  - secure: "Sna4UEFYnaV6k75xP5ZGMBaeBJTgZVczfX1YQLqL2bVgTLK0yqJFvYMtNVLHclMzX+MJVNCwHc5ajWXtgwhm/3LYoRpW07bj9u9iznd2flI59+wGEVprx6exAexGoTjELZtFzPW44/za/dfJtfJcAu3HEt1/JwJMRDbSN2Zc1gGQHywdC71c+0qxHDclAfrFOKRTmecTtOdxFwmvq9yTDo6OZzI+u9jBw2sfjwWwkBqGhlSZjZT4Mx6TWl70kVr1Dwo72VUQdEjPt7p/Z3+sWmzQIfCF40OzPmWPISjLU5FR02LoVKy6WRDZx1tzg5yqkidxHYxH5xHL4YEw0rvOeJDs5nLg9h99q/DHh3bhxW+cIbO+JvEGN1Fn7m5OLOHZ19Y+GE825kIBrdxHgWCG+Bt4O4kYr8Mdkb/OKi6W6k9ku8wziYu7uimQ6G81FYMvMKvjp8pyulMScDWtXdl/YKoOJyIfRS2SriwVszxtHuF1ZJhZ1F+h2Bo6YanhtGWqMCLwXj8iQdBFd67Mq4JHsaMyALWASoQ1EdEbfBCYG7+5SzNEkC/K/4mNRwJWA9BIf6D47DOXwZmGx6nj67LQwK3IvjdQY9yuEesS2Lu97k9a/wB4QEzDmpS5Tlb9b7tNAq18H21PP3tfS/77YktRWHBSv3pzldsSyLYjJ7K9R4o="
+  matrix:
+  - CMD="./mvnw clean test" JOB_LABEL="unit-tests"
+  - CMD="./mvnw -Pcore-test clean package -DskipTests && cmake . && ctest ." JOB_LABEL="core-tests"
+    
 notifications:
   email: true
 
@@ -20,5 +24,14 @@ install:
 - git submodule init
 - git submodule update
 
+before_script:
+- src/build/sh/github-comit-status.sh "${GH_STATUS_USER_PASSWORD}" "${JOB_LABEL}" "pending"
+
 script:
 - eval $CMD
+
+after_success:
+- src/build/sh/github-comit-status.sh "${GH_STATUS_USER_PASSWORD}" "${JOB_LABEL}" "success"
+
+after_failure:
+- src/build/sh/github-comit-status.sh "${GH_STATUS_USER_PASSWORD}" "${JOB_LABEL}" "failure"
