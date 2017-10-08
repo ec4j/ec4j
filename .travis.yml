@@ -6,6 +6,12 @@ sudo: false
 jdk:
   - oraclejdk8
 
+# Setting the same var twice in the env actually makes Travis create a matrix
+# - i.e. there will be two separate executions, one for each value
+env:
+  - CMD="./mvnw clean test"
+  - CMD="./mvnw -Pcore-test clean package -DskipTests && cmake . && ctest ."
+
 notifications:
   email: true
 
@@ -15,4 +21,4 @@ install:
 - git submodule update
 
 script:
-- ./mvnw -Pcore-test clean install && cmake . && ctest .
+- eval $CMD
