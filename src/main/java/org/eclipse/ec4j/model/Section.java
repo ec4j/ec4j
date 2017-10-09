@@ -29,12 +29,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.ec4j.ResourceProvider;
+import org.eclipse.ec4j.EditorConfigConstants;
+import org.eclipse.ec4j.model.optiontypes.OptionNames;
 
 public class Section {
 
 	private final EditorConfig editorConfig;
-	private final List<String> patterns;
+	private String pattern;
 	private final List<Option> options;
 
 	private Pattern regex;
@@ -42,7 +43,6 @@ public class Section {
 
 	public Section(EditorConfig editorConfig) {
 		this.editorConfig = editorConfig;
-		this.patterns = new ArrayList<>();
 		this.options = new ArrayList<>();
 	}
 
@@ -54,22 +54,21 @@ public class Section {
 		return options;
 	}
 
-	public void addPattern(String pattern) {
-		patterns.add(pattern);
+	public void setPattern(String pattern) {
+		this.pattern = pattern;
 	}
 
-	public List<String> getPatterns() {
-		return patterns;
+	public String getPattern() {
+		return pattern;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
 		// patterns
-		List<String> patterns = this.getPatterns();
-		if (!patterns.isEmpty()) {
+		if (!pattern.isEmpty()) {
 			s.append("[");
-			s.append(toString(patterns));
+			s.append(pattern);
 			s.append("]\n");
 		}
 		// options
@@ -84,29 +83,10 @@ public class Section {
 		return s.toString();
 	}
 
-	private String toString(List<String> patterns) {
-		StringBuilder s = new StringBuilder();
-		if (patterns.size() == 1) {
-			s.append(patterns.get(0));
-		} else {
-			int i = 0;
-			s.append("{");
-			for (String pattern : patterns) {
-				if (i > 0) {
-					s.append(",");
-				}
-				s.append(pattern);
-				i++;
-			}
-			s.append("}");
-		}
-		return s.toString();
-	}
-
 	public boolean match(String filePath) {
 		if (regex == null) {
 			String configDirname = editorConfig.getDirPath();
-			String pattern = toString(patterns);
+			String pattern = this.pattern;
 			pattern = pattern.replace(File.separatorChar, '/');
 			pattern = pattern.replaceAll("\\\\#", "#");
 			pattern = pattern.replaceAll("\\\\;", ";");
@@ -137,4 +117,74 @@ public class Section {
 		return false;
 	}
 
+	public void preprocessOptions() {
+		String version = editorConfig != null ? editorConfig.getVersion() : EditorConfigConstants.VERSION;
+		Option indentStyle = null;
+		Option indentSize = null;
+		Option tabWidth = null;
+		for (Option option : options) {
+			OptionNames name = OptionNames.get(option.getName());
+			// Lowercase option value for certain options
+			option.setValue(preprocessOptionValue(name, option.getValue()));
+			// get indent_style, indent_size, tab_width option
+			switch (name) {
+			case indent_style:
+				indentStyle = option;
+				break;
+			case indent_size:
+				indentSize = option;
+				break;
+			case tab_width:
+				tabWidth = option;
+				break;
+			default:
+				break;
+			}
+		}
+
+		// Set indent_size to "tab" if indent_size is unspecified and
+		// indent_style is set to "tab".
+		if (indentStyle != null && "tab".equals(indentStyle.getValue()) && indentSize == null
+				&& RegexpUtils.compareVersions(version, "0.10.0") >= 0) {
+			indentSize = new Option(OptionNames.indent_size.name(), editorConfig);
+			indentSize.setValue("tab");
+			this.addOption(indentSize);
+		}
+
+		// Set tab_width to indent_size if indent_size is specified and
+		// tab_width is unspecified
+		if (indentSize != null && !"tab".equals(indentSize.getValue()) && tabWidth == null) {
+			tabWidth = new Option(OptionNames.tab_width.name(), editorConfig);
+			tabWidth.setValue(indentSize.getValue());
+			this.addOption(tabWidth);
+		}
+
+		// Set indent_size to tab_width if indent_size is "tab"
+		if (indentSize != null && "tab".equals(indentSize.getValue()) && tabWidth != null) {
+			indentSize.setValue(tabWidth.getValue());
+		}
+	}
+
+	/**
+	 * Return the lowercased option value for certain options.
+	 * 
+	 * @param name
+	 * @param value
+	 * @return the lowercased option value for certain options.
+	 */
+	private static String preprocessOptionValue(OptionNames option, String value) {
+		// According test "lowercase_values1" a "lowercase_values2": test that same
+		// property values are lowercased (v0.9.0 properties)
+		switch (option) {
+		case end_of_line:
+		case indent_style:
+		case indent_size:
+		case insert_final_newline:
+		case trim_trailing_whitespace:
+		case charset:
+			return value.toLowerCase();
+		default:
+			return value;
+		}
+	}
 }

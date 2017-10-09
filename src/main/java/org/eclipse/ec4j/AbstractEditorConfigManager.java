@@ -72,6 +72,7 @@ public class AbstractEditorConfigManager<T> {
 	public Collection<Option> getOptions(T file, Set<T> explicitRootDirs) throws EditorConfigException {
 		Map<String, Option> options = new LinkedHashMap<>();
 		try {
+			String path = provider.getPath(file);
 			boolean root = false;
 			T dir = provider.getParent(file);
 			while (dir != null && !root) {
@@ -81,7 +82,7 @@ public class AbstractEditorConfigManager<T> {
 					root = config.isRoot();
 					List<Section> sections = config.getSections();
 					for (Section section : sections) {
-						if (section.match(provider.getPath(file))) {
+						if (section.match(path)) {
 							// Section matches the editor file, collect options of the section
 							List<Option> o = section.getOptions();
 							for (Option option : o) {

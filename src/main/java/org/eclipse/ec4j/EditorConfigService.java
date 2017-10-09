@@ -32,6 +32,8 @@ import org.eclipse.ec4j.completion.CompletionContextType;
 import org.eclipse.ec4j.completion.CompletionEntry;
 import org.eclipse.ec4j.completion.ICompletionEntry;
 import org.eclipse.ec4j.completion.ICompletionEntryMatcher;
+import org.eclipse.ec4j.model.Option;
+import org.eclipse.ec4j.model.Section;
 import org.eclipse.ec4j.model.optiontypes.OptionType;
 import org.eclipse.ec4j.model.optiontypes.OptionTypeRegistry;
 import org.eclipse.ec4j.parser.EditorConfigParser;
@@ -82,7 +84,7 @@ public class EditorConfigService {
 		ValidationEditorConfigHandler handler = new ValidationEditorConfigHandler(reporter, provider, registry);
 		// Set parser as tolerant to collect the full errors of each line of the
 		// editorconfig.
-		new EditorConfigParser<Object, Object>(handler).setTolerant(true).parse(content);
+		new EditorConfigParser<Section, Option>(handler).setTolerant(true).parse(content);
 	}
 
 	// ------------- Completion service

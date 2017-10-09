@@ -36,21 +36,21 @@ import org.eclipse.ec4j.parser.EditorConfigParser;
 
 public class EditorConfig {
 
-	private Boolean root;
-
 	private final List<Section> sections;
+	private final OptionTypeRegistry registry;
+	private final String version;
 
-	private OptionTypeRegistry registry;
-
+	private Boolean root;
 	private String dirPath;
 
 	public EditorConfig() {
-		this(OptionTypeRegistry.DEFAULT);
+		this(OptionTypeRegistry.DEFAULT, EditorConfigConstants.VERSION);
 	}
 
-	public EditorConfig(OptionTypeRegistry registry) {
+	public EditorConfig(OptionTypeRegistry registry, String version) {
 		this.sections = new ArrayList<>();
 		this.registry = registry;
+		this.version = version;
 	}
 
 	public OptionTypeRegistry getRegistry() {
@@ -66,7 +66,7 @@ public class EditorConfig {
 	}
 
 	public static EditorConfig load(Reader reader, OptionTypeRegistry registry, String version) throws IOException {
-		EditorConfigHandler handler = new EditorConfigHandler(registry);
+		EditorConfigHandler handler = new EditorConfigHandler(registry, version);
 		new EditorConfigParser<Section, Option>(handler).setVersion(version).parse(reader);
 		return handler.getEditorConfig();
 	}
@@ -122,5 +122,9 @@ public class EditorConfig {
 
 	public String getDirPath() {
 		return dirPath;
+	}
+
+	public String getVersion() {
+		return version;
 	}
 }

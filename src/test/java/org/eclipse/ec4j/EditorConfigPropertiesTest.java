@@ -25,45 +25,45 @@ package org.eclipse.ec4j;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.eclipse.ec4j.model.Option;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * Some glob test of
- * https://github.com/editorconfig/editorconfig-core-test/tree/master/filetree
+ * https://github.com/editorconfig/editorconfig-core-test/tree/master/properties
  *
  */
-public class EditorConfigFileTreeTest {
+public class EditorConfigPropertiesTest {
 
 	@Test
-	public void windows_separator() throws IOException, EditorConfigException {
-		String content = "; test for path separator\r\n" + 
+	public void indent_size_default() throws IOException, EditorConfigException {
+		String content = "root = true\r\n" + 
 				"\r\n" + 
-				"root=true\r\n" + 
+				"[test.c]\r\n" + 
+				"indent_style = tab\r\n" + 
 				"\r\n" + 
-				"[path/separator]\r\n" + 
-				"key=value\r\n" + 
+				"[test2.c]\r\n" + 
+				"indent_style = space\r\n" + 
 				"\r\n" + 
-				"[/top/of/path]\r\n" + 
-				"key=value\r\n" + 
-				"\r\n" + 
-				"[windows\\separator]\r\n" + 
-				"key=value\r\n" + 
-				"\r\n" + 
-				"[windows\\\\separator2]\r\n" + 
-				"key=value\r\n" + 
+				"[test3.c]\r\n" + 
+				"indent_style = tab\r\n" + 
+				"tab_width = 2\r\n" + 
 				"";
 		
 		TestEditorConfigManager manager = new TestEditorConfigManager();
 		
 		TestFolder root = new TestFolder("root");
 		root.addFile(".editorconfig", content);
-		TestFolder windows = root.addFolder("windows");
-		TestFile file = windows.addFile("separator");
+		TestFile file = root.addFile("test.c");
 
 		Collection<Option> options = manager.getOptions(file, null);
-		//Assert.assertTrue(options.isEmpty());
+		Assert.assertEquals(2, options.size());
+		Iterator<Option> iter = options.iterator();
+		Assert.assertEquals("indent_style = tab", iter.next().toString());
+		Assert.assertEquals("indent_size = tab", iter.next().toString());
 	}
 
 }

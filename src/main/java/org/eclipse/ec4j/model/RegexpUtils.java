@@ -176,4 +176,25 @@ public class RegexpUtils {
 		return count;
 	}
 
+	public static int compareVersions(String version1, String version2) {
+		String[] version1Components = version1.split("(\\.|-)");
+		String[] version2Components = version2.split("(\\.|-)");
+		for (int i = 0; i < 3; i++) {
+			String version1Component = version1Components[i];
+			String version2Component = version2Components[i];
+			int v1 = -1;
+			int v2 = -1;
+			try {
+				v1 = Integer.parseInt(version1Component);
+			} catch (NumberFormatException ignored) {
+			}
+			try {
+				v2 = Integer.parseInt(version2Component);
+			} catch (NumberFormatException ignored) {
+			}
+			if (v1 != v2)
+				return v1 - v2;
+		}
+		return 0;
+	}
 }

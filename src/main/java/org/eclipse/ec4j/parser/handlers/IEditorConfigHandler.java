@@ -30,17 +30,17 @@ public interface IEditorConfigHandler<Section, Option> {
 
 	void setParser(EditorConfigParser<Section, Option> parser);
 
+	void startDocument();
+
+	void endDocument();
+
 	Section startSection();
 
 	void endSection(Section section);
 
-	void startMultiPatternSection(Section section);
+	void startPattern(Section section);
 
-	void endMultiPatternSection(Section section);
-
-	void startPattern(Section section, int i);
-
-	void endPattern(Section section, String pattern, int i);
+	void endPattern(Section section, String pattern);
 
 	void startOption();
 

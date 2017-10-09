@@ -26,8 +26,11 @@ package org.eclipse.ec4j.parser;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.Locale;
+import java.util.Map;
 
 import org.eclipse.ec4j.EditorConfigConstants;
+import org.eclipse.ec4j.model.RegexpUtils;
 import org.eclipse.ec4j.model.optiontypes.OptionNames;
 import org.eclipse.ec4j.parser.handlers.IEditorConfigHandler;
 
@@ -166,6 +169,7 @@ public class EditorConfigParser<Section, Option> {
 	}
 
 	private void readLines() throws IOException {
+		handler.startDocument();
 		int currentLine = 0;
 		do {
 			read();
@@ -174,6 +178,7 @@ public class EditorConfigParser<Section, Option> {
 				readLine();
 			}
 		} while (!isEndOfText());
+		handler.endDocument();
 	}
 
 	private void readLine() throws IOException {
@@ -189,22 +194,22 @@ public class EditorConfigParser<Section, Option> {
 
 	private void readLineAndThrowExceptionIfError() throws IOException {
 		skipWhiteSpace();
-		if (isNewLine()) {
-			// blank line, do nothing
+		if (isNewLine() || current == '\ufeff') {
+			// blank line, or BOM character, do nothing
 			return;
 		}
 		switch (current) {
-		case '\ufeff':
-			// BOM
-			break;
 		case '#':
 		case ';':
+			// comment line
 			readComment();
 			break;
 		case '[':
+			// section line
 			currentSection = readSection();
 			break;
 		default:
+			// option line
 			readOption();
 		}
 	}
@@ -221,54 +226,56 @@ public class EditorConfigParser<Section, Option> {
 		if (isEndOfText()) {
 			throw new SectionNotClosedException(getLocation());
 		}
-		skipWhiteSpace();
 		if (readChar(']')) {
 			handler.endSection(section);
 			return section;
 		}
 		// read pattern of the given section
-		readPattern(section);
-		skipWhiteSpace();
-		if (!readChar(']')) {
-			throw new SectionNotClosedException(getLocation());
-		}
-		handler.endSection(section);
+		readPatternAndCloseSection(section);
 		return section;
 	}
 
-	private void readPattern(Section section) throws IOException {
-		// read pattern
-		boolean multiPattern = readChar('{');
-		if (multiPattern) {
-			readMultiPatterns(section);
-		} else {
-			readSinglePattern(section);
+	private void readPatternAndCloseSection(Section section) throws IOException {
+		handler.startPattern(section);
+		String patternAndCloseSection = readString(StopReading.Pattern);
+		// Search ']' close section at the end of the line
+		char c;
+		int i = -1;
+		for (i = patternAndCloseSection.length() - 1; i >= 0; i--) {
+			c = patternAndCloseSection.charAt(i);
+			if (c == ']') {
+				break;
+			} else if (!isWhiteSpace(c)) {
+				int oldIndex = index;
+				int oldLineOffset = lineOffset;
+				index = -i;
+				lineOffset -= i;
+				try {
+					throw new SectionNotClosedException(getLocation());
+				} finally {
+					index = oldIndex;
+					lineOffset = oldLineOffset;
+				}
+			}
 		}
-	}
-
-	private void readMultiPatterns(Section section) throws IOException {
-		handler.startMultiPatternSection(section);
-		int i = 0;
-		do {
-			handler.startPattern(section, i);
-			String pattern = readString(StopReading.MultiPattern);
-			handler.endPattern(section, pattern, i);
-			i++;
-		} while (readChar(','));
-		if (!readChar('}')) {
-			throw new MultiPatternNotClosedException(getLocation());
+		int oldIndex = index;
+		int oldLineOffset = lineOffset;
+		index = -i;
+		lineOffset -= i;
+		try {
+			String pattern = patternAndCloseSection.substring(0, i);
+			handler.endPattern(section, pattern);
+			index++;
+			lineOffset++;
+			handler.endSection(section);
+		} finally {
+			index = oldIndex;
+			lineOffset = oldLineOffset;
 		}
-		handler.endMultiPatternSection(section);
-	}
-
-	private void readSinglePattern(Section section) throws IOException {
-		handler.startPattern(section, 0);
-		String pattern = readString(StopReading.SimplePattern);
-		handler.endPattern(section, pattern, 0);
 	}
 
 	private enum StopReading {
-		SimplePattern, MultiPattern, OptionName, OptionValue
+		Pattern, OptionName, OptionValue
 	}
 
 	private String readString(StopReading stop) throws IOException {
@@ -291,10 +298,13 @@ public class EditorConfigParser<Section, Option> {
 			return true;
 		}
 		switch (stop) {
-		case SimplePattern:
-			return current == ']';
-		case MultiPattern:
-			return current == ',' || current == '}';
+		case Pattern:
+			// Read the full line
+			if ((current == ';' || current == '#') && isWhiteSpace(last)) {
+				// Inline comment
+				return true;
+			}
+			return false;
 		case OptionName:
 			return isColonSeparator() || isWhiteSpace();
 		case OptionValue:
@@ -423,6 +433,10 @@ public class EditorConfigParser<Section, Option> {
 	}
 
 	private String endCapture() {
+		return endCapture(index);
+	}
+
+	private String endCapture(int index) {
 		int start = captureStart;
 		int end = index - 1;
 		captureStart = -1;

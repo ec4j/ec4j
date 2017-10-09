@@ -23,6 +23,7 @@
  */
 package org.eclipse.ec4j.model;
 
+import org.eclipse.ec4j.model.optiontypes.OptionNames;
 import org.eclipse.ec4j.model.optiontypes.OptionTypeRegistry;
 import org.eclipse.ec4j.parser.ParseException;
 import org.eclipse.ec4j.parser.handlers.AbstractEditorConfigHandler;
@@ -31,10 +32,22 @@ class EditorConfigHandler extends AbstractEditorConfigHandler<Section, Option> {
 
 	private final EditorConfig editorConfig;
 
-	public EditorConfigHandler(OptionTypeRegistry registry) {
-		this.editorConfig = new EditorConfig(registry);
+	public EditorConfigHandler(OptionTypeRegistry registry, String version) {
+		this.editorConfig = new EditorConfig(registry, version);
 	}
 
+	@Override
+	public void startDocument() {
+		
+	}
+	
+	@Override
+	public void endDocument() {
+		for (Section section : editorConfig.getSections()) {
+			section.preprocessOptions();
+		}
+	}
+	
 	@Override
 	public Section startSection() {
 		return new Section(editorConfig);
@@ -42,27 +55,17 @@ class EditorConfigHandler extends AbstractEditorConfigHandler<Section, Option> {
 
 	@Override
 	public void endSection(Section section) {
-		editorConfig.addSection(section);
+		editorConfig.addSection(section);		
 	}
 
 	@Override
-	public void startMultiPatternSection(Section section) {
-
-	}
-
-	@Override
-	public void endMultiPatternSection(Section section) {
+	public void startPattern(Section section) {
 
 	}
 
 	@Override
-	public void startPattern(Section section, int i) {
-
-	}
-
-	@Override
-	public void endPattern(Section section, String pattern, int i) {
-		section.addPattern(pattern);
+	public void endPattern(Section section, String pattern) {
+		section.setPattern(pattern);
 	}
 
 	@Override
@@ -74,7 +77,7 @@ class EditorConfigHandler extends AbstractEditorConfigHandler<Section, Option> {
 	public void endOption(Option option, Section section) {
 		if (section != null) {
 			section.addOption(option);
-		} else if ("root".equals(option.getName())) {
+		} else if (OptionNames.get(option.getName()) == OptionNames.root) {
 			editorConfig.setRoot("true".equals(option.getValue()));
 		}
 	}

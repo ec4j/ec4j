@@ -28,6 +28,16 @@ import org.eclipse.ec4j.parser.ParseException;
 public class LoggerEditorConfigHandler<Section, Option> extends AbstractEditorConfigHandler<Section, Option> {
 
 	@Override
+	public void startDocument() {
+		
+	}
+	
+	@Override
+	public void endDocument() {
+		
+	}
+	
+	@Override
 	public Section startSection() {
 		System.err.println("Start section at " + getLocation());
 		return null;
@@ -39,23 +49,13 @@ public class LoggerEditorConfigHandler<Section, Option> extends AbstractEditorCo
 	}
 
 	@Override
-	public void startMultiPatternSection(Section section) {
-		System.err.println("Start multi pattern at " + getLocation());
+	public void startPattern(Section section) {
+		System.err.println("Start pattern at " + getLocation());
 	}
 
 	@Override
-	public void endMultiPatternSection(Section section) {
-		System.err.println("End multi pattern at " + getLocation());
-	}
-
-	@Override
-	public void startPattern(Section section, int i) {
-		System.err.println("Start pattern [" + i + "] at " + getLocation());
-	}
-
-	@Override
-	public void endPattern(Section section, String pattern, int i) {
-		System.err.println("End pattern [" + i + "] at " + getLocation() + ", pattern=" + pattern);
+	public void endPattern(Section section, String pattern) {
+		System.err.println("End pattern at " + getLocation() + ", pattern=" + pattern);
 	}
 
 	@Override

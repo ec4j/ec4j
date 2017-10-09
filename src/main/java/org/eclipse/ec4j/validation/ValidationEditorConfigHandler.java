@@ -24,7 +24,11 @@
 package org.eclipse.ec4j.validation;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.eclipse.ec4j.model.Option;
+import org.eclipse.ec4j.model.Section;
 import org.eclipse.ec4j.model.optiontypes.OptionException;
 import org.eclipse.ec4j.model.optiontypes.OptionType;
 import org.eclipse.ec4j.model.optiontypes.OptionTypeRegistry;
@@ -33,7 +37,7 @@ import org.eclipse.ec4j.parser.Location;
 import org.eclipse.ec4j.parser.ParseException;
 import org.eclipse.ec4j.parser.handlers.EditorConfigHandlerAdapter;
 
-public class ValidationEditorConfigHandler extends EditorConfigHandlerAdapter<Object, Object> {
+public class ValidationEditorConfigHandler extends EditorConfigHandlerAdapter<Section, Option> {
 
 	private static final String OPTION_NAME_NOT_EXISTS_MESSAGE = "The option ''{0}'' is not supported by .editorconfig";
 	private static final String OPTION_VALUE_TYPE_MESSAGE = "The option ''{0}'' doesn't support the value ''{1}''";
@@ -41,20 +45,44 @@ public class ValidationEditorConfigHandler extends EditorConfigHandlerAdapter<Ob
 	private final IReporter reporter;
 	private final ISeverityProvider provider;
 	private final OptionTypeRegistry registry;
-
+	private List<Section> sections;
+	
 	public ValidationEditorConfigHandler(IReporter reporter, ISeverityProvider provider, OptionTypeRegistry registry) {
 		this.reporter = reporter;
 		this.provider = provider != null ? provider : ISeverityProvider.DEFAULT;
 		this.registry = registry != null ? registry : OptionTypeRegistry.DEFAULT;
+		sections = new ArrayList<>();
 	}
 
 	@Override
-	public void endPattern(Object section, String pattern, int i) {
+	public void startDocument() {
+		
+	}
+	
+	@Override
+	public void endDocument() {
+		for (Section section : getSections()) {
+			section.preprocessOptions();
+		}
+	}
+	
+	@Override
+	public Section startSection() {
+		return new Section(null);
+	}
+
+	@Override
+	public void endSection(Section section) {
+		sections.add(section);
+	}
+
+	@Override
+	public void endPattern(Section section, String pattern) {
 		// TODO: validate pattern
 	}
 
 	@Override
-	public Object endOptionName(String name) {
+	public Option endOptionName(String name) {
 		// Validate option name
 		if (!isOptionExists(name)) {
 			Location start = getLocation();
@@ -67,7 +95,7 @@ public class ValidationEditorConfigHandler extends EditorConfigHandlerAdapter<Ob
 	}
 
 	@Override
-	public void endOptionValue(Object option, String value, String name) {
+	public void endOptionValue(Option option, String value, String name) {
 		// Validate value of the option name
 		try {
 			validateOptionValue(name, value);
@@ -89,7 +117,7 @@ public class ValidationEditorConfigHandler extends EditorConfigHandlerAdapter<Ob
 	}
 
 	private boolean validateOptionValue(String name, String value) throws OptionException {
-		OptionType<?> type = getOption(name);
+		OptionType<?> type = getOptionType(name);
 		if (type != null) {
 			type.validate(value);
 		}
@@ -97,10 +125,14 @@ public class ValidationEditorConfigHandler extends EditorConfigHandlerAdapter<Ob
 	}
 
 	private boolean isOptionExists(String name) {
-		return getOption(name) != null;
+		return getOptionType(name) != null;
 	}
 
-	private OptionType<?> getOption(String name) {
+	private OptionType<?> getOptionType(String name) {
 		return registry.getType(name);
+	}
+	
+	private List<Section> getSections() {
+		return sections;
 	}
 }

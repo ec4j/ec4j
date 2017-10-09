@@ -28,6 +28,16 @@ import org.eclipse.ec4j.parser.ParseException;
 public class EditorConfigHandlerAdapter<Section, Option> extends AbstractEditorConfigHandler<Section, Option> {
 
 	@Override
+	public void startDocument() {
+		
+	}
+	
+	@Override
+	public void endDocument() {
+		
+	}
+	
+	@Override
 	public Section startSection() {
 		return null;
 	}
@@ -38,22 +48,12 @@ public class EditorConfigHandlerAdapter<Section, Option> extends AbstractEditorC
 	}
 
 	@Override
-	public void startMultiPatternSection(Section section) {
+	public void startPattern(Section section) {
 
 	}
 
 	@Override
-	public void endMultiPatternSection(Section section) {
-
-	}
-
-	@Override
-	public void startPattern(Section section, int i) {
-
-	}
-
-	@Override
-	public void endPattern(Section section, String pattern, int i) {
+	public void endPattern(Section section, String pattern) {
 
 	}
 
