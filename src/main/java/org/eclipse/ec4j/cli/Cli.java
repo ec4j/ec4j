@@ -74,6 +74,8 @@ public class Cli {
 				break;
 			case "--version":
 			case "-v":
+				System.out.println("EditorConfig Java Version " + version);
+				System.exit(0);
 				break;
 			default:
 				paths.add(args[i]);
