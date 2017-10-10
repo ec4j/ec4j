@@ -17,5 +17,5 @@ if(NOT JAVA_FOUND)
 endif()
 
 enable_testing()
-set(EDITORCONFIG_CMD ${Java_JAVA_EXECUTABLE} -cp ${PROJECT_SOURCE_DIR}/target/org.eclipse.ec4j.jar org.eclipse.ec4j.cli.Cli)
+set(EDITORCONFIG_CMD ${Java_JAVA_EXECUTABLE} -cp ${PROJECT_SOURCE_DIR}/target/org.eclipse.ec4j-0.1.0-SNAPSHOT.jar org.eclipse.ec4j.cli.Cli)
 add_subdirectory(editorconfig-core-test)

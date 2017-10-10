@@ -100,4 +100,14 @@ public class Option {
 		return type;
 	}
 
+	public boolean checkMax() {
+		if (name != null && name.length() > 50) {
+			return false;
+		}
+		if (value != null && value.length() > 255) {
+			return false;
+		}
+		return true;
+	}
+
 }

@@ -38,16 +38,16 @@ class EditorConfigHandler extends AbstractEditorConfigHandler<Section, Option> {
 
 	@Override
 	public void startDocument() {
-		
+
 	}
-	
+
 	@Override
 	public void endDocument() {
 		for (Section section : editorConfig.getSections()) {
 			section.preprocessOptions();
 		}
 	}
-	
+
 	@Override
 	public Section startSection() {
 		return new Section(editorConfig);
@@ -55,7 +55,7 @@ class EditorConfigHandler extends AbstractEditorConfigHandler<Section, Option> {
 
 	@Override
 	public void endSection(Section section) {
-		editorConfig.addSection(section);		
+		editorConfig.addSection(section);
 	}
 
 	@Override
@@ -76,7 +76,11 @@ class EditorConfigHandler extends AbstractEditorConfigHandler<Section, Option> {
 	@Override
 	public void endOption(Option option, Section section) {
 		if (section != null) {
-			section.addOption(option);
+			if (option.checkMax()) {
+				// name <= 50 (see max_property_name test)
+				// value <= 255 (see max_property_value test)
+				section.addOption(option);
+			}
 		} else if (OptionNames.get(option.getName()) == OptionNames.root) {
 			editorConfig.setRoot("true".equals(option.getValue()));
 		}
