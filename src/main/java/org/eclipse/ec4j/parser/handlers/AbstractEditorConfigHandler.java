@@ -26,12 +26,12 @@ package org.eclipse.ec4j.parser.handlers;
 import org.eclipse.ec4j.parser.EditorConfigParser;
 import org.eclipse.ec4j.parser.Location;
 
-public abstract class AbstractEditorConfigHandler<Section, Option> implements IEditorConfigHandler<Section, Option> {
+public abstract class AbstractEditorConfigHandler<S, O> implements IEditorConfigHandler<S, O> {
 
-	private EditorConfigParser<Section, Option> parser;
+	private EditorConfigParser<S, O> parser;
 
 	@Override
-	public void setParser(EditorConfigParser<Section, Option> parser) {
+	public void setParser(EditorConfigParser<S, O> parser) {
 		this.parser = parser;
 	}
 

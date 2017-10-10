@@ -25,7 +25,7 @@ package org.eclipse.ec4j.parser.handlers;
 
 import org.eclipse.ec4j.parser.ParseException;
 
-public class EditorConfigHandlerAdapter<Section, Option> extends AbstractEditorConfigHandler<Section, Option> {
+public class EditorConfigHandlerAdapter<S, O> extends AbstractEditorConfigHandler<S, O> {
 
 	@Override
 	public void startDocument() {
@@ -38,22 +38,22 @@ public class EditorConfigHandlerAdapter<Section, Option> extends AbstractEditorC
 	}
 	
 	@Override
-	public Section startSection() {
+	public S startSection() {
 		return null;
 	}
 
 	@Override
-	public void endSection(Section section) {
+	public void endSection(S section) {
 
 	}
 
 	@Override
-	public void startPattern(Section section) {
+	public void startPattern(S section) {
 
 	}
 
 	@Override
-	public void endPattern(Section section, String pattern) {
+	public void endPattern(S section, String pattern) {
 
 	}
 
@@ -63,7 +63,7 @@ public class EditorConfigHandlerAdapter<Section, Option> extends AbstractEditorC
 	}
 
 	@Override
-	public void endOption(Option option, Section section) {
+	public void endOption(O option, S section) {
 
 	}
 
@@ -73,7 +73,7 @@ public class EditorConfigHandlerAdapter<Section, Option> extends AbstractEditorC
 	}
 
 	@Override
-	public Option endOptionName(String name) {
+	public O endOptionName(String name) {
 		return null;
 	}
 

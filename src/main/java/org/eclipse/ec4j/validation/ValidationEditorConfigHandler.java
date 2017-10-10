@@ -40,7 +40,7 @@ import org.eclipse.ec4j.parser.handlers.EditorConfigHandlerAdapter;
 public class ValidationEditorConfigHandler extends EditorConfigHandlerAdapter<Section, Option> {
 
 	private static final String OPTION_NAME_NOT_EXISTS_MESSAGE = "The option ''{0}'' is not supported by .editorconfig";
-	private static final String OPTION_VALUE_TYPE_MESSAGE = "The option ''{0}'' doesn't support the value ''{1}''";
+	// private static final String OPTION_VALUE_TYPE_MESSAGE = "The option ''{0}'' doesn't support the value ''{1}''";
 
 	private final IReporter reporter;
 	private final ISeverityProvider provider;
@@ -51,7 +51,7 @@ public class ValidationEditorConfigHandler extends EditorConfigHandlerAdapter<Se
 		this.reporter = reporter;
 		this.provider = provider != null ? provider : ISeverityProvider.DEFAULT;
 		this.registry = registry != null ? registry : OptionTypeRegistry.DEFAULT;
-		sections = new ArrayList<>();
+		this.sections = new ArrayList<>();
 	}
 
 	@Override

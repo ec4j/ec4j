@@ -24,6 +24,7 @@
 package org.eclipse.ec4j;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import java.util.Set;
 
 import org.eclipse.ec4j.model.EditorConfig;
 import org.eclipse.ec4j.model.Option;
+import org.eclipse.ec4j.model.RegexpUtils;
 import org.eclipse.ec4j.model.Section;
 import org.eclipse.ec4j.model.optiontypes.OptionTypeRegistry;
 
@@ -70,6 +72,8 @@ public class AbstractEditorConfigManager<T> {
 	}
 
 	public Collection<Option> getOptions(T file, Set<T> explicitRootDirs) throws EditorConfigException {
+		checkAssertions();
+		Map<String, Option> oldOptions = Collections.emptyMap();
 		Map<String, Option> options = new LinkedHashMap<>();
 		try {
 			String path = provider.getPath(file);
@@ -91,6 +95,9 @@ public class AbstractEditorConfigManager<T> {
 						}
 					}
 				}
+				options.putAll(oldOptions);
+				oldOptions = options;
+				options = new LinkedHashMap<String, Option>();
 				root |= explicitRootDirs != null && explicitRootDirs.contains(dir);
 				dir = provider.getParent(dir);
 			}
@@ -98,7 +105,13 @@ public class AbstractEditorConfigManager<T> {
 			throw new EditorConfigException(null, e);
 		}
 
-		return options.values();
+		return oldOptions.values();
+	}
+
+	private void checkAssertions() throws VersionException {
+		if (RegexpUtils.compareVersions(version, EditorConfigConstants.VERSION) > 0) {
+			throw new VersionException("Required version is greater than the current version.");
+		}
 	}
 
 	public OptionTypeRegistry getRegistry() {
