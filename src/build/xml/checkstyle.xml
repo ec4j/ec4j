@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+    "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
+    "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+
+<module name="Checker">
+
+  <module name="FileTabCharacter">
+    <property name="eachLine" value="true" />
+  </module>
+
+  <module name="RegexpSingleline">
+    <!-- \s matches whitespace character, $ matches end of line. -->
+    <property name="format" value="\s+$" />
+    <property name="message" value="Line has trailing spaces." />
+  </module>
+
+  <!-- Enforce UNIX line endings. -->
+  <module name="RegexpMultiline">
+    <property name="format" value="\r\n" />
+    <property name="maximum" value="0" />
+    <property name="message" value="Line ends with Windows-style \r\n characters. Please use UNIX-style \n end of lines." />
+  </module>
+
+  <module name="TreeWalker">
+
+    <property name="cacheFile" value="${checkstyle.cache.file}" />
+
+    <!-- Checks for imports -->
+    <module name="AvoidStarImport">
+      <property name="allowStaticMemberImports" value="true" />
+    </module>
+    <module name="RedundantImport" />
+
+    <module name="UnusedImports">
+      <property name="processJavadoc" value="true" />
+    </module>
+
+    <module name="ImportOrder">
+      <property name="groups" value="/^javax?\./,org,com" />
+      <property name="ordered" value="true" />
+      <property name="separated" value="true" />
+      <property name="option" value="top" />
+    </module>
+
+    <module name="IllegalImport">
+      <property name="illegalPkgs" value="junit.framework" />
+    </module>
+
+    <!-- Modifier Checks -->
+    <module name="ModifierOrder" />
+    <module name="RedundantModifier" />
+
+    <!-- Checks for blocks. You know, those {}'s -->
+    <module name="LeftCurly">
+      <property name="option" value="eol" />
+      <property name="tokens" value="CLASS_DEF,CTOR_DEF,INTERFACE_DEF,METHOD_DEF,LITERAL_SWITCH,STATIC_INIT" />
+    </module>
+
+    <!-- Checks for common coding problems -->
+    <!-- Disabled until http://sourceforge.net/tracker/?func=detail&aid=2843447&group_id=29721&atid=397078
+      is fixed -->
+    <!--<module name="DoubleCheckedLocking"/> -->
+    <module name="EmptyStatement" />
+    <module name="EqualsHashCode" />
+    <module name="IllegalInstantiation" />
+
+    <!-- Miscellaneous other checks. -->
+    <module name="UpperEll" />
+    <module name="PackageAnnotation" />
+    <module name="CovariantEquals" />
+    <module name="ArrayTypeStyle" />
+
+  </module>
+
+</module>
