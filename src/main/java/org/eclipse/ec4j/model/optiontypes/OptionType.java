@@ -42,13 +42,8 @@ public abstract class OptionType<T> {
 		}
 
 		@Override
-		public ValueParser<IndentStyleOption> getValueParser() {
+		public OptionValueParser<IndentStyleOption> getValueParser() {
 			return new EnumValueParser<IndentStyleOption>(IndentStyleOption.class);
-		}
-
-		@Override
-		public ValueValidator<IndentStyleOption> getValueValidator() {
-			return new EnumValueValidator<IndentStyleOption>(IndentStyleOption.class);
 		}
 
 		@Override
@@ -73,13 +68,8 @@ public abstract class OptionType<T> {
 		}
 
 		@Override
-		public ValueParser<Integer> getValueParser() {
-			return ValueParser.POSITIVE_INT_VALUE_PARSER;
-		}
-
-		@Override
-		public ValueValidator<Integer> getValueValidator() {
-			return ValueValidator.POSITIVE_INT_VALUE_VALIDATOR;
+		public OptionValueParser<Integer> getValueParser() {
+			return OptionValueParser.POSITIVE_INT_VALUE_PARSER;
 		}
 
 		@Override
@@ -104,13 +94,8 @@ public abstract class OptionType<T> {
 		}
 
 		@Override
-		public ValueParser<Integer> getValueParser() {
-			return ValueParser.POSITIVE_INT_VALUE_PARSER;
-		}
-
-		@Override
-		public ValueValidator<Integer> getValueValidator() {
-			return ValueValidator.POSITIVE_INT_VALUE_VALIDATOR;
+		public OptionValueParser<Integer> getValueParser() {
+			return OptionValueParser.POSITIVE_INT_VALUE_PARSER;
 		}
 
 		@Override
@@ -134,13 +119,8 @@ public abstract class OptionType<T> {
 		}
 
 		@Override
-		public ValueParser<EndOfLineOption> getValueParser() {
+		public OptionValueParser<EndOfLineOption> getValueParser() {
 			return new EnumValueParser<EndOfLineOption>(EndOfLineOption.class);
-		}
-
-		@Override
-		public ValueValidator<EndOfLineOption> getValueValidator() {
-			return new EnumValueValidator<EndOfLineOption>(EndOfLineOption.class);
 		}
 
 		@Override
@@ -165,13 +145,8 @@ public abstract class OptionType<T> {
 		}
 
 		@Override
-		public ValueParser<String> getValueParser() {
-			return ValueParser.IDENTITY_VALUE_PARSER;
-		}
-
-		@Override
-		public ValueValidator<String> getValueValidator() {
-			return ValueValidator.IDENTITY_VALUE_VALIDATOR;
+		public OptionValueParser<String> getValueParser() {
+			return OptionValueParser.IDENTITY_VALUE_PARSER;
 		}
 
 		@Override
@@ -194,13 +169,8 @@ public abstract class OptionType<T> {
 		}
 
 		@Override
-		public ValueParser<Boolean> getValueParser() {
-			return ValueParser.BOOLEAN_VALUE_PARSER;
-		}
-
-		@Override
-		public ValueValidator<Boolean> getValueValidator() {
-			return ValueValidator.BOOLEAN_VALUE_VALIDATOR;
+		public OptionValueParser<Boolean> getValueParser() {
+			return OptionValueParser.BOOLEAN_VALUE_PARSER;
 		}
 
 		@Override
@@ -222,13 +192,8 @@ public abstract class OptionType<T> {
 		}
 
 		@Override
-		public ValueParser<Boolean> getValueParser() {
-			return ValueParser.BOOLEAN_VALUE_PARSER;
-		}
-
-		@Override
-		public ValueValidator<Boolean> getValueValidator() {
-			return ValueValidator.BOOLEAN_VALUE_VALIDATOR;
+		public OptionValueParser<Boolean> getValueParser() {
+			return OptionValueParser.BOOLEAN_VALUE_PARSER;
 		}
 
 		@Override
@@ -250,13 +215,8 @@ public abstract class OptionType<T> {
 		}
 
 		@Override
-		public ValueParser<Boolean> getValueParser() {
-			return ValueParser.BOOLEAN_VALUE_PARSER;
-		}
-
-		@Override
-		public ValueValidator<Boolean> getValueValidator() {
-			return ValueValidator.BOOLEAN_VALUE_VALIDATOR;
+		public OptionValueParser<Boolean> getValueParser() {
+			return OptionValueParser.BOOLEAN_VALUE_PARSER;
 		}
 
 		@Override
@@ -269,12 +229,14 @@ public abstract class OptionType<T> {
 
 	public abstract String getDescription();
 
-	public abstract ValueParser<T> getValueParser();
-
-	public abstract ValueValidator<T> getValueValidator();
+	public abstract OptionValueParser<T> getValueParser();
 
 	public void validate(String value) throws OptionException {
-		getValueValidator().validate(getName(), value);
+		getValueParser().validate(getName(), value);
+	}
+
+	public T parse(String value) {
+		return getValueParser().parse(value);
 	}
 
 	public abstract String[] getPossibleValues();

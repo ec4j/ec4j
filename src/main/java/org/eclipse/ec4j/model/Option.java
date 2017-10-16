@@ -68,12 +68,9 @@ public class Option {
 		return new StringBuilder(name).append(" = ").append(value).toString();
 	}
 
-	public int getIntValue() {
-		return Integer.parseInt(getValue());
-	}
-
-	public boolean getBooleanValue() {
-		return Boolean.parseBoolean(getValue());
+	public <T> T getValueAs() {
+		// TODO: call type.validate
+		return (T) type.parse(getValue());
 	}
 
 	public boolean isValid() {

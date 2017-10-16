@@ -23,18 +23,28 @@
  */
 package org.eclipse.ec4j.model.optiontypes;
 
-interface ValueValidator<T> {
+interface OptionValueParser<T> {
 
-	public static ValueValidator<String> IDENTITY_VALUE_VALIDATOR = new ValueValidator<String>() {
-
+	public static OptionValueParser<String> IDENTITY_VALUE_PARSER = new OptionValueParser<String>() {
+		
+		@Override
+		public String parse(final String value) {
+			return value;
+		}
+		
 		@Override
 		public void validate(String name, String value) throws OptionException {
 
 		}
 	};
 
-	public static ValueValidator<Boolean> BOOLEAN_VALUE_VALIDATOR = new ValueValidator<Boolean>() {
-
+	public static OptionValueParser<Boolean> BOOLEAN_VALUE_PARSER = new OptionValueParser<Boolean>() {
+		
+		@Override
+		public Boolean parse(final String value) {
+			return Boolean.valueOf(value.toLowerCase());
+		}
+		
 		@Override
 		public void validate(String name, String value) throws OptionException {
 			value = value.toLowerCase();
@@ -45,8 +55,17 @@ interface ValueValidator<T> {
 		}
 	};
 
-	public static ValueValidator<Integer> POSITIVE_INT_VALUE_VALIDATOR = new ValueValidator<Integer>() {
-
+	public static OptionValueParser<Integer> POSITIVE_INT_VALUE_PARSER = new OptionValueParser<Integer>() {
+		@Override
+		public Integer parse(final String value) {
+			try {
+				final Integer integer = Integer.valueOf(value);
+				return integer <= 0 ? null : integer;
+			} catch (final NumberFormatException e) {
+				return null;
+			}
+		}
+		
 		@Override
 		public void validate(String name, String value) throws OptionException {
 			try {
@@ -59,5 +78,7 @@ interface ValueValidator<T> {
 	};
 
 	void validate(String name, String value) throws OptionException;
+	
+	T parse(String value);
 
 }

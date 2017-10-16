@@ -23,7 +23,7 @@
  */
 package org.eclipse.ec4j.model.optiontypes;
 
-class EnumValueParser<T extends Enum<T>> implements ValueParser<T> {
+class EnumValueParser<T extends Enum<T>> implements OptionValueParser<T> {
 
 	private final Class<? extends Enum> enumType;
 
@@ -37,6 +37,15 @@ class EnumValueParser<T extends Enum<T>> implements ValueParser<T> {
 			return (T) Enum.valueOf(enumType, value.toUpperCase());
 		} catch (final IllegalArgumentException e) {
 			return null;
+		}
+	}
+	
+	@Override
+	public void validate(final String name, final String value) throws OptionException {
+		try {
+			Enum.valueOf(enumType, value.toUpperCase());
+		} catch (final IllegalArgumentException e) {
+			throw new OptionException("enum");
 		}
 	}
 
