@@ -23,6 +23,7 @@
  */
 package org.eclipse.ec4j;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -35,7 +36,14 @@ import org.eclipse.ec4j.model.Option;
 import org.eclipse.ec4j.model.RegexpUtils;
 import org.eclipse.ec4j.model.Section;
 import org.eclipse.ec4j.model.optiontypes.OptionTypeRegistry;
+import org.eclipse.ec4j.parser.ParseException;
 
+/**
+ * Abstract class editorconfig manager.
+ *
+ * @param <T>
+ *            the file type.
+ */
 public class AbstractEditorConfigManager<T> {
 
 	private final String configFilename;
@@ -71,6 +79,22 @@ public class AbstractEditorConfigManager<T> {
 		this.provider = provider;
 	}
 
+	/**
+	 * Parse editorconfig files corresponding to the file path and return the
+	 * parsing result.
+	 *
+	 * @param file
+	 *            the file to be parsed. The path is usually the path of the file
+	 *            which is currently edited by the editor.
+	 * @return The parsing result stored in a list of {@link Option}.
+	 * @throws org.editorconfig.core.ParsingException
+	 *             If an {@code .editorconfig} file could not be parsed
+	 * @throws org.editorconfig.core.VersionException
+	 *             If version greater than actual is specified in constructor
+	 * @throws org.editorconfig.core.EditorConfigException
+	 *             If an EditorConfig exception occurs. Usually one of
+	 *             {@link ParseException} or {@link VersionException}
+	 */
 	public Collection<Option> getOptions(T file, Set<T> explicitRootDirs) throws EditorConfigException {
 		checkAssertions();
 		Map<String, Option> oldOptions = Collections.emptyMap();
@@ -82,7 +106,7 @@ public class AbstractEditorConfigManager<T> {
 			while (dir != null && !root) {
 				T configFile = provider.getResource(dir, getConfigFilename());
 				if (provider.exists(configFile)) {
-					EditorConfig config = EditorConfig.load(configFile, provider, getRegistry(), getVersion());
+					EditorConfig config = getEditorConfig(configFile);
 					root = config.isRoot();
 					List<Section> sections = config.getSections();
 					for (Section section : sections) {
@@ -106,6 +130,19 @@ public class AbstractEditorConfigManager<T> {
 		}
 
 		return oldOptions.values();
+	}
+
+	/**
+	 * Returns the editorconfig instance from the given .editorconfig file. This
+	 * method can be orverrided to manage cache.
+	 * 
+	 * @param configFile
+	 *            the .editorconfig file
+	 * @return the editorconfig instance from the given .editorconfig file
+	 * @throws IOException
+	 */
+	protected EditorConfig getEditorConfig(T configFile) throws IOException {
+		return EditorConfig.load(configFile, provider, getRegistry(), getVersion());
 	}
 
 	private void checkAssertions() throws VersionException {
