@@ -76,7 +76,7 @@ public class EditorConfig {
 		try (BufferedReader reader = new BufferedReader(provider.getContent(configFile));) {
 			EditorConfig config = load(reader, registry, version);
 			T dir = provider.getParent(configFile);
-			config.dirPath = provider.getPath(dir) + "/";
+			config.setDirPath(provider.getPath(dir) + "/");
 			return config;
 		}
 	}
@@ -122,6 +122,10 @@ public class EditorConfig {
 
 	public String getDirPath() {
 		return dirPath;
+	}
+
+	public void setDirPath(String dirPath) {
+		this.dirPath = dirPath;
 	}
 
 	public String getVersion() {

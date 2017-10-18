@@ -141,7 +141,7 @@ public class AbstractEditorConfigManager<T> {
 	 * @return the editorconfig instance from the given .editorconfig file
 	 * @throws IOException
 	 */
-	protected EditorConfig getEditorConfig(T configFile) throws IOException {
+	public EditorConfig getEditorConfig(T configFile) throws IOException {
 		return EditorConfig.load(configFile, provider, getRegistry(), getVersion());
 	}
 

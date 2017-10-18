@@ -26,11 +26,8 @@ package org.eclipse.ec4j.parser;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.Locale;
-import java.util.Map;
 
 import org.eclipse.ec4j.EditorConfigConstants;
-import org.eclipse.ec4j.model.RegexpUtils;
 import org.eclipse.ec4j.model.optiontypes.OptionNames;
 import org.eclipse.ec4j.parser.handlers.IEditorConfigHandler;
 
