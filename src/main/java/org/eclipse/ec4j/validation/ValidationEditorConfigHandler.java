@@ -26,6 +26,7 @@ package org.eclipse.ec4j.validation;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.ec4j.model.Option;
 import org.eclipse.ec4j.model.Section;
@@ -39,14 +40,17 @@ import org.eclipse.ec4j.parser.handlers.EditorConfigHandlerAdapter;
 
 public class ValidationEditorConfigHandler extends EditorConfigHandlerAdapter<Section, Option> {
 
+	private static final String PATTERN_SYNTAX_MESSAGE = "The pattern ''{0}'' is not valid ''{1}''";
 	private static final String OPTION_NAME_NOT_EXISTS_MESSAGE = "The option ''{0}'' is not supported by .editorconfig";
-	// private static final String OPTION_VALUE_TYPE_MESSAGE = "The option ''{0}'' doesn't support the value ''{1}''";
+
+	// private static final String OPTION_VALUE_TYPE_MESSAGE = "The option ''{0}''
+	// doesn't support the value ''{1}''";
 
 	private final IReporter reporter;
 	private final ISeverityProvider provider;
 	private final OptionTypeRegistry registry;
 	private List<Section> sections;
-	
+
 	public ValidationEditorConfigHandler(IReporter reporter, ISeverityProvider provider, OptionTypeRegistry registry) {
 		this.reporter = reporter;
 		this.provider = provider != null ? provider : ISeverityProvider.DEFAULT;
@@ -56,16 +60,16 @@ public class ValidationEditorConfigHandler extends EditorConfigHandlerAdapter<Se
 
 	@Override
 	public void startDocument() {
-		
+
 	}
-	
+
 	@Override
 	public void endDocument() {
 		for (Section section : getSections()) {
 			section.preprocessOptions();
 		}
 	}
-	
+
 	@Override
 	public Section startSection() {
 		return new Section(null);
@@ -78,7 +82,15 @@ public class ValidationEditorConfigHandler extends EditorConfigHandlerAdapter<Se
 
 	@Override
 	public void endPattern(Section section, String pattern) {
-		// TODO: validate pattern
+		section.setPattern(pattern);
+		PatternSyntaxException e = section.getGlob().getError();
+		if (e != null) {
+			Location start = getLocation();
+			Location end = start.adjust(pattern.length());
+			ErrorType errorType = ErrorType.PatternSyntaxType;
+			reporter.addError(MessageFormat.format(PATTERN_SYNTAX_MESSAGE, pattern, e.getMessage()), start, end,
+					errorType, provider.getSeverity(errorType));
+		}
 	}
 
 	@Override
@@ -131,7 +143,7 @@ public class ValidationEditorConfigHandler extends EditorConfigHandlerAdapter<Se
 	private OptionType<?> getOptionType(String name) {
 		return registry.getType(name);
 	}
-	
+
 	private List<Section> getSections() {
 		return sections;
 	}

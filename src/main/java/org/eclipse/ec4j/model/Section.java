@@ -23,10 +23,8 @@
  */
 package org.eclipse.ec4j.model;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.ec4j.EditorConfigConstants;
@@ -40,10 +38,12 @@ public class Section {
 
 	private Pattern regex;
 	private List<int[]> ranges;
+	private Glob glob;
 
 	public Section(EditorConfig editorConfig) {
 		this.editorConfig = editorConfig;
 		this.options = new ArrayList<>();
+		this.pattern = "";
 	}
 
 	public void addOption(Option option) {
@@ -84,37 +84,15 @@ public class Section {
 	}
 
 	public boolean match(String filePath) {
-		if (regex == null) {
-			String configDirname = editorConfig.getDirPath();
-			String pattern = this.pattern;
-			pattern = pattern.replace(File.separatorChar, '/');
-			pattern = pattern.replaceAll("\\\\#", "#");
-			pattern = pattern.replaceAll("\\\\;", ";");
-			int separator = pattern.indexOf("/");
-			if (separator >= 0) {
-				pattern = configDirname.replace(File.separatorChar, '/')
-						+ (separator == 0 ? pattern.substring(1) : pattern);
-			} else {
-				pattern = "**/" + pattern;
-			}
-			ranges = new ArrayList<int[]>();
-			final String regex = RegexpUtils.convertGlobToRegEx(pattern, ranges);
-			this.regex = Pattern.compile(regex);
+		return getGlob().match(filePath);
+	}
+
+	public Glob getGlob() {
+		if (glob == null) {
+			String configDirname = editorConfig != null ? editorConfig.getDirPath() : "/dir/";
+			glob = new Glob(configDirname, pattern);
 		}
-		final Matcher matcher = regex.matcher(filePath);
-		if (matcher.matches()) {
-			for (int i = 0; i < matcher.groupCount(); i++) {
-				final int[] range = ranges.get(i);
-				final String numberString = matcher.group(i + 1);
-				if (numberString == null || numberString.startsWith("0"))
-					return false;
-				int number = Integer.parseInt(numberString);
-				if (number < range[0] || number > range[1])
-					return false;
-			}
-			return true;
-		}
-		return false;
+		return glob;
 	}
 
 	public void preprocessOptions() {

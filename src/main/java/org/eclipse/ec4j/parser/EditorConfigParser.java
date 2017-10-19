@@ -244,30 +244,26 @@ public class EditorConfigParser<Section, Option> {
 				break;
 			} else if (!isWhiteSpace(c)) {
 				int oldIndex = index;
-				int oldLineOffset = lineOffset;
-				index = -i;
-				lineOffset -= i;
+				index -= i;
 				try {
 					throw new SectionNotClosedException(getLocation());
 				} finally {
 					index = oldIndex;
-					lineOffset = oldLineOffset;
 				}
 			}
 		}
+		if (i == -1) {
+			throw new SectionNotClosedException(getLocation());
+		}
 		int oldIndex = index;
-		int oldLineOffset = lineOffset;
-		index = -i;
-		lineOffset -= i;
+		index -= i + 1;
 		try {
 			String pattern = patternAndCloseSection.substring(0, i);
 			handler.endPattern(section, pattern);
 			index++;
-			lineOffset++;
 			handler.endSection(section);
 		} finally {
 			index = oldIndex;
-			lineOffset = oldLineOffset;
 		}
 	}
 
