@@ -25,23 +25,23 @@ package org.eclipse.ec4j.model.optiontypes;
 
 public enum EndOfLineOption {
 
-	LF("Line Feed", "\n"),
+    LF("Line Feed", "\n"),
 
-	CR("Carriage Return", "\r"),
+    CR("Carriage Return", "\r"),
 
-	CRLF("Carriage Return + Line Feed", "\r\n");
+    CRLF("Carriage Return + Line Feed", "\r\n");
 
-	private final String displayValue;
+    private final String displayValue;
 
-	private String eolString;
+    private String eolString;
 
-	private EndOfLineOption(final String displayValue, final String eolString) {
-		this.displayValue = displayValue;
-		this.eolString = eolString;
-	}
+    EndOfLineOption(final String displayValue, final String eolString) {
+        this.displayValue = displayValue;
+        this.eolString = eolString;
+    }
 
-	public String getEndOfLineString() {
-		return eolString;
-	}
+    public String getEndOfLineString() {
+        return eolString;
+    }
 
 }

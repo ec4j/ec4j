@@ -30,98 +30,98 @@ import org.eclipse.ec4j.parser.handlers.AbstractEditorConfigHandler;
 
 public class EditorConfigHandler extends AbstractEditorConfigHandler<Section, Option> {
 
-	private final EditorConfig editorConfig;
+    private final EditorConfig editorConfig;
 
-	public EditorConfigHandler(OptionTypeRegistry registry, String version) {
-		this.editorConfig = new EditorConfig(registry, version);
-	}
+    public EditorConfigHandler(OptionTypeRegistry registry, String version) {
+        this.editorConfig = new EditorConfig(registry, version);
+    }
 
-	@Override
-	public void startDocument() {
+    @Override
+    public void startDocument() {
 
-	}
+    }
 
-	@Override
-	public void endDocument() {
-		for (Section section : editorConfig.getSections()) {
-			section.preprocessOptions();
-		}
-	}
+    @Override
+    public void endDocument() {
+        for (Section section : editorConfig.getSections()) {
+            section.preprocessOptions();
+        }
+    }
 
-	@Override
-	public Section startSection() {
-		return new Section(editorConfig);
-	}
+    @Override
+    public Section startSection() {
+        return new Section(editorConfig);
+    }
 
-	@Override
-	public void endSection(Section section) {
-		editorConfig.addSection(section);
-	}
+    @Override
+    public void endSection(Section section) {
+        editorConfig.addSection(section);
+    }
 
-	@Override
-	public void startPattern(Section section) {
+    @Override
+    public void startPattern(Section section) {
 
-	}
+    }
 
-	@Override
-	public void endPattern(Section section, String pattern) {
-		if(section == null) {
-			return;
-		}
-		section.setPattern(pattern);
-	}
+    @Override
+    public void endPattern(Section section, String pattern) {
+        if(section == null) {
+            return;
+        }
+        section.setPattern(pattern);
+    }
 
-	@Override
-	public void startOption() {
+    @Override
+    public void startOption() {
 
-	}
+    }
 
-	@Override
-	public void endOption(Option option, Section section) {
-		if (option == null) {
-			return;
-		}
-		if (section != null) {
-			if (option.checkMax()) {
-				// name <= 50 (see max_property_name test)
-				// value <= 255 (see max_property_value test)
-				section.addOption(option);
-			}
-		} else if (OptionNames.get(option.getName()) == OptionNames.root) {
-			editorConfig.setRoot("true".equals(option.getValue()));
-		}
-	}
+    @Override
+    public void endOption(Option option, Section section) {
+        if (option == null) {
+            return;
+        }
+        if (section != null) {
+            if (option.checkMax()) {
+                // name <= 50 (see max_property_name test)
+                // value <= 255 (see max_property_value test)
+                section.addOption(option);
+            }
+        } else if (OptionNames.get(option.getName()) == OptionNames.root) {
+            editorConfig.setRoot("true".equals(option.getValue()));
+        }
+    }
 
-	@Override
-	public void startOptionName() {
+    @Override
+    public void startOptionName() {
 
-	}
+    }
 
-	@Override
-	public Option endOptionName(String name) {
-		return new Option(name, editorConfig);
-	}
+    @Override
+    public Option endOptionName(String name) {
+        return new Option(name, editorConfig);
+    }
 
-	@Override
-	public void startOptionValue(Option option, String name) {
+    @Override
+    public void startOptionValue(Option option, String name) {
 
-	}
+    }
 
-	@Override
-	public void endOptionValue(Option option, String value, String name) {
-		if (option == null) {
-			return;
-		}
-		option.setValue(value);
-	}
+    @Override
+    public void endOptionValue(Option option, String value, String name) {
+        if (option == null) {
+            return;
+        }
+        option.setValue(value);
+    }
 
-	@Override
-	public void error(ParseException e) {
-		e.printStackTrace();
-	}
+    @Override
+    public void error(ParseException e) {
+        e.printStackTrace();
+    }
 
-	public EditorConfig getEditorConfig() {
-		return editorConfig;
-	}
+    public EditorConfig getEditorConfig() {
+        return editorConfig;
+    }
 
 }

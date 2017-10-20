@@ -28,35 +28,35 @@ import java.util.Map;
 
 public class TestFolder extends TestResource {
 
-	private final Map<String, TestResource> children;
+    private final Map<String, TestResource> children;
 
-	public TestFolder(String name) {
-		this(name, null);
-	}
+    public TestFolder(String name) {
+        this(name, null);
+    }
 
-	public TestFolder(String name, TestFolder parent) {
-		super(name, parent);
-		children = new HashMap<>();
-	}
+    public TestFolder(String name, TestFolder parent) {
+        super(name, parent);
+        children = new HashMap<>();
+    }
 
-	public TestFile addFile(String name, String content) {
-		TestFile file = new TestFile(name, content, this);
-		children.put(file.getName(), file);
-		return file;
-	}
+    public TestFile addFile(String name, String content) {
+        TestFile file = new TestFile(name, content, this);
+        children.put(file.getName(), file);
+        return file;
+    }
 
-	public TestFolder addFolder(String name) {
-		TestFolder folder = new TestFolder(name, this);
-		children.put(folder.getName(), folder);
-		return folder;
-	}
+    public TestFolder addFolder(String name) {
+        TestFolder folder = new TestFolder(name, this);
+        children.put(folder.getName(), folder);
+        return folder;
+    }
 
-	public TestFile addFile(String name) {
-		return addFile(name, null);
-	}
+    public TestFile addFile(String name) {
+        return addFile(name, null);
+    }
 
-	public TestResource getResource(String child) {
-		return children.get(child);
-	}
+    public TestResource getResource(String child) {
+        return children.get(child);
+    }
 
 }

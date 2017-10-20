@@ -28,19 +28,19 @@ import java.io.StringReader;
 
 public class TestFile extends TestResource {
 
-	private final String content;
+    private final String content;
 
-	public TestFile(String name, String content, TestFolder parent) {
-		super(name, parent);
-		this.content = content;		
-	}
+    public TestFile(String name, String content, TestFolder parent) {
+        super(name, parent);
+        this.content = content;
+    }
 
-	public Reader getReader() {
-		return new StringReader(content);
-	}
+    public Reader getReader() {
+        return new StringReader(content);
+    }
 
-	public TestFile getResource(String child) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public TestFile getResource(String child) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

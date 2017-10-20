@@ -24,5 +24,5 @@
 package org.eclipse.ec4j.completion;
 
 public enum CompletionContextType {
-	SECTION, COMMENTS, OPTION_NAME, OPTION_VALUE
+    SECTION, COMMENTS, OPTION_NAME, OPTION_VALUE
 }

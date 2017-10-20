@@ -27,15 +27,15 @@ import org.eclipse.ec4j.model.optiontypes.OptionType;
 
 public interface ICompletionEntry {
 
-	String getName();
-	
-	void setContextType(CompletionContextType type);
+    String getName();
 
-	void setOptionType(OptionType<?> optionType);
-	
-	void setMatcher(ICompletionEntryMatcher matcher);
-	
-	void setInitialOffset(int offset);
+    void setContextType(CompletionContextType type);
 
-	boolean updatePrefix(String prefix);
+    void setOptionType(OptionType<?> optionType);
+
+    void setMatcher(ICompletionEntryMatcher matcher);
+
+    void setInitialOffset(int offset);
+
+    boolean updatePrefix(String prefix);
 }

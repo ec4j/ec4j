@@ -28,83 +28,83 @@ import org.eclipse.ec4j.model.optiontypes.OptionType;
 
 public class Option {
 
-	private final String name;
-	private final EditorConfig editorConfig;
-	private final OptionType<?> type;
-	private Boolean valid;
-	private String value;
+    private final String name;
+    private final EditorConfig editorConfig;
+    private final OptionType<?> type;
+    private Boolean valid;
+    private String value;
 
-	public Option(String name, EditorConfig editorConfig) {
-		this.name = name;
-		this.editorConfig = editorConfig;
-		this.type = editorConfig.getRegistry().getType(name);
-	}
+    public Option(String name, EditorConfig editorConfig) {
+        this.name = name;
+        this.editorConfig = editorConfig;
+        this.type = editorConfig.getRegistry().getType(name);
+    }
 
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * @return the value
-	 */
-	public String getValue() {
-		return value;
-	}
+    /**
+     * @return the value
+     */
+    public String getValue() {
+        return value;
+    }
 
-	/**
-	 * @param value
-	 *            the value to set
-	 */
-	public void setValue(String value) {
-		this.value = value;
-		this.valid = null;
-	}
+    /**
+     * @param value
+     *            the value to set
+     */
+    public void setValue(String value) {
+        this.value = value;
+        this.valid = null;
+    }
 
-	@Override
-	public String toString() {
-		return new StringBuilder(name).append(" = ").append(value).toString();
-	}
+    @Override
+    public String toString() {
+        return new StringBuilder(name).append(" = ").append(value).toString();
+    }
 
-	public <T> T getValueAs() {
-		// TODO: call type.validate
-		return (T) type.parse(getValue());
-	}
+    public <T> T getValueAs() {
+        // TODO: call type.validate
+        return (T) type.parse(getValue());
+    }
 
-	public boolean isValid() {
-		if (valid == null) {
-			valid = computeValid();
-		}
-		return valid;
-	}
+    public boolean isValid() {
+        if (valid == null) {
+            valid = computeValid();
+        }
+        return valid;
+    }
 
-	private Boolean computeValid() {
-		OptionType<?> type = getType();
-		if (type == null) {
-			return false;
-		}
-		try {
-			type.validate(value);
-		} catch (OptionException e) {
-			return false;
-		}
-		return true;
-	}
+    private Boolean computeValid() {
+        OptionType<?> type = getType();
+        if (type == null) {
+            return false;
+        }
+        try {
+            type.validate(value);
+        } catch (OptionException e) {
+            return false;
+        }
+        return true;
+    }
 
-	public OptionType<?> getType() {
-		return type;
-	}
+    public OptionType<?> getType() {
+        return type;
+    }
 
-	public boolean checkMax() {
-		if (name != null && name.length() > 50) {
-			return false;
-		}
-		if (value != null && value.length() > 255) {
-			return false;
-		}
-		return true;
-	}
+    public boolean checkMax() {
+        if (name != null && name.length() > 50) {
+            return false;
+        }
+        if (value != null && value.length() > 255) {
+            return false;
+        }
+        return true;
+    }
 
 }

@@ -25,7 +25,7 @@ package org.eclipse.ec4j.parser;
 
 public class SectionNotClosedException extends ParseException {
 
-	public SectionNotClosedException(Location location) {
-		super("Section not closed. Expected ']'", location, ErrorType.SectionNotClosed);
-	}
+    public SectionNotClosedException(Location location) {
+        super("Section not closed. Expected ']'", location, ErrorType.SectionNotClosed);
+    }
 }

@@ -23,12 +23,10 @@
  */
 package org.eclipse.ec4j;
 
-import java.io.IOException;
-
 public class EditorConfigException extends Exception {
 
-	public EditorConfigException(String message, Exception e) {
-		super(message, e);
-	}
+    public EditorConfigException(String message, Exception e) {
+        super(message, e);
+    }
 
 }

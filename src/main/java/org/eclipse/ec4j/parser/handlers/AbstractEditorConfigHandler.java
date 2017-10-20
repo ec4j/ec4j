@@ -28,20 +28,20 @@ import org.eclipse.ec4j.parser.Location;
 
 public abstract class AbstractEditorConfigHandler<S, O> implements IEditorConfigHandler<S, O> {
 
-	private EditorConfigParser<S, O> parser;
+    private EditorConfigParser<S, O> parser;
 
-	@Override
-	public void setParser(EditorConfigParser<S, O> parser) {
-		this.parser = parser;
-	}
+    @Override
+    public void setParser(EditorConfigParser<S, O> parser) {
+        this.parser = parser;
+    }
 
-	/**
-	 * Returns the current parser location.
-	 *
-	 * @return the current parser location
-	 */
-	protected Location getLocation() {
-		return parser.getLocation();
-	}
+    /**
+     * Returns the current parser location.
+     *
+     * @return the current parser location
+     */
+    protected Location getLocation() {
+        return parser.getLocation();
+    }
 
 }

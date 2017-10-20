@@ -47,59 +47,59 @@ import org.eclipse.ec4j.model.optiontypes.OptionTypeRegistry;
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
 public class Cli {
-	public static void main(String[] args) throws Exception {
-		List<String> paths = new ArrayList<>();
-		String editorconfigFileName = EditorConfigConstants.EDITORCONFIG;
-		String version = EditorConfigConstants.VERSION;
-		for (int i = 0; i < args.length; i++) {
-			String arg = args[i];
-			switch (arg) {
-			case "-b":
-				if (i + 1 < args.length) {
-					version = args[++i];
-					continue;
-				} else {
-					System.err.println("-b option must be followed by a version");
-					System.exit(1);
-				}
-				break;
-			case "-f":
-				if (i + 1 < args.length) {
-					editorconfigFileName = args[++i];
-					continue;
-				} else {
-					System.err.println("-f option must be followed by a file path");
-					System.exit(1);
-				}
-				break;
-			case "--version":
-			case "-v":
-				System.out.println("EditorConfig Java Version " + version);
-				System.exit(0);
-				break;
-			default:
-				paths.add(args[i]);
-				break;
-			}
-		}
+    public static void main(String[] args) throws Exception {
+        List<String> paths = new ArrayList<>();
+        String editorconfigFileName = EditorConfigConstants.EDITORCONFIG;
+        String version = EditorConfigConstants.VERSION;
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
+            switch (arg) {
+            case "-b":
+                if (i + 1 < args.length) {
+                    version = args[++i];
+                    continue;
+                } else {
+                    System.err.println("-b option must be followed by a version");
+                    System.exit(1);
+                }
+                break;
+            case "-f":
+                if (i + 1 < args.length) {
+                    editorconfigFileName = args[++i];
+                    continue;
+                } else {
+                    System.err.println("-f option must be followed by a file path");
+                    System.exit(1);
+                }
+                break;
+            case "--version":
+            case "-v":
+                System.out.println("EditorConfig Java Version " + version);
+                System.exit(0);
+                break;
+            default:
+                paths.add(args[i]);
+                break;
+            }
+        }
 
-		if (paths.isEmpty()) {
-			System.err.println("At least one file path needs to be specified");
-			System.exit(1);
-		}
+        if (paths.isEmpty()) {
+            System.err.println("At least one file path needs to be specified");
+            System.exit(1);
+        }
 
-		EditorConfigManager editorConfigManager = new EditorConfigManager(OptionTypeRegistry.DEFAULT,
-				editorconfigFileName, version);
-		Set<File> roots = Collections.singleton(new File(".").getAbsoluteFile());
-		for (String path : paths) {
-			if (paths.size() > 1) {
-				System.out.println("[" + path + "]");
-			}
-			Collection<Option> opts = editorConfigManager.getOptions(new File(path).getAbsoluteFile(), roots);
-			for (Option opt : opts) {
-				System.out.println(opt.getName() + "=" + opt.getValue());
-			}
-		}
-	}
+        EditorConfigManager editorConfigManager = new EditorConfigManager(OptionTypeRegistry.DEFAULT,
+                editorconfigFileName, version);
+        Set<File> roots = Collections.singleton(new File(".").getAbsoluteFile());
+        for (String path : paths) {
+            if (paths.size() > 1) {
+                System.out.println("[" + path + "]");
+            }
+            Collection<Option> opts = editorConfigManager.getOptions(new File(path).getAbsoluteFile(), roots);
+            for (Option opt : opts) {
+                System.out.println(opt.getName() + "=" + opt.getValue());
+            }
+        }
+    }
 
 }

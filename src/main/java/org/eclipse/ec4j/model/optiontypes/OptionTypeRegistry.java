@@ -38,36 +38,36 @@ import org.eclipse.ec4j.model.optiontypes.OptionType.TrimTrailingWhitespace;
 
 public class OptionTypeRegistry {
 
-	public static final OptionTypeRegistry DEFAULT;
+    public static final OptionTypeRegistry DEFAULT;
 
-	static {
-		DEFAULT = new OptionTypeRegistry();
-		DEFAULT.register(new IndentStyle());
-		DEFAULT.register(new IndentSize());
-		DEFAULT.register(new TabWidth());
-		DEFAULT.register(new EndOfLine());
-		DEFAULT.register(new Charset());
-		DEFAULT.register(new TrimTrailingWhitespace());
-		DEFAULT.register(new InsertFinalNewline());
-		DEFAULT.register(new Root());
-	}
+    static {
+        DEFAULT = new OptionTypeRegistry();
+        DEFAULT.register(new IndentStyle());
+        DEFAULT.register(new IndentSize());
+        DEFAULT.register(new TabWidth());
+        DEFAULT.register(new EndOfLine());
+        DEFAULT.register(new Charset());
+        DEFAULT.register(new TrimTrailingWhitespace());
+        DEFAULT.register(new InsertFinalNewline());
+        DEFAULT.register(new Root());
+    }
 
-	private Map<String, OptionType<?>> types;
+    private Map<String, OptionType<?>> types;
 
-	public OptionTypeRegistry() {
-		this.types = new HashMap<>();
-	}
+    public OptionTypeRegistry() {
+        this.types = new HashMap<>();
+    }
 
-	public void register(OptionType<?> type) {
-		types.put(type.getName().toUpperCase(), type);
-	}
+    public void register(OptionType<?> type) {
+        types.put(type.getName().toUpperCase(), type);
+    }
 
-	public OptionType<?> getType(String name) {
-		return types.get(name.toUpperCase());
-	}
+    public OptionType<?> getType(String name) {
+        return types.get(name.toUpperCase());
+    }
 
-	public Collection<OptionType<?>> getTypes() {
-		return types.values();
-	}
+    public Collection<OptionType<?>> getTypes() {
+        return types.values();
+    }
 
 }

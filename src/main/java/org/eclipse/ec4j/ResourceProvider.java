@@ -28,14 +28,14 @@ import java.io.Reader;
 
 public interface ResourceProvider<T> {
 
-	T getParent(T file);
+    T getParent(T file);
 
-	T getResource(T dir, String configFilename);
+    T getResource(T dir, String configFilename);
 
-	boolean exists(T file);
+    boolean exists(T file);
 
-	String getPath(T file);
+    String getPath(T file);
 
-	Reader getContent(T file) throws IOException;
+    Reader getContent(T file) throws IOException;
 
 }

@@ -40,111 +40,111 @@ import org.eclipse.ec4j.parser.handlers.EditorConfigHandlerAdapter;
 
 public class ValidationEditorConfigHandler extends EditorConfigHandlerAdapter<Section, Option> {
 
-	private static final String PATTERN_SYNTAX_MESSAGE = "The pattern ''{0}'' is not valid ''{1}''";
-	private static final String OPTION_NAME_NOT_EXISTS_MESSAGE = "The option ''{0}'' is not supported by .editorconfig";
+    private static final String PATTERN_SYNTAX_MESSAGE = "The pattern ''{0}'' is not valid ''{1}''";
+    private static final String OPTION_NAME_NOT_EXISTS_MESSAGE = "The option ''{0}'' is not supported by .editorconfig";
 
-	// private static final String OPTION_VALUE_TYPE_MESSAGE = "The option ''{0}''
-	// doesn't support the value ''{1}''";
+    // private static final String OPTION_VALUE_TYPE_MESSAGE = "The option ''{0}''
+    // doesn't support the value ''{1}''";
 
-	private final IReporter reporter;
-	private final ISeverityProvider provider;
-	private final OptionTypeRegistry registry;
-	private List<Section> sections;
+    private final IReporter reporter;
+    private final ISeverityProvider provider;
+    private final OptionTypeRegistry registry;
+    private List<Section> sections;
 
-	public ValidationEditorConfigHandler(IReporter reporter, ISeverityProvider provider, OptionTypeRegistry registry) {
-		this.reporter = reporter;
-		this.provider = provider != null ? provider : ISeverityProvider.DEFAULT;
-		this.registry = registry != null ? registry : OptionTypeRegistry.DEFAULT;
-		this.sections = new ArrayList<>();
-	}
+    public ValidationEditorConfigHandler(IReporter reporter, ISeverityProvider provider, OptionTypeRegistry registry) {
+        this.reporter = reporter;
+        this.provider = provider != null ? provider : ISeverityProvider.DEFAULT;
+        this.registry = registry != null ? registry : OptionTypeRegistry.DEFAULT;
+        this.sections = new ArrayList<>();
+    }
 
-	@Override
-	public void startDocument() {
+    @Override
+    public void startDocument() {
 
-	}
+    }
 
-	@Override
-	public void endDocument() {
-		for (Section section : getSections()) {
-			section.preprocessOptions();
-		}
-	}
+    @Override
+    public void endDocument() {
+        for (Section section : getSections()) {
+            section.preprocessOptions();
+        }
+    }
 
-	@Override
-	public Section startSection() {
-		return new Section(null);
-	}
+    @Override
+    public Section startSection() {
+        return new Section(null);
+    }
 
-	@Override
-	public void endSection(Section section) {
-		sections.add(section);
-	}
+    @Override
+    public void endSection(Section section) {
+        sections.add(section);
+    }
 
-	@Override
-	public void endPattern(Section section, String pattern) {
-		section.setPattern(pattern);
-		PatternSyntaxException e = section.getGlob().getError();
-		if (e != null) {
-			Location start = getLocation();
-			Location end = start.adjust(pattern.length());
-			ErrorType errorType = ErrorType.PatternSyntaxType;
-			reporter.addError(MessageFormat.format(PATTERN_SYNTAX_MESSAGE, pattern, e.getMessage()), start, end,
-					errorType, provider.getSeverity(errorType));
-		}
-	}
+    @Override
+    public void endPattern(Section section, String pattern) {
+        section.setPattern(pattern);
+        PatternSyntaxException e = section.getGlob().getError();
+        if (e != null) {
+            Location start = getLocation();
+            Location end = start.adjust(pattern.length());
+            ErrorType errorType = ErrorType.PatternSyntaxType;
+            reporter.addError(MessageFormat.format(PATTERN_SYNTAX_MESSAGE, pattern, e.getMessage()), start, end,
+                    errorType, provider.getSeverity(errorType));
+        }
+    }
 
-	@Override
-	public Option endOptionName(String name) {
-		// Validate option name
-		if (!isOptionExists(name)) {
-			Location start = getLocation();
-			Location end = start.adjust(-name.length());
-			ErrorType errorType = ErrorType.OptionNameNotExists;
-			reporter.addError(MessageFormat.format(OPTION_NAME_NOT_EXISTS_MESSAGE, name), start, end, errorType,
-					provider.getSeverity(errorType));
-		}
-		return null;
-	}
+    @Override
+    public Option endOptionName(String name) {
+        // Validate option name
+        if (!isOptionExists(name)) {
+            Location start = getLocation();
+            Location end = start.adjust(-name.length());
+            ErrorType errorType = ErrorType.OptionNameNotExists;
+            reporter.addError(MessageFormat.format(OPTION_NAME_NOT_EXISTS_MESSAGE, name), start, end, errorType,
+                    provider.getSeverity(errorType));
+        }
+        return null;
+    }
 
-	@Override
-	public void endOptionValue(Option option, String value, String name) {
-		// Validate value of the option name
-		try {
-			validateOptionValue(name, value);
-		} catch (OptionException e) {
-			Location start = getLocation();
-			ErrorType errorType = ErrorType.OptionValueType;
-			Location end = start.adjust(-value.length());
-			reporter.addError(e.getMessage(), start, end, errorType, provider.getSeverity(errorType));
-		}
-	}
+    @Override
+    public void endOptionValue(Option option, String value, String name) {
+        // Validate value of the option name
+        try {
+            validateOptionValue(name, value);
+        } catch (OptionException e) {
+            Location start = getLocation();
+            ErrorType errorType = ErrorType.OptionValueType;
+            Location end = start.adjust(-value.length());
+            reporter.addError(e.getMessage(), start, end, errorType, provider.getSeverity(errorType));
+        }
+    }
 
-	@Override
-	public void error(ParseException e) {
-		reporter.addError(e.getMessage(), e.getLocation(), null, e.getErrorType(), getSeverity(e));
-	}
+    @Override
+    public void error(ParseException e) {
+        reporter.addError(e.getMessage(), e.getLocation(), null, e.getErrorType(), getSeverity(e));
+    }
 
-	protected Severity getSeverity(ParseException e) {
-		return provider.getSeverity(e.getErrorType());
-	}
+    protected Severity getSeverity(ParseException e) {
+        return provider.getSeverity(e.getErrorType());
+    }
 
-	private boolean validateOptionValue(String name, String value) throws OptionException {
-		OptionType<?> type = getOptionType(name);
-		if (type != null) {
-			type.validate(value);
-		}
-		return true;
-	}
+    private boolean validateOptionValue(String name, String value) throws OptionException {
+        OptionType<?> type = getOptionType(name);
+        if (type != null) {
+            type.validate(value);
+        }
+        return true;
+    }
 
-	private boolean isOptionExists(String name) {
-		return getOptionType(name) != null;
-	}
+    private boolean isOptionExists(String name) {
+        return getOptionType(name) != null;
+    }
 
-	private OptionType<?> getOptionType(String name) {
-		return registry.getType(name);
-	}
+    private OptionType<?> getOptionType(String name) {
+        return registry.getType(name);
+    }
 
-	private List<Section> getSections() {
-		return sections;
-	}
+    private List<Section> getSections() {
+        return sections;
+    }
 }

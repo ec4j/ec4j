@@ -25,5 +25,5 @@ package org.eclipse.ec4j.validation;
 
 public enum Severity {
 
-	error, warning, info
+    error, warning, info
 }

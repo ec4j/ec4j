@@ -32,20 +32,20 @@ import org.eclipse.ec4j.parser.Location;
  */
 public interface IReporter {
 
-	/**
-	 * Add error.
-	 * 
-	 * @param message
-	 *            the message error.
-	 * @param start
-	 *            the start location of the error.
-	 * @param end
-	 *            the end location of the error (can be null).
-	 * @param type
-	 *            the type of the error.
-	 * @param severity
-	 *            the severity of the error.
-	 */
-	void addError(String message, Location start, Location end, ErrorType type, Severity severity);
+    /**
+     * Add error.
+     *
+     * @param message
+     *            the message error.
+     * @param start
+     *            the start location of the error.
+     * @param end
+     *            the end location of the error (can be null).
+     * @param type
+     *            the type of the error.
+     * @param severity
+     *            the severity of the error.
+     */
+    void addError(String message, Location start, Location end, ErrorType type, Severity severity);
 
 }

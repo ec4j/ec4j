@@ -34,39 +34,39 @@ import org.eclipse.ec4j.model.optiontypes.OptionTypeRegistry;
 
 public class EditorConfigManager extends AbstractEditorConfigManager<File> {
 
-	public static final ResourceProvider<File> FILE_RESOURCE_PROVIDER = new ResourceProvider<File>() {
+    public static final ResourceProvider<File> FILE_RESOURCE_PROVIDER = new ResourceProvider<File>() {
 
-		@Override
-		public File getParent(File file) {
-			return file.getParentFile();
-		}
+        @Override
+        public File getParent(File file) {
+            return file.getParentFile();
+        }
 
-		@Override
-		public File getResource(File parent, String child) {
-			return new File(parent, child);
-		}
+        @Override
+        public File getResource(File parent, String child) {
+            return new File(parent, child);
+        }
 
-		@Override
-		public boolean exists(File file) {
-			return file.exists();
-		}
+        @Override
+        public boolean exists(File file) {
+            return file.exists();
+        }
 
-		@Override
-		public String getPath(File file) {
-			return file.toString().replaceAll("[\\\\]", "/");
-		}
+        @Override
+        public String getPath(File file) {
+            return file.toString().replaceAll("[\\\\]", "/");
+        }
 
-		@Override
-		public Reader getContent(File configFile) throws IOException {
-			return new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8);
-		}
-	};
+        @Override
+        public Reader getContent(File configFile) throws IOException {
+            return new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8);
+        }
+    };
 
-	public EditorConfigManager() {
-		super(FILE_RESOURCE_PROVIDER);
-	}
+    public EditorConfigManager() {
+        super(FILE_RESOURCE_PROVIDER);
+    }
 
-	public EditorConfigManager(OptionTypeRegistry registry, String configFilename, String version) {
-		super(registry, FILE_RESOURCE_PROVIDER, configFilename, version);
-	}
+    public EditorConfigManager(OptionTypeRegistry registry, String configFilename, String version) {
+        super(registry, FILE_RESOURCE_PROVIDER, configFilename, version);
+    }
 }

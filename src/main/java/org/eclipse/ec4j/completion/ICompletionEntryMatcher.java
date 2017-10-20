@@ -25,30 +25,30 @@ package org.eclipse.ec4j.completion;
 
 /**
  * Matcher for completion entry.
- * 
+ *
  */
 public interface ICompletionEntryMatcher {
 
-	public static ICompletionEntryMatcher LCS = new ICompletionEntryMatcher() {
+    ICompletionEntryMatcher LCS = new ICompletionEntryMatcher() {
 
-		@Override
-		public int[] bestSubsequence(String completion, String token) {
-			return LCSS.bestSubsequence(completion, token);
-		}
+        @Override
+        public int[] bestSubsequence(String completion, String token) {
+            return LCSS.bestSubsequence(completion, token);
+        }
 
-	};
-	
-	public static ICompletionEntryMatcher START_WITH_MATCHER = new ICompletionEntryMatcher() {
+    };
 
-		@Override
-		public int[] bestSubsequence(String completion, String token) {
-			if (!completion.startsWith(token)) {
-				return null;
-			}
-			return new int[] { 0, token.length() - 1 };
-		}
-	};
+    ICompletionEntryMatcher START_WITH_MATCHER = new ICompletionEntryMatcher() {
 
-	int[] bestSubsequence(String completion, String token);
+        @Override
+        public int[] bestSubsequence(String completion, String token) {
+            if (!completion.startsWith(token)) {
+                return null;
+            }
+            return new int[] { 0, token.length() - 1 };
+        }
+    };
+
+    int[] bestSubsequence(String completion, String token);
 
 }

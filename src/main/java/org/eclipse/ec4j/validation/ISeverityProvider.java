@@ -27,13 +27,13 @@ import org.eclipse.ec4j.parser.ErrorType;
 
 public interface ISeverityProvider {
 
-	public static final ISeverityProvider DEFAULT = new ISeverityProvider() {
+    ISeverityProvider DEFAULT = new ISeverityProvider() {
 
-		@Override
-		public Severity getSeverity(ErrorType errorType) {
-			return errorType.isSyntaxError() ? Severity.error : Severity.warning;
-		}
-	};
+        @Override
+        public Severity getSeverity(ErrorType errorType) {
+            return errorType.isSyntaxError() ? Severity.error : Severity.warning;
+        }
+    };
 
-	Severity getSeverity(ErrorType errorType);
+    Severity getSeverity(ErrorType errorType);
 }

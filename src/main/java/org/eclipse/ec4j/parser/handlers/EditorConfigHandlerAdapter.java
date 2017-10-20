@@ -27,68 +27,68 @@ import org.eclipse.ec4j.parser.ParseException;
 
 public class EditorConfigHandlerAdapter<S, O> extends AbstractEditorConfigHandler<S, O> {
 
-	@Override
-	public void startDocument() {
+    @Override
+    public void startDocument() {
 
-	}
+    }
 
-	@Override
-	public void endDocument() {
+    @Override
+    public void endDocument() {
 
-	}
+    }
 
-	@Override
-	public S startSection() {
-		return null;
-	}
+    @Override
+    public S startSection() {
+        return null;
+    }
 
-	@Override
-	public void endSection(S section) {
+    @Override
+    public void endSection(S section) {
 
-	}
+    }
 
-	@Override
-	public void startPattern(S section) {
+    @Override
+    public void startPattern(S section) {
 
-	}
+    }
 
-	@Override
-	public void endPattern(S section, String pattern) {
+    @Override
+    public void endPattern(S section, String pattern) {
 
-	}
+    }
 
-	@Override
-	public void startOption() {
+    @Override
+    public void startOption() {
 
-	}
+    }
 
-	@Override
-	public void endOption(O option, S section) {
+    @Override
+    public void endOption(O option, S section) {
 
-	}
+    }
 
-	@Override
-	public void startOptionName() {
+    @Override
+    public void startOptionName() {
 
-	}
+    }
 
-	@Override
-	public O endOptionName(String name) {
-		return null;
-	}
+    @Override
+    public O endOptionName(String name) {
+        return null;
+    }
 
-	@Override
-	public void startOptionValue(O option, String name) {
+    @Override
+    public void startOptionValue(O option, String name) {
 
-	}
+    }
 
-	@Override
-	public void endOptionValue(O option, String value, String name) {
+    @Override
+    public void endOptionValue(O option, String value, String name) {
 
-	}
+    }
 
-	@Override
-	public void error(ParseException e) {
+    @Override
+    public void error(ParseException e) {
 
-	}
+    }
 }

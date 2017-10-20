@@ -25,15 +25,15 @@ package org.eclipse.ec4j.model.optiontypes;
 
 public enum IndentStyleOption  {
 
-	TAB("Tab"),
+    TAB("Tab"),
 
-	SPACE("Space");
+    SPACE("Space");
 
-	private final String displayValue;
+    private final String displayValue;
 
-	private IndentStyleOption(final String displayValue) {
-		this.displayValue = displayValue;
-	}
+    IndentStyleOption(final String displayValue) {
+        this.displayValue = displayValue;
+    }
 
 
 }

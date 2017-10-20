@@ -38,32 +38,32 @@ import org.junit.Test;
  */
 public class EditorConfigPropertiesTest {
 
-	@Test
-	public void indent_size_default() throws IOException, EditorConfigException {
-		String content = "root = true\r\n" + 
-				"\r\n" + 
-				"[test.c]\r\n" + 
-				"indent_style = tab\r\n" + 
-				"\r\n" + 
-				"[test2.c]\r\n" + 
-				"indent_style = space\r\n" + 
-				"\r\n" + 
-				"[test3.c]\r\n" + 
-				"indent_style = tab\r\n" + 
-				"tab_width = 2\r\n" + 
-				"";
-		
-		TestEditorConfigManager manager = new TestEditorConfigManager();
-		
-		TestFolder root = new TestFolder("root");
-		root.addFile(".editorconfig", content);
-		TestFile file = root.addFile("test.c");
+    @Test
+    public void indent_size_default() throws IOException, EditorConfigException {
+        String content = "root = true\r\n" +
+                "\r\n" +
+                "[test.c]\r\n" +
+                "indent_style = tab\r\n" +
+                "\r\n" +
+                "[test2.c]\r\n" +
+                "indent_style = space\r\n" +
+                "\r\n" +
+                "[test3.c]\r\n" +
+                "indent_style = tab\r\n" +
+                "tab_width = 2\r\n" +
+                "";
 
-		Collection<Option> options = manager.getOptions(file, null);
-		Assert.assertEquals(2, options.size());
-		Iterator<Option> iter = options.iterator();
-		Assert.assertEquals("indent_style = tab", iter.next().toString());
-		Assert.assertEquals("indent_size = tab", iter.next().toString());
-	}
+        TestEditorConfigManager manager = new TestEditorConfigManager();
+
+        TestFolder root = new TestFolder("root");
+        root.addFile(".editorconfig", content);
+        TestFile file = root.addFile("test.c");
+
+        Collection<Option> options = manager.getOptions(file, null);
+        Assert.assertEquals(2, options.size());
+        Iterator<Option> iter = options.iterator();
+        Assert.assertEquals("indent_style = tab", iter.next().toString());
+        Assert.assertEquals("indent_size = tab", iter.next().toString());
+    }
 
 }

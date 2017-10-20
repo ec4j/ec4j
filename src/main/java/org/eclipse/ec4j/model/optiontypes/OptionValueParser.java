@@ -25,60 +25,60 @@ package org.eclipse.ec4j.model.optiontypes;
 
 interface OptionValueParser<T> {
 
-	public static OptionValueParser<String> IDENTITY_VALUE_PARSER = new OptionValueParser<String>() {
-		
-		@Override
-		public String parse(final String value) {
-			return value;
-		}
-		
-		@Override
-		public void validate(String name, String value) throws OptionException {
+    OptionValueParser<String> IDENTITY_VALUE_PARSER = new OptionValueParser<String>() {
 
-		}
-	};
+        @Override
+        public String parse(final String value) {
+            return value;
+        }
 
-	public static OptionValueParser<Boolean> BOOLEAN_VALUE_PARSER = new OptionValueParser<Boolean>() {
-		
-		@Override
-		public Boolean parse(final String value) {
-			return Boolean.valueOf(value.toLowerCase());
-		}
-		
-		@Override
-		public void validate(String name, String value) throws OptionException {
-			value = value.toLowerCase();
-			if (!"true".equals(value) && !"false".equals(value)) {
-				throw new OptionException(
-						"Option '" + name + "' expects a boolean. The value '" + value + "' is not a boolean.");
-			}
-		}
-	};
+        @Override
+        public void validate(String name, String value) throws OptionException {
 
-	public static OptionValueParser<Integer> POSITIVE_INT_VALUE_PARSER = new OptionValueParser<Integer>() {
-		@Override
-		public Integer parse(final String value) {
-			try {
-				final Integer integer = Integer.valueOf(value);
-				return integer <= 0 ? null : integer;
-			} catch (final NumberFormatException e) {
-				return null;
-			}
-		}
-		
-		@Override
-		public void validate(String name, String value) throws OptionException {
-			try {
-				Integer.valueOf(value);
-			} catch (final NumberFormatException e) {
-				throw new OptionException(
-						"Option '" + name + "' expects an integer. The value '" + value + "' is not an integer.");
-			}
-		}
-	};
+        }
+    };
 
-	void validate(String name, String value) throws OptionException;
-	
-	T parse(String value);
+    OptionValueParser<Boolean> BOOLEAN_VALUE_PARSER = new OptionValueParser<Boolean>() {
+
+        @Override
+        public Boolean parse(final String value) {
+            return Boolean.valueOf(value.toLowerCase());
+        }
+
+        @Override
+        public void validate(String name, String value) throws OptionException {
+            value = value.toLowerCase();
+            if (!"true".equals(value) && !"false".equals(value)) {
+                throw new OptionException(
+                        "Option '" + name + "' expects a boolean. The value '" + value + "' is not a boolean.");
+            }
+        }
+    };
+
+    OptionValueParser<Integer> POSITIVE_INT_VALUE_PARSER = new OptionValueParser<Integer>() {
+        @Override
+        public Integer parse(final String value) {
+            try {
+                final Integer integer = Integer.valueOf(value);
+                return integer <= 0 ? null : integer;
+            } catch (final NumberFormatException e) {
+                return null;
+            }
+        }
+
+        @Override
+        public void validate(String name, String value) throws OptionException {
+            try {
+                Integer.valueOf(value);
+            } catch (final NumberFormatException e) {
+                throw new OptionException(
+                        "Option '" + name + "' expects an integer. The value '" + value + "' is not an integer.");
+            }
+        }
+    };
+
+    void validate(String name, String value) throws OptionException;
+
+    T parse(String value);
 
 }

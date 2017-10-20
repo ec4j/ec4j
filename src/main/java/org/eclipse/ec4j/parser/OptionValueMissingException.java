@@ -25,8 +25,8 @@ package org.eclipse.ec4j.parser;
 
 public class OptionValueMissingException extends ParseException {
 
-	public OptionValueMissingException(String name, Location location) {
-		super("None value defined for the option '" + name + "'. Expected a value", location,
-				ErrorType.OptionValueMissing);
-	}
+    public OptionValueMissingException(String name, Location location) {
+        super("None value defined for the option '" + name + "'. Expected a value", location,
+                ErrorType.OptionValueMissing);
+    }
 }

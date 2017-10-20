@@ -36,99 +36,99 @@ import org.eclipse.ec4j.parser.EditorConfigParser;
 
 public class EditorConfig {
 
-	private final List<Section> sections;
-	private final OptionTypeRegistry registry;
-	private final String version;
+    private final List<Section> sections;
+    private final OptionTypeRegistry registry;
+    private final String version;
 
-	private Boolean root;
-	private String dirPath;
+    private Boolean root;
+    private String dirPath;
 
-	public EditorConfig() {
-		this(OptionTypeRegistry.DEFAULT, EditorConfigConstants.VERSION);
-	}
+    public EditorConfig() {
+        this(OptionTypeRegistry.DEFAULT, EditorConfigConstants.VERSION);
+    }
 
-	public EditorConfig(OptionTypeRegistry registry, String version) {
-		this.sections = new ArrayList<>();
-		this.registry = registry;
-		this.version = version;
-	}
+    public EditorConfig(OptionTypeRegistry registry, String version) {
+        this.sections = new ArrayList<>();
+        this.registry = registry;
+        this.version = version;
+    }
 
-	public OptionTypeRegistry getRegistry() {
-		return registry;
-	}
+    public OptionTypeRegistry getRegistry() {
+        return registry;
+    }
 
-	public static EditorConfig load(Reader reader) throws IOException {
-		return load(reader, OptionTypeRegistry.DEFAULT);
-	}
+    public static EditorConfig load(Reader reader) throws IOException {
+        return load(reader, OptionTypeRegistry.DEFAULT);
+    }
 
-	public static EditorConfig load(Reader reader, OptionTypeRegistry registry) throws IOException {
-		return load(reader, registry, EditorConfigConstants.VERSION);
-	}
+    public static EditorConfig load(Reader reader, OptionTypeRegistry registry) throws IOException {
+        return load(reader, registry, EditorConfigConstants.VERSION);
+    }
 
-	public static EditorConfig load(Reader reader, OptionTypeRegistry registry, String version) throws IOException {
-		EditorConfigHandler handler = new EditorConfigHandler(registry, version);
-		new EditorConfigParser<Section, Option>(handler).setVersion(version).parse(reader);
-		return handler.getEditorConfig();
-	}
+    public static EditorConfig load(Reader reader, OptionTypeRegistry registry, String version) throws IOException {
+        EditorConfigHandler handler = new EditorConfigHandler(registry, version);
+        new EditorConfigParser<Section, Option>(handler).setVersion(version).parse(reader);
+        return handler.getEditorConfig();
+    }
 
-	public static <T> EditorConfig load(T configFile, ResourceProvider<T> provider, OptionTypeRegistry registry,
-			String version) throws IOException {
-		try (BufferedReader reader = new BufferedReader(provider.getContent(configFile));) {
-			EditorConfig config = load(reader, registry, version);
-			T dir = provider.getParent(configFile);
-			config.setDirPath(provider.getPath(dir) + "/");
-			return config;
-		}
-	}
+    public static <T> EditorConfig load(T configFile, ResourceProvider<T> provider, OptionTypeRegistry registry,
+            String version) throws IOException {
+        try (BufferedReader reader = new BufferedReader(provider.getContent(configFile));) {
+            EditorConfig config = load(reader, registry, version);
+            T dir = provider.getParent(configFile);
+            config.setDirPath(provider.getPath(dir) + "/");
+            return config;
+        }
+    }
 
-	public void addSection(Section section) {
-		sections.add(section);
-	}
+    public void addSection(Section section) {
+        sections.add(section);
+    }
 
-	public List<Section> getSections() {
-		return sections;
-	}
+    public List<Section> getSections() {
+        return sections;
+    }
 
-	public Boolean getRoot() {
-		return root;
-	}
+    public Boolean getRoot() {
+        return root;
+    }
 
-	public void setRoot(Boolean root) {
-		this.root = root;
-	}
+    public void setRoot(Boolean root) {
+        this.root = root;
+    }
 
-	public boolean isRoot() {
-		return root != null && root;
-	}
+    public boolean isRoot() {
+        return root != null && root;
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder s = new StringBuilder();
-		if (getRoot() != null) {
-			s.append("root = ");
-			s.append(isRoot());
-			s.append("\n\n");
-		}
-		int i = 0;
-		for (Section section : sections) {
-			if (i > 0) {
-				s.append("\n\n");
-			}
-			s.append(section.toString());
-			i++;
-		}
-		return s.toString();
-	}
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        if (getRoot() != null) {
+            s.append("root = ");
+            s.append(isRoot());
+            s.append("\n\n");
+        }
+        int i = 0;
+        for (Section section : sections) {
+            if (i > 0) {
+                s.append("\n\n");
+            }
+            s.append(section.toString());
+            i++;
+        }
+        return s.toString();
+    }
 
-	public String getDirPath() {
-		return dirPath;
-	}
+    public String getDirPath() {
+        return dirPath;
+    }
 
-	public void setDirPath(String dirPath) {
-		this.dirPath = dirPath;
-	}
+    public void setDirPath(String dirPath) {
+        this.dirPath = dirPath;
+    }
 
-	public String getVersion() {
-		return version;
-	}
+    public String getVersion() {
+        return version;
+    }
 }

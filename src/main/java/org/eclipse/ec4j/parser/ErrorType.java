@@ -25,16 +25,16 @@ package org.eclipse.ec4j.parser;
 
 public enum ErrorType {
 
-	ParsingError(true), SectionNotClosed(true), MultiPatternNotClosed(true), OptionAssignementMissing(
-			true), OptionValueMissing(true), OptionNameNotExists(false), OptionValueType(false), PatternSyntaxType(true);
+    ParsingError(true), SectionNotClosed(true), MultiPatternNotClosed(true), OptionAssignementMissing(
+            true), OptionValueMissing(true), OptionNameNotExists(false), OptionValueType(false), PatternSyntaxType(true);
 
-	private final boolean syntaxError;
+    private final boolean syntaxError;
 
-	private ErrorType(boolean syntaxError) {
-		this.syntaxError = syntaxError;
-	}
+    ErrorType(boolean syntaxError) {
+        this.syntaxError = syntaxError;
+    }
 
-	public boolean isSyntaxError() {
-		return syntaxError;
-	}
+    public boolean isSyntaxError() {
+        return syntaxError;
+    }
 }

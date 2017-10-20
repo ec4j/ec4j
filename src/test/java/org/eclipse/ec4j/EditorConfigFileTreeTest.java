@@ -36,34 +36,34 @@ import org.junit.Test;
  */
 public class EditorConfigFileTreeTest {
 
-	@Test
-	public void windows_separator() throws IOException, EditorConfigException {
-		String content = "; test for path separator\r\n" + 
-				"\r\n" + 
-				"root=true\r\n" + 
-				"\r\n" + 
-				"[path/separator]\r\n" + 
-				"key=value\r\n" + 
-				"\r\n" + 
-				"[/top/of/path]\r\n" + 
-				"key=value\r\n" + 
-				"\r\n" + 
-				"[windows\\separator]\r\n" + 
-				"key=value\r\n" + 
-				"\r\n" + 
-				"[windows\\\\separator2]\r\n" + 
-				"key=value\r\n" + 
-				"";
-		
-		TestEditorConfigManager manager = new TestEditorConfigManager();
-		
-		TestFolder root = new TestFolder("root");
-		root.addFile(".editorconfig", content);
-		TestFolder windows = root.addFolder("windows");
-		TestFile file = windows.addFile("separator");
+    @Test
+    public void windows_separator() throws IOException, EditorConfigException {
+        String content = "; test for path separator\r\n" +
+                "\r\n" +
+                "root=true\r\n" +
+                "\r\n" +
+                "[path/separator]\r\n" +
+                "key=value\r\n" +
+                "\r\n" +
+                "[/top/of/path]\r\n" +
+                "key=value\r\n" +
+                "\r\n" +
+                "[windows\\separator]\r\n" +
+                "key=value\r\n" +
+                "\r\n" +
+                "[windows\\\\separator2]\r\n" +
+                "key=value\r\n" +
+                "";
 
-		Collection<Option> options = manager.getOptions(file, null);
-		//Assert.assertTrue(options.isEmpty());
-	}
+        TestEditorConfigManager manager = new TestEditorConfigManager();
+
+        TestFolder root = new TestFolder("root");
+        root.addFile(".editorconfig", content);
+        TestFolder windows = root.addFolder("windows");
+        TestFile file = windows.addFile("separator");
+
+        Collection<Option> options = manager.getOptions(file, null);
+        //Assert.assertTrue(options.isEmpty());
+    }
 
 }

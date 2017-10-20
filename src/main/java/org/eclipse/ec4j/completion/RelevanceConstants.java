@@ -25,7 +25,7 @@ package org.eclipse.ec4j.completion;
 
 public interface RelevanceConstants {
 
-	public static final int R_EXACT_NAME = 4;
+    int R_EXACT_NAME = 4;
 
-	public static final int R_CASE = 10;
+    int R_CASE = 10;
 }

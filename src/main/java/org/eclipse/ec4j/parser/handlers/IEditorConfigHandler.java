@@ -28,32 +28,32 @@ import org.eclipse.ec4j.parser.ParseException;
 
 public interface IEditorConfigHandler<S, O> {
 
-	void setParser(EditorConfigParser<S, O> parser);
+    void setParser(EditorConfigParser<S, O> parser);
 
-	void startDocument();
+    void startDocument();
 
-	void endDocument();
+    void endDocument();
 
-	S startSection();
+    S startSection();
 
-	void endSection(S section);
+    void endSection(S section);
 
-	void startPattern(S section);
+    void startPattern(S section);
 
-	void endPattern(S section, String pattern);
+    void endPattern(S section, String pattern);
 
-	void startOption();
+    void startOption();
 
-	void startOptionName();
+    void startOptionName();
 
-	O endOptionName(String name);
+    O endOptionName(String name);
 
-	void endOption(O option, S section);
+    void endOption(O option, S section);
 
-	void startOptionValue(O option, String name);
+    void startOptionValue(O option, String name);
 
-	void endOptionValue(O option, String value, String name);
+    void endOptionValue(O option, String value, String name);
 
-	void error(ParseException e);
+    void error(ParseException e);
 
 }

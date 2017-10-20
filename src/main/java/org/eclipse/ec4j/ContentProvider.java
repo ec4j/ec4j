@@ -30,33 +30,33 @@ package org.eclipse.ec4j;
  */
 public interface ContentProvider<T> {
 
-	public static final ContentProvider<String> STRING_CONTENT_PROVIDER = new ContentProvider<String>() {
+    ContentProvider<String> STRING_CONTENT_PROVIDER = new ContentProvider<String>() {
 
-		@Override
-		public char getChar(String document, int index) throws Exception {
-			return document.charAt(index);
-		}
+        @Override
+        public char getChar(String document, int index) throws Exception {
+            return document.charAt(index);
+        }
 
-		@Override
-		public int getLength(String document) {
-			return document.length();
-		}
+        @Override
+        public int getLength(String document) {
+            return document.length();
+        }
 
-	};
+    };
 
-	/**
-	 * Returns the character at the given document offset in this document.
-	 *
-	 * @param document
-	 *            the document
-	 * @param offset
-	 *            a document offset
-	 * @return the character at the offset
-	 * @exception if
-	 *                the offset is invalid in this document for instance
-	 */
-	char getChar(T document, int offset) throws Exception;
+    /**
+     * Returns the character at the given document offset in this document.
+     *
+     * @param document
+     *            the document
+     * @param offset
+     *            a document offset
+     * @return the character at the offset
+     * @exception if
+     *                the offset is invalid in this document for instance
+     */
+    char getChar(T document, int offset) throws Exception;
 
-	int getLength(T document);
+    int getLength(T document);
 
 }

@@ -27,70 +27,70 @@ import org.eclipse.ec4j.parser.ParseException;
 
 public class LoggerEditorConfigHandler<Section, Option> extends AbstractEditorConfigHandler<Section, Option> {
 
-	@Override
-	public void startDocument() {
-		
-	}
-	
-	@Override
-	public void endDocument() {
-		
-	}
-	
-	@Override
-	public Section startSection() {
-		System.err.println("Start section at " + getLocation());
-		return null;
-	}
+    @Override
+    public void startDocument() {
 
-	@Override
-	public void endSection(Section section) {
-		System.err.println("End section at " + getLocation());
-	}
+    }
 
-	@Override
-	public void startPattern(Section section) {
-		System.err.println("Start pattern at " + getLocation());
-	}
+    @Override
+    public void endDocument() {
 
-	@Override
-	public void endPattern(Section section, String pattern) {
-		System.err.println("End pattern at " + getLocation() + ", pattern=" + pattern);
-	}
+    }
 
-	@Override
-	public void startOption() {
-		System.err.println("Start option at " + getLocation());
-	}
+    @Override
+    public Section startSection() {
+        System.err.println("Start section at " + getLocation());
+        return null;
+    }
 
-	@Override
-	public void endOption(Option option, Section section) {
-		System.err.println("End option at " + getLocation());
-	}
+    @Override
+    public void endSection(Section section) {
+        System.err.println("End section at " + getLocation());
+    }
 
-	@Override
-	public void startOptionName() {
-		System.err.println("Start option name at " + getLocation());
-	}
+    @Override
+    public void startPattern(Section section) {
+        System.err.println("Start pattern at " + getLocation());
+    }
 
-	@Override
-	public Option endOptionName(String name) {
-		System.err.println("End option name at " + getLocation() + ", name=" + name);
-		return null;
-	}
+    @Override
+    public void endPattern(Section section, String pattern) {
+        System.err.println("End pattern at " + getLocation() + ", pattern=" + pattern);
+    }
 
-	@Override
-	public void startOptionValue(Option option, String name) {
-		System.err.println("Start option value of '" + name + "' at " + getLocation());
-	}
+    @Override
+    public void startOption() {
+        System.err.println("Start option at " + getLocation());
+    }
 
-	@Override
-	public void endOptionValue(Option option, String value, String name) {
-		System.err.println("End option value of '" + name + "', value=" + value + " at " + getLocation());
-	}
+    @Override
+    public void endOption(Option option, Section section) {
+        System.err.println("End option at " + getLocation());
+    }
 
-	@Override
-	public void error(ParseException e) {
-		e.printStackTrace();
-	}
+    @Override
+    public void startOptionName() {
+        System.err.println("Start option name at " + getLocation());
+    }
+
+    @Override
+    public Option endOptionName(String name) {
+        System.err.println("End option name at " + getLocation() + ", name=" + name);
+        return null;
+    }
+
+    @Override
+    public void startOptionValue(Option option, String name) {
+        System.err.println("Start option value of '" + name + "' at " + getLocation());
+    }
+
+    @Override
+    public void endOptionValue(Option option, String value, String name) {
+        System.err.println("End option value of '" + name + "', value=" + value + " at " + getLocation());
+    }
+
+    @Override
+    public void error(ParseException e) {
+        e.printStackTrace();
+    }
 }
