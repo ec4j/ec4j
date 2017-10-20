@@ -1,218 +1,252 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    The MIT License
-    Copyright © 2017 Angelo Zerr and other contributors as
+    Copyright (c) 2017 Angelo Zerr and other contributors as
     indicated by the @author tags.
 
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-    The above copyright notice and this permission notice shall be included in
-    all copies or substantial portions of the Software.
+      http://www.apache.org/licenses/LICENSE-2.0
 
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-    THE SOFTWARE.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.eclipse</groupId>
-	<artifactId>org.eclipse.ec4j</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+    <groupId>org.eclipse</groupId>
+    <artifactId>org.eclipse.ec4j</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
 
-	<name>ec4j</name>
-	<description>An EditorConfig parser for Java</description>
-	<url>https://github.com/angelozerr/ec4j</url>
-	<inceptionYear>2017</inceptionYear>
-	<licenses>
-		<license>
-			<name>MIT License</name>
-			<url>http://www.opensource.org/licenses/mit-license.php</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
+    <name>ec4j</name>
+    <description>An EditorConfig parser for Java</description>
+    <url>https://github.com/angelozerr/ec4j</url>
+    <inceptionYear>2017</inceptionYear>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
-	<scm>
-		<connection>scm:git:https://github.com/angelozerr/ec4j.git</connection>
-		<developerConnection>scm:git:https://github.com/angelozerr/ec4j.git</developerConnection>
-		<url>https://github.com/angelozerr/ec4j</url>
-	</scm>
+    <scm>
+        <connection>scm:git:https://github.com/angelozerr/ec4j.git</connection>
+        <developerConnection>scm:git:https://github.com/angelozerr/ec4j.git</developerConnection>
+        <url>https://github.com/angelozerr/ec4j</url>
+    </scm>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<!-- license-maven-plugin -->
-<!-- 		<license.failIfMissing>true</license.failIfMissing> -->
-<!-- 		<license.failIfUnknown>true</license.failIfUnknown> -->
+        <!-- Checkstyle and maven-checkstyle-plugin -->
+        <version.com.puppycrawl.tools.checkstyle>6.13</version.com.puppycrawl.tools.checkstyle>
+        <!-- checkstyle.xml location in the source tree -->
+        <checkstyle.consoleOutput>true</checkstyle.consoleOutput>
+        <checkstyle.failOnError>true</checkstyle.failOnError>
+        <checkstyle.includes>
+            src/**/*.java
+        </checkstyle.includes>
+        <checkstyle.excludes>
+            target/**
+        </checkstyle.excludes>
+        <!-- license-maven-plugin -->
+<!--         <license.failIfMissing>true</license.failIfMissing> -->
+<!--         <license.failIfUnknown>true</license.failIfUnknown> -->
 
-		<!-- maven-surefire-plugin -->
-		<surefire.useFile>false</surefire.useFile>
-		<trimStackTrace>false</trimStackTrace>
+        <!-- maven-surefire-plugin -->
+        <surefire.useFile>false</surefire.useFile>
+        <trimStackTrace>false</trimStackTrace>
 
-	</properties>
+    </properties>
 
-	<dependencies>
-		<!-- Ordering: alphabetical by groupId and artifactId -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <!-- Ordering: alphabetical by groupId and artifactId -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-	<build>
-		<plugins>
-			<!-- Ordering: alphabetical by groupId and artifactId -->
-			<!-- <plugin>
-				<groupId>com.mycila</groupId>
-				<artifactId>license-maven-plugin</artifactId>
-				<version>3.0</version>
-				<configuration>
-					<inlineHeader>The MIT License
-Copyright © ${project.inceptionYear} Angelo Zerr and other contributors as
+    <build>
+        <plugins>
+            <!-- Ordering: alphabetical by groupId and artifactId -->
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <inlineHeader>Copyright (c) ${project.inceptionYear} Angelo Zerr and other contributors as
 indicated by the @author tags.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+  http://www.apache.org/licenses/LICENSE-2.0
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.</inlineHeader>
-					<excludes>
-						<exclude>**/*.adoc</exclude>
-						<exclude>**/README.*</exclude>
-						<exclude>**/.gitkeep</exclude>
-						<exclude>.mvn/wrapper/</exclude>
-						<exclude>CMakeFiles/</exclude>
-						<exclude>CMakeCache.txt</exclude>
-						<exclude>CMakeLists.txt</exclude>
-						<exclude>CTestTestfile.cmake</exclude>
-						<exclude>cmake_install.cmake</exclude>
-						<exclude>editorconfig-core-test/</exclude>
-						<exclude>LICENSE</exclude>
-						<exclude>Makefile</exclude>
-						<exclude>mvnw</exclude>
-						<exclude>mvnw.cmd</exclude>
-						<exclude>Testing/</exclude>
-					</excludes>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
- -->
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<version>2.5.4</version>
-				<extensions>true</extensions>
-				<executions>
-					<execution>
-						<id>bundle-manifest</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>manifest</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<instructions>
-						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-					</instructions>
-				</configuration>
-			</plugin>
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</inlineHeader>
+                    <excludes>
+                        <exclude>**/*.adoc</exclude>
+                        <exclude>**/README.*</exclude>
+                        <exclude>**/.gitkeep</exclude>
+                        <exclude>.mvn/wrapper/</exclude>
+                        <exclude>CMakeFiles/</exclude>
+                        <exclude>CMakeCache.txt</exclude>
+                        <exclude>CMakeLists.txt</exclude>
+                        <exclude>CTestTestfile.cmake</exclude>
+                        <exclude>cmake_install.cmake</exclude>
+                        <exclude>editorconfig-core-test/</exclude>
+                        <exclude>LICENSE</exclude>
+                        <exclude>Makefile</exclude>
+                        <exclude>mvnw</exclude>
+                        <exclude>mvnw.cmd</exclude>
+                        <exclude>Testing/</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-clean-plugin</artifactId>
-				<version>3.0.0</version>
-				<configuration>
-					<filesets>
-						<fileset>
-							<directory>${project.basedir}</directory>
-							<includes>
-								<include>Testing/**</include>
-								<include>CMakeFiles/**</include>
-								<include>cmake_install.cmake</include>
-								<include>CMakeCache.txt</include>
-								<include>CTestTestfile.cmake</include>
-								<include>Makefile</include>
-							</includes>
-						</fileset>
-					</filesets>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.5.4</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                    </instructions>
+                </configuration>
+            </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.7.0</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.17</version>
+                <configuration>
+                    <configLocation>${basedir}/src/build/xml/checkstyle.xml</configLocation>
+                    <consoleOutput>${checkstyle.consoleOutput}</consoleOutput>
+                    <failsOnError>${checkstyle.failOnError}</failsOnError>
+                    <excludes>${checkstyle.excludes}</excludes>
+                    <includes>${checkstyle.includes}</includes>
+                    <sourceDirectory>${basedir}</sourceDirectory>
+                    <useFile />
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>checkstyle</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>checkstyle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>${version.com.puppycrawl.tools.checkstyle}</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>com.sun</groupId>
+                                <artifactId>tools</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                </dependencies>
+            </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.0.2</version>
-				<configuration>
-					<archive>
-						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-					</archive>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${project.basedir}</directory>
+                            <includes>
+                                <include>Testing/**</include>
+                                <include>CMakeFiles/**</include>
+                                <include>cmake_install.cmake</include>
+                                <include>CMakeCache.txt</include>
+                                <include>CTestTestfile.cmake</include>
+                                <include>Makefile</include>
+                            </includes>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>3.0.2</version>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.20.1</version>
-			</plugin>
-		</plugins>
-	</build>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
 
-	<profiles>
-		<!-- core-test profile to produce a jar file with a version-less name as it is expected by cmake tests -->
-		<profile>
-			<id>core-test</id>
-			<build>
-				<finalName>${project.artifactId}</finalName>
-			</build>
-		</profile>
-	</profiles>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.0.2</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.20.1</version>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!-- core-test profile to produce a jar file with a version-less name as it is expected by cmake tests -->
+        <profile>
+            <id>core-test</id>
+            <build>
+                <finalName>${project.artifactId}</finalName>
+            </build>
+        </profile>
+    </profiles>
 </project>
