@@ -51,7 +51,7 @@ mvn -Pcore-test clean install && cmake . && ctest .
 == Get support and contribute
 
 * *License and community*: `ec4j` is a community open-source project
-licensed under the https://opensource.org/licenses/mit-license.php[MIT License].
+licensed under the http://www.apache.org/licenses/LICENSE-2.0.txt[Apache License].
 * *Support:* You can ask questions, report bugs, and request features
 using http://github.com/eclipse/ec4j/issues[GitHub issues].
 * *Git*: This `angelozerr/ec4j` repository is the reference repository
