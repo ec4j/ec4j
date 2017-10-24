@@ -16,6 +16,9 @@
  */
 package org.eclipse.ec4j.core.parser;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public class MultiPatternNotClosedException extends ParseException {
 
     public MultiPatternNotClosedException(Location location) {

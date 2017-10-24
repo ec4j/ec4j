@@ -25,6 +25,9 @@ import java.nio.charset.StandardCharsets;
 
 import org.eclipse.ec4j.core.model.optiontypes.OptionTypeRegistry;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public class EditorConfigManager extends AbstractEditorConfigManager<File> {
 
     public static final ResourceProvider<File> FILE_RESOURCE_PROVIDER = new ResourceProvider<File>() {

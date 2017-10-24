@@ -23,6 +23,9 @@ import org.eclipse.ec4j.core.model.EditorConfig;
 import org.junit.Assert;
 import org.junit.Test;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public class EditorConfigTest {
 
     @Test

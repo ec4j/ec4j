@@ -16,6 +16,9 @@
  */
 package org.eclipse.ec4j.services.completion;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public enum CompletionContextType {
     SECTION, COMMENTS, OPTION_NAME, OPTION_VALUE
 }

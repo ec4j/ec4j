@@ -20,6 +20,8 @@ package org.eclipse.ec4j.core;
  * Content provider API.
  *
  * @param <T>
+ *
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
 public interface ContentProvider<T> {
 

@@ -36,6 +36,8 @@ import org.eclipse.ec4j.core.parser.ParseException;
  *
  * @param <T>
  *            the file type.
+ *
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
 public class AbstractEditorConfigManager<T> {
 

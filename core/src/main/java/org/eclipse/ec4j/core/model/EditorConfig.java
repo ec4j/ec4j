@@ -27,6 +27,9 @@ import org.eclipse.ec4j.core.ResourceProvider;
 import org.eclipse.ec4j.core.model.optiontypes.OptionTypeRegistry;
 import org.eclipse.ec4j.core.parser.EditorConfigParser;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public class EditorConfig {
 
     private final List<Section> sections;

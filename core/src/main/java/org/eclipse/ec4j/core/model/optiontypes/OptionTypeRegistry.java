@@ -29,6 +29,9 @@ import org.eclipse.ec4j.core.model.optiontypes.OptionType.Root;
 import org.eclipse.ec4j.core.model.optiontypes.OptionType.TabWidth;
 import org.eclipse.ec4j.core.model.optiontypes.OptionType.TrimTrailingWhitespace;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public class OptionTypeRegistry {
 
     public static final OptionTypeRegistry DEFAULT;

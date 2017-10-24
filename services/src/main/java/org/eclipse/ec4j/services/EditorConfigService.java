@@ -43,6 +43,7 @@ import org.eclipse.ec4j.services.validation.ValidationEditorConfigHandler;
  * <li>completion</li>
  * </ul>
  *
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
 public class EditorConfigService {
 

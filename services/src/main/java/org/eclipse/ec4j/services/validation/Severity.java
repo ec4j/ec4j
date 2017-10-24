@@ -16,6 +16,9 @@
  */
 package org.eclipse.ec4j.services.validation;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public enum Severity {
 
     error, warning, info

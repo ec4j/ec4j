@@ -16,6 +16,9 @@
  */
 package org.eclipse.ec4j.core;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public class EditorConfigConstants {
 
     public static final String EDITORCONFIG = ".editorconfig";

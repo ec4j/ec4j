@@ -31,6 +31,9 @@ import org.eclipse.ec4j.core.parser.Location;
 import org.eclipse.ec4j.core.parser.ParseException;
 import org.eclipse.ec4j.core.parser.handlers.EditorConfigHandlerAdapter;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public class ValidationEditorConfigHandler extends EditorConfigHandlerAdapter<Section, Option> {
 
     private static final String PATTERN_SYNTAX_MESSAGE = "The pattern ''{0}'' is not valid ''{1}''";

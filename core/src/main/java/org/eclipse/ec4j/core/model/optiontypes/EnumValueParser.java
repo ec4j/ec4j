@@ -16,6 +16,9 @@
  */
 package org.eclipse.ec4j.core.model.optiontypes;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 class EnumValueParser<T extends Enum<T>> implements OptionValueParser<T> {
 
     private final Class<? extends Enum> enumType;

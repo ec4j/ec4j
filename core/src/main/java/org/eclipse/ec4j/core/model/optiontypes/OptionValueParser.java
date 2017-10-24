@@ -16,6 +16,9 @@
  */
 package org.eclipse.ec4j.core.model.optiontypes;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 interface OptionValueParser<T> {
 
     OptionValueParser<String> IDENTITY_VALUE_PARSER = new OptionValueParser<String>() {

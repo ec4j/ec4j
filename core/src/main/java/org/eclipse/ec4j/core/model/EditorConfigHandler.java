@@ -21,6 +21,9 @@ import org.eclipse.ec4j.core.model.optiontypes.OptionTypeRegistry;
 import org.eclipse.ec4j.core.parser.ParseException;
 import org.eclipse.ec4j.core.parser.handlers.AbstractEditorConfigHandler;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public class EditorConfigHandler extends AbstractEditorConfigHandler<Section, Option> {
 
     private final EditorConfig editorConfig;

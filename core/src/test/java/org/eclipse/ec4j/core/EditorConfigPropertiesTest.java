@@ -28,6 +28,7 @@ import org.junit.Test;
  * Some glob test of
  * https://github.com/editorconfig/editorconfig-core-test/tree/master/properties
  *
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
 public class EditorConfigPropertiesTest {
 

@@ -24,6 +24,9 @@ import org.eclipse.ec4j.core.EditorConfigConstants;
 import org.eclipse.ec4j.core.model.optiontypes.OptionNames;
 import org.eclipse.ec4j.core.parser.handlers.IEditorConfigHandler;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public class EditorConfigParser<Section, Option> {
 
     private static final int MIN_BUFFER_SIZE = 10;

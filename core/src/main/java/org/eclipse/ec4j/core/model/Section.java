@@ -23,6 +23,9 @@ import java.util.regex.Pattern;
 import org.eclipse.ec4j.core.EditorConfigConstants;
 import org.eclipse.ec4j.core.model.optiontypes.OptionNames;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public class Section {
 
     private final EditorConfig editorConfig;

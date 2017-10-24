@@ -19,6 +19,9 @@ package org.eclipse.ec4j.core;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public class TestFolder extends TestResource {
 
     private final Map<String, TestResource> children;

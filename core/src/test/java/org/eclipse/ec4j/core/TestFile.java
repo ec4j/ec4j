@@ -19,6 +19,9 @@ package org.eclipse.ec4j.core;
 import java.io.Reader;
 import java.io.StringReader;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public class TestFile extends TestResource {
 
     private final String content;

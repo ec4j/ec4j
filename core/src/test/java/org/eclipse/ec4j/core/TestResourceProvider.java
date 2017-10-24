@@ -19,6 +19,9 @@ package org.eclipse.ec4j.core;
 import java.io.IOException;
 import java.io.Reader;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public class TestResourceProvider implements ResourceProvider<TestResource> {
 
     @Override
