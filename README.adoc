@@ -44,7 +44,7 @@ A build with https://github.com/editorconfig/editorconfig-core-test[editorconfig
 ----
 git submodule init
 git submodule update
-mvn -Pcore-test clean install && cmake . && ctest .
+mvn -Pcore-test clean install && ( cd core && cmake . && ctest . )
 ----
 
 
