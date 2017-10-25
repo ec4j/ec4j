@@ -22,3 +22,6 @@ install:
 
 script:
 - eval $CMD
+
+after_failure:
+- '[ -f core/Testing/Temporary/LastTest.log ] && cat core/Testing/Temporary/LastTest.log'
