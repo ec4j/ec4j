@@ -84,7 +84,7 @@ public class EditorConfigHandler extends AbstractEditorConfigHandler<Section, Op
                 section.addOption(option);
             }
         } else if (OptionNames.get(option.getName()) == OptionNames.root) {
-            editorConfig.setRoot("true".equals(option.getValue()));
+            editorConfig.setRoot("true".equalsIgnoreCase(option.getValue()));
         }
     }
 

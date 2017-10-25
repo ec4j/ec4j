@@ -24,31 +24,54 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 /**
+ * The EditorConfig glob. Citing from <a href="http://editorconfig.org/">:
+ * <p>
+ * Special characters recognized in section names for wildcard matching:
+ * <ul>
+ * <li>*    Matches any string of characters, except path separators (/)</li>
+ * <li>**  Matches any string of characters</li>
+ * <li>?   Matches any single character</li>
+ * <li>[name]  Matches any single character in name</li>
+ * <li>[!name] Matches any single character not in name</li>
+ * <li>{s1,s2,s3}  Matches any of the strings given (separated by commas) (Available since EditorConfig Core 0.11.0)</li>
+ * <li>{num1..num2}    Matches any integer numbers between num1 and num2, where num1 and num2 can be either positive or negative</li>
+ * </ul>
+ *
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
 public class Glob {
 
+    private static final int MAX_GLOB_LENGTH = 4096;
     private final List<int[]> ranges;
-    private Pattern regex;
-    private PatternSyntaxException error;
+    private final Pattern regex;
+    private final PatternSyntaxException error;
 
     public Glob(String configDirname, String pattern) {
-        pattern = pattern.replace(File.separatorChar, '/');
-        pattern = pattern.replaceAll("\\\\#", "#");
-        pattern = pattern.replaceAll("\\\\;", ";");
-        int separator = pattern.indexOf("/");
-        if (separator >= 0) {
-            pattern = configDirname.replace(File.separatorChar, '/')
-                    + (separator == 0 ? pattern.substring(1) : pattern);
-        } else {
-            pattern = "**/" + pattern;
-        }
         ranges = new ArrayList<int[]>();
-        final String regex = RegexpUtils.convertGlobToRegEx(pattern, ranges);
-        try {
-            this.regex = Pattern.compile(regex);
-        } catch (PatternSyntaxException e) {
-            this.error = e;
+        if (pattern.length() > MAX_GLOB_LENGTH) {
+            this.regex = null;
+            this.error = new PatternSyntaxException("Glob length exceeds the maximal allowed length of "+ MAX_GLOB_LENGTH +" characters", pattern, MAX_GLOB_LENGTH);
+        } else {
+            pattern = pattern.replace(File.separatorChar, '/');
+            pattern = pattern.replaceAll("\\\\#", "#");
+            pattern = pattern.replaceAll("\\\\;", ";");
+            int separator = pattern.indexOf("/");
+            if (separator >= 0) {
+                pattern = configDirname.replace(File.separatorChar, '/')
+                        + (separator == 0 ? pattern.substring(1) : pattern);
+            } else {
+                pattern = "**/" + pattern;
+            }
+            final String regex = RegexpUtils.convertGlobToRegEx(pattern, ranges);
+            PatternSyntaxException err = null;
+            Pattern pat = null;
+            try {
+                pat = Pattern.compile(regex);
+            } catch (PatternSyntaxException e) {
+                err = e;
+            }
+            this.error = err;
+            this.regex = pat;
         }
     }
 

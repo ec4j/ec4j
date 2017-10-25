@@ -65,6 +65,7 @@
         <checkstyle.excludes>
             target/**
         </checkstyle.excludes>
+
         <!-- license-maven-plugin -->
         <license.failIfMissing>true</license.failIfMissing>
         <license.failIfUnknown>true</license.failIfUnknown>
@@ -73,6 +74,11 @@
         <surefire.useFile>false</surefire.useFile>
         <trimStackTrace>false</trimStackTrace>
 
+        <!-- maven-compiler-plugin -->
+        <!-- Note that we override this in ec4j.services to Java 8 -->
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
     </properties>
 
     <dependencyManagement>
@@ -126,10 +132,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.7.0</version>
-                    <configuration>
-                        <source>1.7</source>
-                        <target>1.7</target>
-                    </configuration>
                 </plugin>
 
                 <plugin>

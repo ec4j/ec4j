@@ -50,7 +50,7 @@ public class ValidationEditorConfigHandler extends EditorConfigHandlerAdapter<Se
     public ValidationEditorConfigHandler(IReporter reporter, ISeverityProvider provider, OptionTypeRegistry registry) {
         this.reporter = reporter;
         this.provider = provider != null ? provider : ISeverityProvider.DEFAULT;
-        this.registry = registry != null ? registry : OptionTypeRegistry.DEFAULT;
+        this.registry = registry != null ? registry : OptionTypeRegistry.getDefault();
         this.sections = new ArrayList<>();
     }
 
