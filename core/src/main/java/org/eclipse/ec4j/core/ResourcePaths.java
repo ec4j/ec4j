@@ -65,7 +65,15 @@ public class ResourcePaths {
         /** {@inheritDoc} */
         @Override
         public String getPath() {
-            return path.toString();
+            StringBuilder result = new StringBuilder();
+            final int len = path.getNameCount();
+            for (int i = 0; i < len ; i++) {
+                if (i != 0 || path.isAbsolute()) {
+                    result.append('/');
+                }
+                result.append(path.getName(i));
+            }
+            return result.toString();
         }
 
         /** {@inheritDoc} */
