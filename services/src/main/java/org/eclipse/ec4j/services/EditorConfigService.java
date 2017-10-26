@@ -19,7 +19,6 @@ package org.eclipse.ec4j.services;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 
 import org.eclipse.ec4j.core.Resources.RandomReader;
 import org.eclipse.ec4j.core.model.Option;
@@ -46,6 +45,10 @@ import org.eclipse.ec4j.services.validation.ValidationEditorConfigHandler;
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
 public class EditorConfigService {
+
+    public interface CompletionEntryFactory {
+        ICompletionEntry newEntry(String name);
+    }
 
     // ------------- Validation service
 
@@ -84,9 +87,9 @@ public class EditorConfigService {
 
     // ------------- Completion service
 
-    public static final Function<String, ICompletionEntry> COMPLETION_ENTRY_FACTORY = new Function<String, ICompletionEntry>() {
+    public static final CompletionEntryFactory COMPLETION_ENTRY_FACTORY = new CompletionEntryFactory() {
         @Override
-        public CompletionEntry apply(String name) {
+        public CompletionEntry newEntry(String name) {
             return new CompletionEntry(name);
         }
     };
@@ -97,13 +100,13 @@ public class EditorConfigService {
     }
 
     public static List<ICompletionEntry> getCompletionEntries(int offset, RandomReader reader,
-            ICompletionEntryMatcher matcher, final Function<String, ICompletionEntry> factory)
+            ICompletionEntryMatcher matcher, final CompletionEntryFactory factory)
             throws Exception {
         return getCompletionEntries(offset, reader, matcher, factory, null);
     }
 
     public static List<ICompletionEntry> getCompletionEntries(int offset, RandomReader reader,
-            ICompletionEntryMatcher matcher, final Function<String, ICompletionEntry> factory,
+            ICompletionEntryMatcher matcher, final CompletionEntryFactory factory,
             OptionTypeRegistry registry) throws Exception {
         if (registry == null) {
             registry = OptionTypeRegistry.getDefault();
@@ -114,7 +117,7 @@ public class EditorConfigService {
             ICompletionEntry entry = null;
             List<ICompletionEntry> entries = new ArrayList<>();
             for (OptionType<?> type : registry.getTypes()) {
-                entry = factory.apply(type.getName());
+                entry = factory.newEntry(type.getName());
                 entry.setMatcher(matcher);
                 entry.setOptionType(type);
                 entry.setContextType(context.type);
@@ -133,7 +136,7 @@ public class EditorConfigService {
                     ICompletionEntry entry = null;
                     List<ICompletionEntry> entries = new ArrayList<>();
                     for (String value : values) {
-                        entry = factory.apply(value);
+                        entry = factory.newEntry(value);
                         entry.setMatcher(matcher);
                         entry.setOptionType(optionType);
                         entry.setContextType(context.type);
