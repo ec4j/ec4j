@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2017 Angelo Zerr and other contributors as
+    indicated by the @author tags.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.eclipse</groupId>
+        <artifactId>org.eclipse.ec4j</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>org.eclipse.ec4j.core</artifactId>
+
+    <name>ec4j.core</name>
+    <description>An EditorConfig parser and tree walker</description>
+
+    <properties>
+        <checkstyle.xml.path>${basedir}/../src/build/xml/checkstyle.xml</checkstyle.xml.path>
+    </properties>
+
+
+    <dependencies>
+        <!-- Ordering: alphabetical by groupId and artifactId -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Ordering: alphabetical by groupId and artifactId -->
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>${project.basedir}</directory>
+                            <includes>
+                                <include>Testing/**</include>
+                                <include>CMakeFiles/**</include>
+                                <include>cmake_install.cmake</include>
+                                <include>CMakeCache.txt</include>
+                                <include>CTestTestfile.cmake</include>
+                                <include>Makefile</include>
+                            </includes>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <profiles>
+        <!-- core-test profile to produce a jar file with a version-less name as it is expected by cmake tests -->
+        <profile>
+            <id>core-test</id>
+            <build>
+                <finalName>${project.artifactId}</finalName>
+            </build>
+        </profile>
+    </profiles>
+</project>

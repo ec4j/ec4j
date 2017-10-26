@@ -10,7 +10,7 @@ jdk:
 # - i.e. there will be two separate executions, one for each value
 env:
   - CMD="./mvnw clean test"
-  - CMD="./mvnw -Pcore-test clean package -DskipTests && cmake . && ctest ."
+  - CMD="./mvnw -Pcore-test clean install && ( cd core && cmake . && ctest . )"
 
 notifications:
   email: true
