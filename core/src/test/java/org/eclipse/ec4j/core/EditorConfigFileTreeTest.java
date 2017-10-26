@@ -36,9 +36,9 @@ import org.junit.Test;
  *
  */
 public class EditorConfigFileTreeTest {
-    private static final Path basedir = Paths.get(System.getProperty("basedir", ".")).normalize();
+    private static final Path basedir = Paths.get(System.getProperty("basedir", ".")).toAbsolutePath().normalize();
     private static final boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
-    private static final Path testProjectDir = basedir.resolve("target/test-classes/path_separator").toAbsolutePath();
+    private static final Path testProjectDir = basedir.resolve("target/test-classes/path_separator");
 
     /**
      * Demonstrates way to construct a {@link Path} containing a segment with backslash on non-Windows operating
@@ -71,14 +71,15 @@ public class EditorConfigFileTreeTest {
     @Test
     public void path_separator_backslash_in_cmd_line() throws IOException, EditorConfigException {
 
-        final Resource testFile = Resources.ofPath(testProjectDir.resolve("path\\separator"));
-
-        Collection<Option> options = EditorConfigSession.default_().queryOptions(testFile);
         if (isWindows) {
+            final Resource testFile = Resources.ofPath(testProjectDir.resolve("path\\separator"));
+            Collection<Option> options = EditorConfigSession.default_().queryOptions(testFile);
             Assert.assertEquals(1, options.size());
             Iterator<Option> it = options.iterator();
             Assert.assertEquals("key = value", it.next().toString());
         } else {
+            final Resource testFile = Resources.ofPath(testProjectDir.resolve(Paths.get("", "path\\separator")));
+            Collection<Option> options = EditorConfigSession.default_().queryOptions(testFile);
             Assert.assertEquals(0, options.size());
         }
 
