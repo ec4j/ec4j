@@ -17,8 +17,11 @@
 package org.eclipse.ec4j.core;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Iterator;
 
+import org.eclipse.ec4j.core.Resources.StringResourceTree;
 import org.eclipse.ec4j.core.model.Option;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,6 +29,9 @@ import org.junit.Test;
 /**
  * Some glob test of
  * https://github.com/editorconfig/editorconfig-core-test/tree/master/parser
+ *
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  *
  */
 public class EditorConfigParserTest {
@@ -103,13 +109,13 @@ public class EditorConfigParserTest {
     @Test
     public void spaces_in_section_name() throws IOException, EditorConfigException {
 
-        TestEditorConfigManager manager = new TestEditorConfigManager();
+        final String testFile = "root/ test 7 ";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig", WHITESPACE_DOT_IN)//
+                .touch(testFile) //
+                .build();
 
-        TestFolder root = new TestFolder("root");
-        root.addFile(".editorconfig", WHITESPACE_DOT_IN);
-        TestFile file = root.addFile(" test 7 ");
-
-        Collection<Option> options = manager.getOptions(file, null);
+        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
         Assert.assertEquals(1, options.size());
         Assert.assertEquals("key = value", options.iterator().next().toString());
     }
@@ -177,15 +183,77 @@ public class EditorConfigParserTest {
     @Test
     public void comments_after_property() throws IOException, EditorConfigException {
 
-        TestEditorConfigManager manager = new TestEditorConfigManager();
+        final String testFile = "root/test7.c";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig", COMMENTS_DOT_IN)//
+                .touch(testFile) //
+                .build();
 
-        TestFolder root = new TestFolder("root");
-        root.addFile(".editorconfig", COMMENTS_DOT_IN);
-        TestFile file = root.addFile("test7.c");
-
-        Collection<Option> options = manager.getOptions(file, null);
+        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
         Assert.assertEquals(1, options.size());
         Assert.assertEquals("key = value ", options.iterator().next().toString());
     }
 
+
+    private static final String BASIC_DOT_IN = "[*.a]\n" +
+            "option1=value1\n" +
+            "\n" +
+            "; repeat section\n" +
+            "[*.a]\n" +
+            "option2=value2\n" +
+            "\n" +
+            "[*.b]\n" +
+            "option1 = a\n" +
+            "option2 = a\n" +
+            "\n" +
+            "[b.b]\n" +
+            "option2 = b\n" +
+            "\n" +
+            "[*.b]\n" +
+            "option1 = c\n";
+
+
+
+    @Test
+    public void repeat_sections() throws IOException, EditorConfigException {
+
+        final String testFile = "root/a.a";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig", BASIC_DOT_IN)//
+                .touch(testFile) //
+                .build();
+
+        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
+        Assert.assertEquals(2, options.size());
+        Iterator<Option> it = options.iterator();
+        Assert.assertEquals("option1 = value1", it.next().toString());
+        Assert.assertEquals("option2 = value2", it.next().toString());
+    }
+
+    @Test
+    public void max_section_name_ok() throws EditorConfigException, IOException {
+        final String testFile = "root/test3";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig", getClass().getResource("/parser/.editorconfig"), StandardCharsets.UTF_8)//
+                .touch(testFile) //
+                .build();
+
+        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
+        Assert.assertEquals(1, options.size());
+        Iterator<Option> it = options.iterator();
+        Assert.assertEquals("key3 = value3", it.next().toString());
+    }
+
+    @Test
+    public void max_section_name_ignore() throws EditorConfigException, IOException {
+        final String testFile = "root/test4";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig", getClass().getResource("/parser/.editorconfig"), StandardCharsets.UTF_8)//
+                .touch(testFile) //
+                .build();
+
+        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
+        Assert.assertEquals(0, options.size());
+    }
 }
+

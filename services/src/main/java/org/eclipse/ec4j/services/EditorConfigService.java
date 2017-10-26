@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-import org.eclipse.ec4j.core.ContentProvider;
+import org.eclipse.ec4j.core.Resources.RandomReader;
 import org.eclipse.ec4j.core.model.Option;
 import org.eclipse.ec4j.core.model.Section;
 import org.eclipse.ec4j.core.model.optiontypes.OptionType;
@@ -43,6 +43,7 @@ import org.eclipse.ec4j.services.validation.ValidationEditorConfigHandler;
  * <li>completion</li>
  * </ul>
  *
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
 public class EditorConfigService {
 
@@ -90,29 +91,28 @@ public class EditorConfigService {
         }
     };
 
-    public static List<ICompletionEntry> getCompletionEntries(int offset, String document,
+    public static List<ICompletionEntry> getCompletionEntries(int offset, RandomReader reader,
             ICompletionEntryMatcher matcher) throws Exception {
-        return getCompletionEntries(offset, document, matcher, COMPLETION_ENTRY_FACTORY,
-                ContentProvider.STRING_CONTENT_PROVIDER);
+        return getCompletionEntries(offset, reader, matcher, COMPLETION_ENTRY_FACTORY);
     }
 
-    public static <T, C extends ICompletionEntry> List<C> getCompletionEntries(int offset, T document,
-            ICompletionEntryMatcher matcher, final Function<String, C> factory, ContentProvider<T> provider)
+    public static List<ICompletionEntry> getCompletionEntries(int offset, RandomReader reader,
+            ICompletionEntryMatcher matcher, final Function<String, ICompletionEntry> factory)
             throws Exception {
-        return getCompletionEntries(offset, document, matcher, factory, provider, null);
+        return getCompletionEntries(offset, reader, matcher, factory, null);
     }
 
-    public static <T, C extends ICompletionEntry> List<C> getCompletionEntries(int offset, T document,
-            ICompletionEntryMatcher matcher, final Function<String, C> factory, ContentProvider<T> provider,
+    public static List<ICompletionEntry> getCompletionEntries(int offset, RandomReader reader,
+            ICompletionEntryMatcher matcher, final Function<String, ICompletionEntry> factory,
             OptionTypeRegistry registry) throws Exception {
         if (registry == null) {
-            registry = OptionTypeRegistry.DEFAULT;
+            registry = OptionTypeRegistry.getDefault();
         }
-        TokenContext context = getTokenContext(offset, document, false, provider);
+        TokenContext context = getTokenContext(offset, reader, false);
         switch (context.type) {
         case OPTION_NAME: {
-            C entry = null;
-            List<C> entries = new ArrayList<>();
+            ICompletionEntry entry = null;
+            List<ICompletionEntry> entries = new ArrayList<>();
             for (OptionType<?> type : registry.getTypes()) {
                 entry = factory.apply(type.getName());
                 entry.setMatcher(matcher);
@@ -130,8 +130,8 @@ public class EditorConfigService {
             if (optionType != null) {
                 String[] values = optionType.getPossibleValues();
                 if (values != null) {
-                    C entry = null;
-                    List<C> entries = new ArrayList<>();
+                    ICompletionEntry entry = null;
+                    List<ICompletionEntry> entries = new ArrayList<>();
                     for (String value : values) {
                         entry = factory.apply(value);
                         entry.setMatcher(matcher);
@@ -155,16 +155,16 @@ public class EditorConfigService {
 
     // ------------- Hover service
 
-    public static <T> String getHover(int offset, T document, ContentProvider<T> provider) throws Exception {
-        return getHover(offset, document, provider, null);
+    public static <T> String getHover(int offset, RandomReader reader) throws Exception {
+        return getHover(offset, reader, null);
     }
 
-    public static <T> String getHover(int offset, T document, ContentProvider<T> provider, OptionTypeRegistry registry)
+    public static <T> String getHover(int offset, RandomReader reader, OptionTypeRegistry registry)
             throws Exception {
         if (registry == null) {
-            registry = OptionTypeRegistry.DEFAULT;
+            registry = OptionTypeRegistry.getDefault();
         }
-        TokenContext context = getTokenContext(offset, document, true, provider);
+        TokenContext context = getTokenContext(offset, reader, true);
         switch (context.type) {
         case OPTION_NAME: {
             OptionType<?> type = registry.getType(context.prefix);
@@ -191,16 +191,18 @@ public class EditorConfigService {
         }
     }
 
-    private static <T> TokenContext getTokenContext(int offset, T document, boolean collectWord,
-            ContentProvider<T> provider) throws Exception {
+    private static TokenContext getTokenContext(int offset, RandomReader reader, boolean collectWord) throws Exception {
+
+        final long length = reader.getLength();
         char c;
         CompletionContextType type = CompletionContextType.OPTION_NAME;
         StringBuilder prefix = new StringBuilder();
         StringBuilder name = null;
-        int i = offset - 1;
+        long i = offset - 1;
+
         // Collect prefix
         while (i >= 0) {
-            c = provider.getChar(document, i);
+            c = reader.read(i);
             if (Character.isJavaIdentifierPart(c)) {
                 prefix.insert(0, c);
                 i--;
@@ -210,9 +212,8 @@ public class EditorConfigService {
         }
         if (collectWord) {
             int j = offset;
-            int length = provider.getLength(document);
             while (j <= length) {
-                c = provider.getChar(document, j);
+                c = reader.read(i);
                 if (Character.isJavaIdentifierPart(c)) {
                     prefix.append(c);
                     j++;
@@ -225,7 +226,7 @@ public class EditorConfigService {
         // Collect context type
         boolean stop = false;
         while (i >= 0 && !stop) {
-            c = provider.getChar(document, i--);
+            c = reader.read(i--);
             switch (c) {
             case '[':
                 type = CompletionContextType.SECTION;

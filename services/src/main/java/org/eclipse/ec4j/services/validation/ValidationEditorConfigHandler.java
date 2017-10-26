@@ -31,6 +31,9 @@ import org.eclipse.ec4j.core.parser.Location;
 import org.eclipse.ec4j.core.parser.ParseException;
 import org.eclipse.ec4j.core.parser.handlers.EditorConfigHandlerAdapter;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public class ValidationEditorConfigHandler extends EditorConfigHandlerAdapter<Section, Option> {
 
     private static final String PATTERN_SYNTAX_MESSAGE = "The pattern ''{0}'' is not valid ''{1}''";
@@ -47,7 +50,7 @@ public class ValidationEditorConfigHandler extends EditorConfigHandlerAdapter<Se
     public ValidationEditorConfigHandler(IReporter reporter, ISeverityProvider provider, OptionTypeRegistry registry) {
         this.reporter = reporter;
         this.provider = provider != null ? provider : ISeverityProvider.DEFAULT;
-        this.registry = registry != null ? registry : OptionTypeRegistry.DEFAULT;
+        this.registry = registry != null ? registry : OptionTypeRegistry.getDefault();
         this.sections = new ArrayList<>();
     }
 

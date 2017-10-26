@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public class RegexpUtils {
 
     private static final Pattern OPENING_BRACES = Pattern.compile("(?:^|[^\\\\])\\{");

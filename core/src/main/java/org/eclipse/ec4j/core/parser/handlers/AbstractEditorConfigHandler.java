@@ -19,6 +19,9 @@ package org.eclipse.ec4j.core.parser.handlers;
 import org.eclipse.ec4j.core.parser.EditorConfigParser;
 import org.eclipse.ec4j.core.parser.Location;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public abstract class AbstractEditorConfigHandler<S, O> implements IEditorConfigHandler<S, O> {
 
     private EditorConfigParser<S, O> parser;

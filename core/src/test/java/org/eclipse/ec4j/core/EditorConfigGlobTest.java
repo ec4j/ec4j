@@ -19,6 +19,7 @@ package org.eclipse.ec4j.core;
 import java.io.IOException;
 import java.util.Collection;
 
+import org.eclipse.ec4j.core.Resources.StringResourceTree;
 import org.eclipse.ec4j.core.model.Option;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -28,6 +29,7 @@ import org.junit.Test;
  * Some glob test of
  * https://github.com/editorconfig/editorconfig-core-test/tree/master/glob
  *
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
 public class EditorConfigGlobTest {
 
@@ -44,14 +46,14 @@ public class EditorConfigGlobTest {
                 "keyb=valueb\r\n" +
                 "";
 
-        TestEditorConfigManager manager = new TestEditorConfigManager();
 
-        TestFolder root = new TestFolder("root");
-        root.addFile(".editorconfig", content);
-        TestFolder bar = root.addFolder("Bar");
-        TestFile file = bar.addFile("foo.txt");
+        final String testFile = "root/Bar/foo.txt";
+        StringResourceTree tree = StringResourceTree.builder() //
+            .resource("root/.editorconfig", content)//
+            .touch(testFile) //
+            .build();
 
-        Collection<Option> options = manager.getOptions(file, null);
+        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
         Assert.assertEquals(1, options.size());
         Assert.assertEquals("keyb = valueb", options.iterator().next().toString());
     }
@@ -66,13 +68,13 @@ public class EditorConfigGlobTest {
                 "key = value\r\n" +
                 "";
 
-        TestEditorConfigManager manager = new TestEditorConfigManager();
+        final String testFile = "root/中文.txt";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig", content)//
+                .touch(testFile) //
+                .build();
 
-        TestFolder root = new TestFolder("root");
-        root.addFile(".editorconfig", content);
-        TestFile file = root.addFile("中文.txt");
-
-        Collection<Option> options = manager.getOptions(file, null);
+        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
         Assert.assertEquals(1, options.size());
         Assert.assertEquals("key = value", options.iterator().next().toString());
     }
@@ -134,13 +136,13 @@ public class EditorConfigGlobTest {
     @Test()
     public void brackets_close_inside() throws IOException, EditorConfigException {
 
-        TestEditorConfigManager manager = new TestEditorConfigManager();
+        final String testFile = "root/].g";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig", BRACKETS_DOT_IN)//
+                .touch(testFile) //
+                .build();
 
-        TestFolder root = new TestFolder("root");
-        root.addFile(".editorconfig", BRACKETS_DOT_IN);
-        TestFile file = root.addFile("].g");
-
-        Collection<Option> options = manager.getOptions(file, null);
+        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
         Assert.assertEquals(1, options.size());
         Assert.assertEquals("close_inside = true", options.iterator().next().toString());
     }
@@ -148,13 +150,13 @@ public class EditorConfigGlobTest {
     @Test
     public void brackets_close_outside() throws IOException, EditorConfigException {
 
-        TestEditorConfigManager manager = new TestEditorConfigManager();
+        final String testFile = "root/b].g";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig", BRACKETS_DOT_IN)//
+                .touch(testFile) //
+                .build();
 
-        TestFolder root = new TestFolder("root");
-        root.addFile(".editorconfig", BRACKETS_DOT_IN);
-        TestFile file = root.addFile("b].g");
-
-        Collection<Option> options = manager.getOptions(file, null);
+        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
         Assert.assertEquals(1, options.size());
         Assert.assertEquals("close_outside = true", options.iterator().next().toString());
     }
@@ -227,13 +229,13 @@ public class EditorConfigGlobTest {
     @Test
     public void braces_word_choice1() throws IOException, EditorConfigException {
 
-        TestEditorConfigManager manager = new TestEditorConfigManager();
+        final String testFile = "root/test.py";
+        StringResourceTree tree = StringResourceTree.builder() //
+            .resource("root/.editorconfig", BRACES_DOT_IN)//
+            .touch(testFile) //
+            .build();
 
-        TestFolder root = new TestFolder("root");
-        root.addFile(".editorconfig", BRACES_DOT_IN);
-        TestFile file = root.addFile("test.py");
-
-        Collection<Option> options = manager.getOptions(file, null);
+        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
         Assert.assertEquals(1, options.size());
         Assert.assertEquals("choice = true", options.iterator().next().toString());
     }
@@ -258,15 +260,17 @@ public class EditorConfigGlobTest {
     @Test
     public void star_star_over_separator7() throws IOException, EditorConfigException {
 
-        TestEditorConfigManager manager = new TestEditorConfigManager();
+        final String testFile = "root/b/z.c";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig", STAR_STAR_DOT_IN)//
+                .touch(testFile) //
+                .build();
 
-        TestFolder root = new TestFolder("root");
-        root.addFile(".editorconfig", STAR_STAR_DOT_IN);
-        TestFile file = root.addFile("b/z.c");
 
-        Collection<Option> options = manager.getOptions(file, null);
+        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
         Assert.assertEquals(1, options.size());
         Assert.assertEquals("key2 = value2", options.iterator().next().toString());
     }
 
 }
+

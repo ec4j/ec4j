@@ -18,6 +18,8 @@ package org.eclipse.ec4j.core.parser;
 
 /**
  * An immutable object that represents a location in the parsed text.
+ *
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
 public class Location {
     /**

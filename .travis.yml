@@ -20,5 +20,12 @@ install:
 - git submodule init
 - git submodule update
 
+# Unset _JAVA_OPTIONS or otherwise core-tests will fail due to JVM outputting Picked up _JAVA_OPTIONS: ...
+before_script:
+  - unset _JAVA_OPTIONS
+
 script:
 - eval $CMD
+
+after_failure:
+- '[ -f core/Testing/Temporary/LastTest.log ] && cat core/Testing/Temporary/LastTest.log'

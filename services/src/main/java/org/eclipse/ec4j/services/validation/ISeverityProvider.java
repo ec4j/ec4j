@@ -18,6 +18,9 @@ package org.eclipse.ec4j.services.validation;
 
 import org.eclipse.ec4j.core.parser.ErrorType;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public interface ISeverityProvider {
 
     ISeverityProvider DEFAULT = new ISeverityProvider() {

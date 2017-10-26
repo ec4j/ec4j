@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.eclipse.ec4j.core.Resources.StringResourceTree;
 import org.eclipse.ec4j.core.model.Option;
 import org.junit.Assert;
 import org.junit.Test;
@@ -28,6 +29,7 @@ import org.junit.Test;
  * Some glob test of
  * https://github.com/editorconfig/editorconfig-core-test/tree/master/properties
  *
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
 public class EditorConfigPropertiesTest {
 
@@ -46,13 +48,14 @@ public class EditorConfigPropertiesTest {
                 "tab_width = 2\r\n" +
                 "";
 
-        TestEditorConfigManager manager = new TestEditorConfigManager();
+        final String testFile = "root/test.c";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig", content)//
+                .touch(testFile) //
+                .build();
 
-        TestFolder root = new TestFolder("root");
-        root.addFile(".editorconfig", content);
-        TestFile file = root.addFile("test.c");
+        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
 
-        Collection<Option> options = manager.getOptions(file, null);
         Assert.assertEquals(2, options.size());
         Iterator<Option> iter = options.iterator();
         Assert.assertEquals("indent_style = tab", iter.next().toString());
@@ -60,3 +63,4 @@ public class EditorConfigPropertiesTest {
     }
 
 }
+

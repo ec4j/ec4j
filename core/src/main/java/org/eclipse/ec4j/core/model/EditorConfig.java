@@ -16,17 +16,14 @@
  */
 package org.eclipse.ec4j.core.model;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.ec4j.core.EditorConfigConstants;
-import org.eclipse.ec4j.core.ResourceProvider;
 import org.eclipse.ec4j.core.model.optiontypes.OptionTypeRegistry;
-import org.eclipse.ec4j.core.parser.EditorConfigParser;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public class EditorConfig {
 
     private final List<Section> sections;
@@ -36,10 +33,6 @@ public class EditorConfig {
     private Boolean root;
     private String dirPath;
 
-    public EditorConfig() {
-        this(OptionTypeRegistry.DEFAULT, EditorConfigConstants.VERSION);
-    }
-
     public EditorConfig(OptionTypeRegistry registry, String version) {
         this.sections = new ArrayList<>();
         this.registry = registry;
@@ -48,30 +41,6 @@ public class EditorConfig {
 
     public OptionTypeRegistry getRegistry() {
         return registry;
-    }
-
-    public static EditorConfig load(Reader reader) throws IOException {
-        return load(reader, OptionTypeRegistry.DEFAULT);
-    }
-
-    public static EditorConfig load(Reader reader, OptionTypeRegistry registry) throws IOException {
-        return load(reader, registry, EditorConfigConstants.VERSION);
-    }
-
-    public static EditorConfig load(Reader reader, OptionTypeRegistry registry, String version) throws IOException {
-        EditorConfigHandler handler = new EditorConfigHandler(registry, version);
-        new EditorConfigParser<Section, Option>(handler).setVersion(version).parse(reader);
-        return handler.getEditorConfig();
-    }
-
-    public static <T> EditorConfig load(T configFile, ResourceProvider<T> provider, OptionTypeRegistry registry,
-            String version) throws IOException {
-        try (BufferedReader reader = new BufferedReader(provider.getContent(configFile));) {
-            EditorConfig config = load(reader, registry, version);
-            T dir = provider.getParent(configFile);
-            config.setDirPath(provider.getPath(dir) + "/");
-            return config;
-        }
     }
 
     public void addSection(Section section) {

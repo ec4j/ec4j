@@ -17,46 +17,88 @@
 package org.eclipse.ec4j.core;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.Iterator;
 
+import org.eclipse.ec4j.core.Resources.Resource;
+import org.eclipse.ec4j.core.Resources.StringResourceTree;
 import org.eclipse.ec4j.core.model.Option;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Some glob test of
- * https://github.com/editorconfig/editorconfig-core-test/tree/master/filetree
+ * Some glob test of https://github.com/editorconfig/editorconfig-core-test/tree/master/filetree
+ *
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  *
  */
 public class EditorConfigFileTreeTest {
+    private static final Path basedir = Paths.get(System.getProperty("basedir", ".")).normalize();
+    private static final boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+    private static final Path testProjectDir = basedir.resolve("target/test-classes/path_separator").toAbsolutePath();
+
+    /**
+     * Demonstrates way to construct a {@link Path} containing a segment with backslash on non-Windows operating
+     * systems.
+     */
+    @Test
+    public void backslashNameOnUnix() {
+        if (!isWindows) {
+            Assert.assertEquals("/root/folder\\folder", Paths.get("/root", "folder\\folder").toString());
+            Assert.assertEquals("/root\\folder", Paths.get("/", "root\\folder").toString());
+
+            /* funny enough, "" is ignored */
+            Path p = Paths.get("", "root\\folder");
+            Assert.assertEquals("root\\folder", p.toString());
+
+            /* make also sure that normalization does not break the backslash in the last segment */
+            Path dir = Paths.get(".").toAbsolutePath().normalize();
+            Path pNormal = p.toAbsolutePath().normalize();
+            String suffix = pNormal.toString().substring(dir.toString().length() + 1);
+            Assert.assertEquals("root\\folder", suffix);
+        }
+    }
+
+    /**
+     * Windows style path separator in the command line should work on Windows, but should not work on other systems
+     *
+     * @throws IOException
+     * @throws EditorConfigException
+     */
+    @Test
+    public void path_separator_backslash_in_cmd_line() throws IOException, EditorConfigException {
+
+        final Resource testFile = Resources.ofPath(testProjectDir.resolve("path\\separator"));
+
+        Collection<Option> options = EditorConfigSession.default_().queryOptions(testFile);
+        if (isWindows) {
+            Assert.assertEquals(1, options.size());
+            Iterator<Option> it = options.iterator();
+            Assert.assertEquals("key = value", it.next().toString());
+        } else {
+            Assert.assertEquals(0, options.size());
+        }
+
+    }
 
     @Test
     public void windows_separator() throws IOException, EditorConfigException {
-        String content = "; test for path separator\r\n" +
-                "\r\n" +
-                "root=true\r\n" +
-                "\r\n" +
-                "[path/separator]\r\n" +
-                "key=value\r\n" +
-                "\r\n" +
-                "[/top/of/path]\r\n" +
-                "key=value\r\n" +
-                "\r\n" +
-                "[windows\\separator]\r\n" +
-                "key=value\r\n" +
-                "\r\n" +
-                "[windows\\\\separator2]\r\n" +
-                "key=value\r\n" +
-                "";
+        String content = "; test for path separator\r\n" + "\r\n" + "root=true\r\n" + "\r\n" + "[path/separator]\r\n"
+                + "key=value\r\n" + "\r\n" + "[/top/of/path]\r\n" + "key=value\r\n" + "\r\n"
+                + "[windows\\separator]\r\n" + "key=value\r\n" + "\r\n" + "[windows\\\\separator2]\r\n"
+                + "key=value\r\n" + "";
 
-        TestEditorConfigManager manager = new TestEditorConfigManager();
+        final String testFile = "root/windows/separator";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig", content)//
+                .touch(testFile) //
+                .build();
 
-        TestFolder root = new TestFolder("root");
-        root.addFile(".editorconfig", content);
-        TestFolder windows = root.addFolder("windows");
-        TestFile file = windows.addFile("separator");
-
-        Collection<Option> options = manager.getOptions(file, null);
-        //Assert.assertTrue(options.isEmpty());
+        EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
+        // Assert.assertTrue(options.isEmpty());
     }
 
 }

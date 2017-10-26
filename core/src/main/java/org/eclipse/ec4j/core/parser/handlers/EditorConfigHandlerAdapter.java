@@ -18,6 +18,9 @@ package org.eclipse.ec4j.core.parser.handlers;
 
 import org.eclipse.ec4j.core.parser.ParseException;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public class EditorConfigHandlerAdapter<S, O> extends AbstractEditorConfigHandler<S, O> {
 
     @Override

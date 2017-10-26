@@ -22,6 +22,7 @@ import org.eclipse.ec4j.core.parser.Location;
 /**
  * EditorConfig reporter.
  *
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
 public interface IReporter {
 

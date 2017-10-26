@@ -29,9 +29,12 @@ import org.eclipse.ec4j.core.model.optiontypes.OptionType.Root;
 import org.eclipse.ec4j.core.model.optiontypes.OptionType.TabWidth;
 import org.eclipse.ec4j.core.model.optiontypes.OptionType.TrimTrailingWhitespace;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public class OptionTypeRegistry {
 
-    public static final OptionTypeRegistry DEFAULT;
+    private static final OptionTypeRegistry DEFAULT;
 
     static {
         DEFAULT = new OptionTypeRegistry();
@@ -43,6 +46,10 @@ public class OptionTypeRegistry {
         DEFAULT.register(new TrimTrailingWhitespace());
         DEFAULT.register(new InsertFinalNewline());
         DEFAULT.register(new Root());
+    }
+
+    public static final OptionTypeRegistry getDefault() {
+        return DEFAULT;
     }
 
     private Map<String, OptionType<?>> types;

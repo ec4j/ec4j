@@ -16,6 +16,9 @@
  */
 package org.eclipse.ec4j.core.model.optiontypes;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public enum IndentStyleOption  {
 
     TAB("Tab"),

@@ -16,6 +16,9 @@
  */
 package org.eclipse.ec4j.core.model.optiontypes;
 
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
 public abstract class OptionType<T> {
 
     private static final String[] BOOLEAN_POSSIBLE_VALUES = new String[] { "true", "false" };
