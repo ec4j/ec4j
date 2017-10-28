@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.ec4j.core.ResourcePaths.PathResourcePath;
 import org.eclipse.ec4j.core.Resources.Resource;
 
 /**
@@ -59,7 +60,8 @@ public class ResourcePaths {
         /** {@inheritDoc} */
         @Override
         public ResourcePath getParent() {
-            return new PathResourcePath(path.getParent());
+            Path parent = path.getParent();
+            return parent == null ? null : new PathResourcePath(parent);
         }
 
         /** {@inheritDoc} */

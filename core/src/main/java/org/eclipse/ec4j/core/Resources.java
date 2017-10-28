@@ -78,7 +78,8 @@ public class Resources {
         /** {@inheritDoc} */
         @Override
         public ResourcePaths.ResourcePath getParent() {
-            return new PathResourcePath(path.getParent());
+            Path parent = path.getParent();
+            return parent == null ? null : new PathResourcePath(parent);
         }
 
         /** {@inheritDoc} */
