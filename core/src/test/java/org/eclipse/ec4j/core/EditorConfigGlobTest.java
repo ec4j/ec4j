@@ -32,6 +32,7 @@ import org.junit.Test;
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
 public class EditorConfigGlobTest {
+    private static final boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
 
     @Test
     public void star_after_slash() throws IOException, EditorConfigException {
@@ -270,6 +271,22 @@ public class EditorConfigGlobTest {
         Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
         Assert.assertEquals(1, options.size());
         Assert.assertEquals("key2 = value2", options.iterator().next().toString());
+    }
+
+    @Test
+    public void braces_escaped_backslash2() throws EditorConfigException {
+        if (!isWindows) {
+            final String testFile = "root/\\.txt";
+            StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig", BRACES_DOT_IN)//
+                .touch(testFile) //
+                .build();
+
+            Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
+            Assert.assertEquals(1, options.size());
+            Assert.assertEquals("backslash = yes", options.iterator().next().toString());
+        }
+
     }
 
 }

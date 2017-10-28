@@ -69,7 +69,7 @@ public class ResourcePaths {
         public String getPath() {
             StringBuilder result = new StringBuilder();
             final int len = path.getNameCount();
-            for (int i = 0; i < len ; i++) {
+            for (int i = 0; i < len; i++) {
                 if (i != 0 || path.isAbsolute()) {
                     result.append('/');
                 }
@@ -103,7 +103,9 @@ public class ResourcePaths {
     }
 
     /**
-     * A directory path in filesystem like {@link Resource} hierarchies.
+     * A directory path in filesystem like {@link Resource} hierarchies. The implementations must implement
+     * {@link #hashCode()} and {@link #equals(Object)}
+     *
      */
     public interface ResourcePath {
         /**
@@ -125,7 +127,8 @@ public class ResourcePaths {
         /**
          * Resolves an immediate child of this {@link ResourcePath}.
          *
-         * @param name the name of the child; should not contain path separators
+         * @param name
+         *            the name of the child; should not contain path separators
          * @return the child {@link Resource}
          */
         Resource resolve(String name);
@@ -203,7 +206,8 @@ public class ResourcePaths {
     }
 
     /**
-     * @param path the {@link Path} to create a new {@link ResourcePath} from
+     * @param path
+     *            the {@link Path} to create a new {@link ResourcePath} from
      * @return a new {@link PathResourcePath}
      */
     public static ResourcePath ofPath(Path path) {

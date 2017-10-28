@@ -17,16 +17,13 @@
 package org.eclipse.ec4j.core;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.ec4j.core.Resources.Resource;
 import org.eclipse.ec4j.core.model.EditorConfig;
-import org.eclipse.ec4j.core.model.EditorConfigHandler;
-import org.eclipse.ec4j.core.model.Option;
 import org.eclipse.ec4j.core.model.RegexpUtils;
-import org.eclipse.ec4j.core.model.Section;
 import org.eclipse.ec4j.core.model.optiontypes.OptionTypeRegistry;
+import org.eclipse.ec4j.core.parser.EditorConfigModelHandler;
 import org.eclipse.ec4j.core.parser.EditorConfigParser;
 
 /**
@@ -88,11 +85,11 @@ public class EditorConfigLoader {
      */
     public EditorConfig load(Resource configFile) throws EditorConfigException {
         /* http://editorconfig.org/ says that "EditorConfig files should be UTF-8 encoded" */
-        try (Reader reader = configFile.openReader(StandardCharsets.UTF_8)) {
-            EditorConfigHandler handler = new EditorConfigHandler(registry, version);
-            new EditorConfigParser<Section, Option>(handler).parse(reader);
+        try {
+            EditorConfigModelHandler handler = new EditorConfigModelHandler(registry, version);
+            EditorConfigParser parser = EditorConfigParser.builder().build();
+            parser.parse(configFile, StandardCharsets.UTF_8, handler);
             EditorConfig result = handler.getEditorConfig();
-            result.setDirPath(configFile.getParent().getPath() + "/");
             return result;
         } catch (IOException e) {
             throw new EditorConfigException("Could not load " + configFile.getPath(), e);

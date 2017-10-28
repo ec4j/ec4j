@@ -16,13 +16,14 @@
  */
 package org.eclipse.ec4j.services;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.ec4j.core.Resources;
 import org.eclipse.ec4j.core.Resources.RandomReader;
-import org.eclipse.ec4j.core.model.Option;
-import org.eclipse.ec4j.core.model.Section;
 import org.eclipse.ec4j.core.model.optiontypes.OptionType;
 import org.eclipse.ec4j.core.model.optiontypes.OptionTypeRegistry;
 import org.eclipse.ec4j.core.parser.EditorConfigParser;
@@ -82,7 +83,13 @@ public class EditorConfigService {
         ValidationEditorConfigHandler handler = new ValidationEditorConfigHandler(reporter, provider, registry);
         // Set parser as tolerant to collect the full errors of each line of the
         // editorconfig.
-        new EditorConfigParser<Section, Option>(handler).setTolerant(true).parse(content);
+        EditorConfigParser parser = EditorConfigParser.builder().tolerant().build();
+        try {
+            parser.parse(Resources.ofString(content), StandardCharsets.UTF_8, handler);
+        } catch (IOException e) {
+            /* should not happen with Resources.ofString(content) */
+            throw new RuntimeException(e);
+        }
     }
 
     // ------------- Completion service

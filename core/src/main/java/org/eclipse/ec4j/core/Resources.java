@@ -142,7 +142,8 @@ public class Resources {
     }
 
     /**
-     * A file in filesystem like {@link Resource} hierarchies.
+     * A file in filesystem like {@link Resource} hierarchies. The implementations must implement
+     * {@link #hashCode()} and {@link #equals(Object)}
      */
     public interface Resource {
         /**

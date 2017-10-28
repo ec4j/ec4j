@@ -17,24 +17,22 @@
 package org.eclipse.ec4j.services.validation;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.PatternSyntaxException;
 
-import org.eclipse.ec4j.core.model.Option;
-import org.eclipse.ec4j.core.model.Section;
+import org.eclipse.ec4j.core.model.Glob;
 import org.eclipse.ec4j.core.model.optiontypes.OptionException;
 import org.eclipse.ec4j.core.model.optiontypes.OptionType;
 import org.eclipse.ec4j.core.model.optiontypes.OptionTypeRegistry;
+import org.eclipse.ec4j.core.parser.EditorConfigHandler;
 import org.eclipse.ec4j.core.parser.ErrorType;
 import org.eclipse.ec4j.core.parser.Location;
+import org.eclipse.ec4j.core.parser.ParseContext;
 import org.eclipse.ec4j.core.parser.ParseException;
-import org.eclipse.ec4j.core.parser.handlers.EditorConfigHandlerAdapter;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-public class ValidationEditorConfigHandler extends EditorConfigHandlerAdapter<Section, Option> {
+public class ValidationEditorConfigHandler implements EditorConfigHandler {
 
     private static final String PATTERN_SYNTAX_MESSAGE = "The pattern ''{0}'' is not valid ''{1}''";
     private static final String OPTION_NAME_NOT_EXISTS_MESSAGE = "The option ''{0}'' is not supported by .editorconfig";
@@ -45,74 +43,74 @@ public class ValidationEditorConfigHandler extends EditorConfigHandlerAdapter<Se
     private final IReporter reporter;
     private final ISeverityProvider provider;
     private final OptionTypeRegistry registry;
-    private List<Section> sections;
+    private Location patternStart;
+    private Location optionNameStart;
+    private Location optionValueStart;
+    private OptionType<?> type;
 
     public ValidationEditorConfigHandler(IReporter reporter, ISeverityProvider provider, OptionTypeRegistry registry) {
         this.reporter = reporter;
         this.provider = provider != null ? provider : ISeverityProvider.DEFAULT;
         this.registry = registry != null ? registry : OptionTypeRegistry.getDefault();
-        this.sections = new ArrayList<>();
     }
 
     @Override
-    public void startDocument() {
+    public void startDocument(ParseContext context) {
 
     }
 
     @Override
-    public void endDocument() {
-        for (Section section : getSections()) {
-            section.preprocessOptions();
-        }
+    public void endDocument(ParseContext context) {
     }
 
     @Override
-    public Section startSection() {
-        return new Section(null);
+    public void startSection(ParseContext context) {
     }
 
     @Override
-    public void endSection(Section section) {
-        sections.add(section);
+    public void endSection(ParseContext context) {
     }
 
     @Override
-    public void endPattern(Section section, String pattern) {
-        section.setPattern(pattern);
-        PatternSyntaxException e = section.getGlob().getError();
+    public void endPattern(ParseContext context, String pattern) {
+        Glob g = new Glob(context.getResource().getParent().getPath(), pattern);
+        PatternSyntaxException e = g.getError();
         if (e != null) {
-            Location start = getLocation();
-            Location end = start.adjust(pattern.length());
+            Location end = context.getLocation();
             ErrorType errorType = ErrorType.PatternSyntaxType;
-            reporter.addError(MessageFormat.format(PATTERN_SYNTAX_MESSAGE, pattern, e.getMessage()), start, end,
+            reporter.addError(MessageFormat.format(PATTERN_SYNTAX_MESSAGE, pattern, e.getMessage()), patternStart, end,
                     errorType, provider.getSeverity(errorType));
         }
+        patternStart = null;
     }
 
     @Override
-    public Option endOptionName(String name) {
+    public void endOptionName(ParseContext context, String name) {
         // Validate option name
-        if (!isOptionExists(name)) {
-            Location start = getLocation();
-            Location end = start.adjust(-name.length());
+        this.type = registry.getType(name);
+        if (type == null) {
+            Location end = context.getLocation();
             ErrorType errorType = ErrorType.OptionNameNotExists;
-            reporter.addError(MessageFormat.format(OPTION_NAME_NOT_EXISTS_MESSAGE, name), start, end, errorType,
-                    provider.getSeverity(errorType));
+            reporter.addError(MessageFormat.format(OPTION_NAME_NOT_EXISTS_MESSAGE, name), optionNameStart, end,
+                    errorType, provider.getSeverity(errorType));
         }
-        return null;
+        optionNameStart = null;
     }
 
     @Override
-    public void endOptionValue(Option option, String value, String name) {
+    public void endOptionValue(ParseContext context, String value) {
         // Validate value of the option name
         try {
-            validateOptionValue(name, value);
+            if (type != null) {
+                type.validate(value);
+            }
         } catch (OptionException e) {
-            Location start = getLocation();
+            Location end = context.getLocation();
             ErrorType errorType = ErrorType.OptionValueType;
-            Location end = start.adjust(-value.length());
-            reporter.addError(e.getMessage(), start, end, errorType, provider.getSeverity(errorType));
+            reporter.addError(e.getMessage(), optionValueStart, end, errorType, provider.getSeverity(errorType));
         }
+        type = null;
+        optionValueStart = null;
     }
 
     @Override
@@ -124,23 +122,28 @@ public class ValidationEditorConfigHandler extends EditorConfigHandlerAdapter<Se
         return provider.getSeverity(e.getErrorType());
     }
 
-    private boolean validateOptionValue(String name, String value) throws OptionException {
-        OptionType<?> type = getOptionType(name);
-        if (type != null) {
-            type.validate(value);
-        }
-        return true;
+    @Override
+    public void startPattern(ParseContext context) {
+
     }
 
-    private boolean isOptionExists(String name) {
-        return getOptionType(name) != null;
+    @Override
+    public void startOption(ParseContext context) {
+
     }
 
-    private OptionType<?> getOptionType(String name) {
-        return registry.getType(name);
+    @Override
+    public void endOption(ParseContext context) {
+
     }
 
-    private List<Section> getSections() {
-        return sections;
+    @Override
+    public void startOptionName(ParseContext context) {
+
+    }
+
+    @Override
+    public void startOptionValue(ParseContext context) {
+
     }
 }

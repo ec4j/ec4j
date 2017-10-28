@@ -111,13 +111,14 @@ public class Cli {
                 } else {
                     /* Otherwise, we have to use the multiarg Path.get(first, more...) so that the backslashes are not
                      * interpreted as separators. "" segments are ignored by Paths.get() */
-                    p = Paths.get("", path.split("/")).toAbsolutePath().normalize();
+                    final String first = path.startsWith("/") ? "/" : "";
+                    p = Paths.get(first, path.split("/")).toAbsolutePath().normalize();
                 }
             }
             Resource file = org.eclipse.ec4j.core.Resources.ofPath(p);
             Collection<Option> opts = editorConfigSession.queryOptions(file);
             for (Option opt : opts) {
-                System.out.println(opt.getName() + "=" + opt.getValue());
+                System.out.println(opt.getName() + "=" + opt.getSourceValue());
             }
         }
     }

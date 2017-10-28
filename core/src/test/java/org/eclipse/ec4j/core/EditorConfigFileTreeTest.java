@@ -17,6 +17,7 @@
 package org.eclipse.ec4j.core;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -83,6 +84,20 @@ public class EditorConfigFileTreeTest {
             Assert.assertEquals(0, options.size());
         }
 
+    }
+
+    @Test
+    public void parent_directory() throws IOException, EditorConfigException {
+        final String testFile = "root/parent_directory/test.a";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig", getClass().getResource("/filetree/.editorconfig"), StandardCharsets.UTF_8)//
+                .resource("root/parent_directory/.editorconfig", getClass().getResource("/filetree/parent_directory/.editorconfig"), StandardCharsets.UTF_8)//
+                .touch(testFile) //
+                .build();
+
+        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
+        Assert.assertEquals(1, options.size());
+        Assert.assertEquals("key = value", options.iterator().next().toString());
     }
 
     @Test

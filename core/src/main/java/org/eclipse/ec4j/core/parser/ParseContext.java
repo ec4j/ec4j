@@ -14,30 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.ec4j.core.parser.handlers;
+package org.eclipse.ec4j.core.parser;
 
-import org.eclipse.ec4j.core.parser.EditorConfigParser;
-import org.eclipse.ec4j.core.parser.Location;
+import org.eclipse.ec4j.core.Resources.Resource;
 
 /**
- * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ * The context of a parse notification sent by {@link EditorConfigParser}.
+ *
+ * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
-public abstract class AbstractEditorConfigHandler<S, O> implements IEditorConfigHandler<S, O> {
-
-    private EditorConfigParser<S, O> parser;
-
-    @Override
-    public void setParser(EditorConfigParser<S, O> parser) {
-        this.parser = parser;
-    }
+public interface ParseContext {
 
     /**
-     * Returns the current parser location.
-     *
-     * @return the current parser location
+     * @return the {@link Location} in the parsed {@link Resource} the parser is currently on
      */
-    protected Location getLocation() {
-        return parser.getLocation();
-    }
+    Location getLocation();
 
+    /**
+     * @return the resource being parsed
+     */
+    Resource getResource();
 }
