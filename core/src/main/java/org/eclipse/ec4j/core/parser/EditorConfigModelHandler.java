@@ -19,6 +19,7 @@ package org.eclipse.ec4j.core.parser;
 import org.eclipse.ec4j.core.model.EditorConfig;
 import org.eclipse.ec4j.core.model.Option;
 import org.eclipse.ec4j.core.model.Section;
+import org.eclipse.ec4j.core.model.Version;
 import org.eclipse.ec4j.core.model.optiontypes.OptionTypeRegistry;
 
 /**
@@ -34,9 +35,9 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
     private Section.Builder sectionBuilder;
     private Option.Builder optionBuilder;
     private final OptionTypeRegistry registry;
-    private final String version;
+    private final Version version;
 
-    public EditorConfigModelHandler(OptionTypeRegistry registry, String version) {
+    public EditorConfigModelHandler(OptionTypeRegistry registry, Version version) {
         this.registry = registry;
         this.version = version;
     }

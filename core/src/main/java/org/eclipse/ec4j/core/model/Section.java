@@ -138,7 +138,7 @@ public class Section {
         }
 
         private void preprocessOptions() {
-            String version = parentBuilder.version;
+            Version version = parentBuilder.version;
             Option indentStyle = null;
             Option indentSize = null;
             Option tabWidth = null;
@@ -164,7 +164,7 @@ public class Section {
             // Set indent_size to "tab" if indent_size is unspecified and
             // indent_style is set to "tab".
             if (indentStyle != null && "tab".equals(indentStyle.getSourceValue()) && indentSize == null
-                    && RegexpUtils.compareVersions(version, "0.10.0") >= 0) {
+                    && version.compareTo(Version._0_10_0) >= 0) {
                 final String name = OptionNames.indent_size.name();
                 final OptionType<?> type = parentBuilder.registry.getType(name);
                 final String value = "tab";

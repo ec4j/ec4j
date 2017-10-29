@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.ec4j.core.EditorConfigConstants;
 import org.eclipse.ec4j.core.ResourcePaths.ResourcePath;
 import org.eclipse.ec4j.core.model.optiontypes.OptionTypeRegistry;
 
@@ -42,7 +41,7 @@ public class EditorConfig {
         ResourcePath resourcePath;
         Boolean root;
         List<Section> sections;
-        String version = EditorConfigConstants.VERSION;
+        Version version = Version.CURRENT;
 
         public Builder(OptionTypeRegistry registry) {
             super();
@@ -140,7 +139,7 @@ public class EditorConfig {
          *            the version to set
          * @return this {@link Builder}
          */
-        public Builder version(String version) {
+        public Builder version(Version version) {
             this.version = version;
             return this;
         }
@@ -169,7 +168,7 @@ public class EditorConfig {
 
     private final List<Section> sections;
 
-    private final String version;
+    private final Version version;
 
     /**
      * You look for {@link #builder(OptionTypeRegistry)} if you wonder why this constructor this package private.
@@ -179,7 +178,7 @@ public class EditorConfig {
      * @param resourcePath
      * @param sections
      */
-    EditorConfig(Boolean root, String version, ResourcePath resourcePath, List<Section> sections) {
+    EditorConfig(Boolean root, Version version, ResourcePath resourcePath, List<Section> sections) {
         super();
         this.root = root;
         this.version = version;
@@ -236,7 +235,7 @@ public class EditorConfig {
     /**
      * @return The version of EditorConfig specification, the current {@link EditorConfig} model is compliant with
      */
-    public String getVersion() {
+    public Version getVersion() {
         return version;
     }
 

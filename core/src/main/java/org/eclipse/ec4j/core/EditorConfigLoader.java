@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.eclipse.ec4j.core.Resources.Resource;
 import org.eclipse.ec4j.core.model.EditorConfig;
-import org.eclipse.ec4j.core.model.RegexpUtils;
+import org.eclipse.ec4j.core.model.Version;
 import org.eclipse.ec4j.core.model.optiontypes.OptionTypeRegistry;
 import org.eclipse.ec4j.core.parser.EditorConfigModelHandler;
 import org.eclipse.ec4j.core.parser.EditorConfigParser;
@@ -33,28 +33,28 @@ import org.eclipse.ec4j.core.parser.EditorConfigParser;
  */
 public class EditorConfigLoader {
 
-    private static final EditorConfigLoader DEFAULT = new EditorConfigLoader(EditorConfigConstants.VERSION,
+    private static final EditorConfigLoader DEFAULT = new EditorConfigLoader(Version.CURRENT,
             OptionTypeRegistry.getDefault());
 
     public static EditorConfigLoader getDefault() {
         return DEFAULT;
     }
 
-    public static EditorConfigLoader of(String version) throws VersionException {
+    public static EditorConfigLoader of(Version version) throws VersionException {
         return of(version, OptionTypeRegistry.getDefault());
     }
 
-    public static EditorConfigLoader of(String version, OptionTypeRegistry registry) throws VersionException {
-        if (RegexpUtils.compareVersions(version, EditorConfigConstants.VERSION) > 0) {
+    public static EditorConfigLoader of(Version version, OptionTypeRegistry registry) throws VersionException {
+        if (version.compareTo(Version.CURRENT) > 0) {
             throw new VersionException("Required version is greater than the current version.");
         }
         return new EditorConfigLoader(version, registry);
     }
 
     private final OptionTypeRegistry registry;
-    private final String version;
+    private final Version version;
 
-    EditorConfigLoader(String version, OptionTypeRegistry registry) {
+    EditorConfigLoader(Version version, OptionTypeRegistry registry) {
         super();
         this.version = version;
         this.registry = registry;
@@ -70,7 +70,7 @@ public class EditorConfigLoader {
     /**
      * @return the version of the EditorConfig spec the current {@link EditorConfigLoader} is able to read
      */
-    public String getVersion() {
+    public Version getVersion() {
         return version;
     }
 

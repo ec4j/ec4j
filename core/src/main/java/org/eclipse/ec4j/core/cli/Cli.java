@@ -27,6 +27,7 @@ import org.eclipse.ec4j.core.EditorConfigSession;
 import org.eclipse.ec4j.core.ResourcePaths;
 import org.eclipse.ec4j.core.Resources.Resource;
 import org.eclipse.ec4j.core.model.Option;
+import org.eclipse.ec4j.core.model.Version;
 
 /**
  * A simple command line wrapper over {@link EditorConfigManager} so that it can
@@ -46,13 +47,13 @@ public class Cli {
     public static void main(String[] args) throws Exception {
         List<String> paths = new ArrayList<>();
         String editorconfigFileName = EditorConfigConstants.EDITORCONFIG;
-        String version = EditorConfigConstants.VERSION;
+        Version version = Version.CURRENT;
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             switch (arg) {
             case "-b":
                 if (i + 1 < args.length) {
-                    version = args[++i];
+                    version = Version.of(args[++i]);
                     continue;
                 } else {
                     System.err.println("-b option must be followed by a version");
