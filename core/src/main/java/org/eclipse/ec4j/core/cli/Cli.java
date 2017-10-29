@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 package org.eclipse.ec4j.core.cli;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -87,7 +88,7 @@ public class Cli {
 
         EditorConfigSession editorConfigSession = EditorConfigSession.builder() //
                 .configFileName(editorconfigFileName) //
-                .rootDirectory(ResourcePaths.ofPath(Paths.get(".").toAbsolutePath().normalize())) //
+                .rootDirectory(ResourcePaths.ofPath(Paths.get(".").toAbsolutePath().normalize(), StandardCharsets.UTF_8)) //
                 .loader(EditorConfigLoader.of(version)) //
                 .build();
 
@@ -116,7 +117,7 @@ public class Cli {
                     p = Paths.get(first, path.split("/")).toAbsolutePath().normalize();
                 }
             }
-            Resource file = org.eclipse.ec4j.core.Resources.ofPath(p);
+            Resource file = org.eclipse.ec4j.core.Resources.ofPath(p, StandardCharsets.UTF_8);
             Collection<Option> opts = editorConfigSession.queryOptions(file);
             for (Option opt : opts) {
                 System.out.println(opt.getName() + "=" + opt.getSourceValue());

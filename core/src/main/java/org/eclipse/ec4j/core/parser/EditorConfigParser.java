@@ -18,7 +18,6 @@ package org.eclipse.ec4j.core.parser;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.nio.charset.Charset;
 
 import org.eclipse.ec4j.core.Resources.Resource;
 import org.eclipse.ec4j.core.model.optiontypes.OptionNames;
@@ -100,8 +99,6 @@ public class EditorConfigParser implements ParseContext {
      *
      * @param resource
      *            the {@link Resource} to parse
-     * @param encoding
-     *            the encoding of the {@code resource}
      * @param handler
      *            the handler to send the parse events to
      * @throws IOException
@@ -110,7 +107,7 @@ public class EditorConfigParser implements ParseContext {
      *             only if {@link #tolerant} is {@code false}; otherwise the exceptions are passed to the
      *             {@link EditorConfigHandler}
      */
-    public void parse(Resource resource, Charset encoding, EditorConfigHandler handler) throws IOException {
+    public void parse(Resource resource, EditorConfigHandler handler) throws IOException {
         this.resource = resource;
         this.handler = handler;
         bufferOffset = 0;
@@ -122,7 +119,7 @@ public class EditorConfigParser implements ParseContext {
         last = -1;
         captureStart = -1;
 
-        try (Reader reader = resource.openReader(encoding)) {
+        try (Reader reader = resource.openReader()) {
             this.reader = reader;
             readLines();
             if (!isEndOfText()) {

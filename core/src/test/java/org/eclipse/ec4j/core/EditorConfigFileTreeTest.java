@@ -73,13 +73,13 @@ public class EditorConfigFileTreeTest {
     public void path_separator_backslash_in_cmd_line() throws IOException, EditorConfigException {
 
         if (isWindows) {
-            final Resource testFile = Resources.ofPath(testProjectDir.resolve("path\\separator"));
+            final Resource testFile = Resources.ofPath(testProjectDir.resolve("path\\separator"), StandardCharsets.UTF_8);
             Collection<Option> options = EditorConfigSession.default_().queryOptions(testFile);
             Assert.assertEquals(1, options.size());
             Iterator<Option> it = options.iterator();
             Assert.assertEquals("key = value", it.next().toString());
         } else {
-            final Resource testFile = Resources.ofPath(testProjectDir.resolve(Paths.get("", "path\\separator")));
+            final Resource testFile = Resources.ofPath(testProjectDir.resolve(Paths.get("", "path\\separator")), StandardCharsets.UTF_8);
             Collection<Option> options = EditorConfigSession.default_().queryOptions(testFile);
             Assert.assertEquals(0, options.size());
         }

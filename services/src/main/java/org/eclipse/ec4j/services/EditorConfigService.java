@@ -17,7 +17,6 @@
 package org.eclipse.ec4j.services;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -85,7 +84,7 @@ public class EditorConfigService {
         // editorconfig.
         EditorConfigParser parser = EditorConfigParser.builder().tolerant().build();
         try {
-            parser.parse(Resources.ofString(content), StandardCharsets.UTF_8, handler);
+            parser.parse(Resources.ofString(content), handler);
         } catch (IOException e) {
             /* should not happen with Resources.ofString(content) */
             throw new RuntimeException(e);

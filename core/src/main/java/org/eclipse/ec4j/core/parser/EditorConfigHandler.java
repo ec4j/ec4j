@@ -18,7 +18,7 @@ package org.eclipse.ec4j.core.parser;
 
 /**
  * A handler that gets notified about parse events from
- * {@link EditorConfigParser#parse(org.eclipse.ec4j.core.Resources.Resource, java.nio.charset.Charset, EditorConfigHandler)}.
+ * {@link EditorConfigParser#parse(org.eclipse.ec4j.core.Resources.Resource, EditorConfigHandler)}.
  * <p>
  * Implementations will generally want to keep some internal state and therefore their instances should not be accessed
  * from concurrent threads.

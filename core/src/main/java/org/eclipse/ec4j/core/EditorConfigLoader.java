@@ -17,7 +17,6 @@
 package org.eclipse.ec4j.core;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 import org.eclipse.ec4j.core.Resources.Resource;
 import org.eclipse.ec4j.core.model.EditorConfig;
@@ -84,11 +83,10 @@ public class EditorConfigLoader {
      *             if anything goes wrong, incl IO problems that get wrapped as {@link EditorConfigException}s
      */
     public EditorConfig load(Resource configFile) throws EditorConfigException {
-        /* http://editorconfig.org/ says that "EditorConfig files should be UTF-8 encoded" */
         try {
             EditorConfigModelHandler handler = new EditorConfigModelHandler(registry, version);
             EditorConfigParser parser = EditorConfigParser.builder().build();
-            parser.parse(configFile, StandardCharsets.UTF_8, handler);
+            parser.parse(configFile, handler);
             EditorConfig result = handler.getEditorConfig();
             return result;
         } catch (IOException e) {

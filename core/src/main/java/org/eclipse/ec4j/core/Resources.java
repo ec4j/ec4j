@@ -50,10 +50,12 @@ public class Resources {
     static class PathResource implements Resource {
 
         private final Path path;
+        private final Charset encoding;
 
-        PathResource(Path path) {
+        PathResource(Path path, Charset encoding) {
             super();
             this.path = path;
+            this.encoding = encoding;
         }
 
         /** {@inheritDoc} */
@@ -79,7 +81,7 @@ public class Resources {
         @Override
         public ResourcePaths.ResourcePath getParent() {
             Path parent = path.getParent();
-            return parent == null ? null : new PathResourcePath(parent);
+            return parent == null ? null : new PathResourcePath(parent, encoding);
         }
 
         /** {@inheritDoc} */
@@ -104,13 +106,13 @@ public class Resources {
 
         /** {@inheritDoc} */
         @Override
-        public RandomReader openRandomReader(Charset encoding) throws IOException {
+        public RandomReader openRandomReader() throws IOException {
             return new StringRandomReader(new String(Files.readAllBytes(path), encoding));
         }
 
         /** {@inheritDoc} */
         @Override
-        public Reader openReader(Charset encoding) throws IOException {
+        public Reader openReader() throws IOException {
             return Files.newBufferedReader(path, encoding);
         }
 
@@ -165,22 +167,18 @@ public class Resources {
         /**
          * Opens a {@link RandomReader} to read the content of this {@link Resource}.
          *
-         * @param encoding
-         *            the {@link Charset} to use when reading the underlying resource
          * @return an open {@link RandomReader}
          * @throws IOException
          */
-        RandomReader openRandomReader(Charset encoding) throws IOException;
+        RandomReader openRandomReader() throws IOException;
 
         /**
          * Opens a {@link Reader} to read the content of this {@link Resource}.
          *
-         * @param encoding
-         *            the {@link Charset} to use when reading the underlying resource
          * @return an open {@link Reader}
          * @throws IOException
          */
-        Reader openReader(Charset encoding) throws IOException;
+        Reader openReader() throws IOException;
     }
 
     /**
@@ -300,13 +298,13 @@ public class Resources {
 
         /** {@inheritDoc} */
         @Override
-        public RandomReader openRandomReader(Charset encoding) throws IOException {
+        public RandomReader openRandomReader() throws IOException {
             return new StringRandomReader(content);
         }
 
         /** {@inheritDoc} */
         @Override
-        public Reader openReader(Charset encoding) throws IOException {
+        public Reader openReader() throws IOException {
             return new StringReader(content);
         }
 
@@ -402,8 +400,8 @@ public class Resources {
      *            the {@link Path} to create a new {@link Resource} from
      * @return a new {@link PathResource}
      */
-    public static Resource ofPath(Path path) {
-        return new PathResource(path);
+    public static Resource ofPath(Path path, Charset encoding) {
+        return new PathResource(path, encoding);
     }
 
     /**
