@@ -17,10 +17,10 @@
 package org.eclipse.ec4j.core.parser;
 
 import org.eclipse.ec4j.core.model.EditorConfig;
-import org.eclipse.ec4j.core.model.Option;
+import org.eclipse.ec4j.core.model.Property;
 import org.eclipse.ec4j.core.model.Section;
 import org.eclipse.ec4j.core.model.Version;
-import org.eclipse.ec4j.core.model.optiontypes.OptionTypeRegistry;
+import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
 
 /**
  * A {@link EditorConfigHandler} implementation that assemles {@link EditorConfig} instances out of the parse
@@ -33,11 +33,11 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
 
     private EditorConfig.Builder editorConfigBuilder;
     private Section.Builder sectionBuilder;
-    private Option.Builder optionBuilder;
-    private final OptionTypeRegistry registry;
+    private Property.Builder propertyBuilder;
+    private final PropertyTypeRegistry registry;
     private final Version version;
 
-    public EditorConfigModelHandler(OptionTypeRegistry registry, Version version) {
+    public EditorConfigModelHandler(PropertyTypeRegistry registry, Version version) {
         this.registry = registry;
         this.version = version;
     }
@@ -69,15 +69,15 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
 
     /** {@inheritDoc} */
     @Override
-    public void startOption(ParseContext context) {
-        optionBuilder = sectionBuilder.openOption();
+    public void startProperty(ParseContext context) {
+        propertyBuilder = sectionBuilder.openProperty();
     }
 
     /** {@inheritDoc} */
     @Override
-    public void endOption(ParseContext context) {
-        optionBuilder.closeOption();
-        optionBuilder = null;
+    public void endProperty(ParseContext context) {
+        propertyBuilder.closeProperty();
+        propertyBuilder = null;
     }
 
     /** {@inheritDoc} */
@@ -106,24 +106,24 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
 
     /** {@inheritDoc} */
     @Override
-    public void startOptionName(ParseContext context) {
+    public void startPropertyName(ParseContext context) {
     }
 
     /** {@inheritDoc} */
     @Override
-    public void endOptionName(ParseContext context, String name) {
-        optionBuilder.name(name);
+    public void endPropertyName(ParseContext context, String name) {
+        propertyBuilder.name(name);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void startOptionValue(ParseContext context) {
+    public void startPropertyValue(ParseContext context) {
     }
 
     /** {@inheritDoc} */
     @Override
-    public void endOptionValue(ParseContext context, String value) {
-        optionBuilder.value(value);
+    public void endPropertyValue(ParseContext context, String value) {
+        propertyBuilder.value(value);
     }
 
 }

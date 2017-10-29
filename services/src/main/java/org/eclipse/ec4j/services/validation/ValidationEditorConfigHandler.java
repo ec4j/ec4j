@@ -20,9 +20,9 @@ import java.text.MessageFormat;
 import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.ec4j.core.model.Glob;
-import org.eclipse.ec4j.core.model.optiontypes.OptionException;
-import org.eclipse.ec4j.core.model.optiontypes.OptionType;
-import org.eclipse.ec4j.core.model.optiontypes.OptionTypeRegistry;
+import org.eclipse.ec4j.core.model.propertytype.PropertyException;
+import org.eclipse.ec4j.core.model.propertytype.PropertyType;
+import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
 import org.eclipse.ec4j.core.parser.EditorConfigHandler;
 import org.eclipse.ec4j.core.parser.ErrorType;
 import org.eclipse.ec4j.core.parser.Location;
@@ -35,23 +35,23 @@ import org.eclipse.ec4j.core.parser.ParseException;
 public class ValidationEditorConfigHandler implements EditorConfigHandler {
 
     private static final String PATTERN_SYNTAX_MESSAGE = "The pattern ''{0}'' is not valid ''{1}''";
-    private static final String OPTION_NAME_NOT_EXISTS_MESSAGE = "The option ''{0}'' is not supported by .editorconfig";
+    private static final String PROPERTY_NAME_NOT_EXISTS_MESSAGE = "The property ''{0}'' is not supported by .editorconfig";
 
-    // private static final String OPTION_VALUE_TYPE_MESSAGE = "The option ''{0}''
+    // private static final String PROPERTY_VALUE_TYPE_MESSAGE = "The property ''{0}''
     // doesn't support the value ''{1}''";
 
     private final IReporter reporter;
     private final ISeverityProvider provider;
-    private final OptionTypeRegistry registry;
+    private final PropertyTypeRegistry registry;
     private Location patternStart;
-    private Location optionNameStart;
-    private Location optionValueStart;
-    private OptionType<?> type;
+    private Location propertyNameStart;
+    private Location propertyValueStart;
+    private PropertyType<?> type;
 
-    public ValidationEditorConfigHandler(IReporter reporter, ISeverityProvider provider, OptionTypeRegistry registry) {
+    public ValidationEditorConfigHandler(IReporter reporter, ISeverityProvider provider, PropertyTypeRegistry registry) {
         this.reporter = reporter;
         this.provider = provider != null ? provider : ISeverityProvider.DEFAULT;
-        this.registry = registry != null ? registry : OptionTypeRegistry.getDefault();
+        this.registry = registry != null ? registry : PropertyTypeRegistry.getDefault();
     }
 
     @Override
@@ -85,32 +85,32 @@ public class ValidationEditorConfigHandler implements EditorConfigHandler {
     }
 
     @Override
-    public void endOptionName(ParseContext context, String name) {
-        // Validate option name
+    public void endPropertyName(ParseContext context, String name) {
+        // Validate property name
         this.type = registry.getType(name);
         if (type == null) {
             Location end = context.getLocation();
-            ErrorType errorType = ErrorType.OptionNameNotExists;
-            reporter.addError(MessageFormat.format(OPTION_NAME_NOT_EXISTS_MESSAGE, name), optionNameStart, end,
+            ErrorType errorType = ErrorType.PropertyNameNotExists;
+            reporter.addError(MessageFormat.format(PROPERTY_NAME_NOT_EXISTS_MESSAGE, name), propertyNameStart, end,
                     errorType, provider.getSeverity(errorType));
         }
-        optionNameStart = null;
+        propertyNameStart = null;
     }
 
     @Override
-    public void endOptionValue(ParseContext context, String value) {
-        // Validate value of the option name
+    public void endPropertyValue(ParseContext context, String value) {
+        // Validate value of the property name
         try {
             if (type != null) {
                 type.validate(value);
             }
-        } catch (OptionException e) {
+        } catch (PropertyException e) {
             Location end = context.getLocation();
-            ErrorType errorType = ErrorType.OptionValueType;
-            reporter.addError(e.getMessage(), optionValueStart, end, errorType, provider.getSeverity(errorType));
+            ErrorType errorType = ErrorType.PropertyValueType;
+            reporter.addError(e.getMessage(), propertyValueStart, end, errorType, provider.getSeverity(errorType));
         }
         type = null;
-        optionValueStart = null;
+        propertyValueStart = null;
     }
 
     @Override
@@ -128,22 +128,22 @@ public class ValidationEditorConfigHandler implements EditorConfigHandler {
     }
 
     @Override
-    public void startOption(ParseContext context) {
+    public void startProperty(ParseContext context) {
 
     }
 
     @Override
-    public void endOption(ParseContext context) {
+    public void endProperty(ParseContext context) {
 
     }
 
     @Override
-    public void startOptionName(ParseContext context) {
+    public void startPropertyName(ParseContext context) {
 
     }
 
     @Override
-    public void startOptionValue(ParseContext context) {
+    public void startPropertyValue(ParseContext context) {
 
     }
 }

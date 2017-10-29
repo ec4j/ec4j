@@ -28,11 +28,11 @@ import org.eclipse.ec4j.core.Caches.Cache;
 import org.eclipse.ec4j.core.ResourcePaths.ResourcePath;
 import org.eclipse.ec4j.core.Resources.Resource;
 import org.eclipse.ec4j.core.model.EditorConfig;
-import org.eclipse.ec4j.core.model.Option;
+import org.eclipse.ec4j.core.model.Property;
 import org.eclipse.ec4j.core.model.Section;
 
 /**
- * A session that keeps a {@link Cache} and {@link EditorConfigLoader} to be able to query {@link Option}s applicable to
+ * A session that keeps a {@link Cache} and {@link EditorConfigLoader} to be able to query {@link Property}s applicable to
  * a {@link Resource}.
  * <p>
  * This is a typical entry point for the users of {@code ec4j.core}.
@@ -55,8 +55,8 @@ import org.eclipse.ec4j.core.model.Section;
  *         .rootDirectory(ResourcePaths.ofPath(Paths.get("/my/dir1")))
  *         .rootDirectory(ResourcePaths.ofPath(Paths.get("/my/dir2")))
  *         .build();
- * Collection<Option> opts1 = mySession.getOptions(Resources.ofPath(Paths.get("/my/dir1/Class1.java")));
- * Collection<Option> opts2 = mySession.getOptions(Resources.ofPath(Paths.get("/my/dir2/Class2.java")));
+ * Collection<Property> opts1 = mySession.queryProperties(Resources.ofPath(Paths.get("/my/dir1/Class1.java")));
+ * Collection<Property> opts2 = mySession.queryProperties(Resources.ofPath(Paths.get("/my/dir2/Class2.java")));
  * </pre>
  *
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
@@ -165,16 +165,16 @@ public class EditorConfigSession {
     }
 
     /**
-     * Queries {@link Option}s applicable to a {@link Resource}.
+     * Queries {@link Property}s applicable to a {@link Resource}.
      *
      * @param resource
-     *            the resource to query the {@link Option}s for
-     * @return an immutable {@link Collection} of {@link Option}s applicable to the given {@link Resource}
+     *            the resource to query the {@link Property}s for
+     * @return an immutable {@link Collection} of {@link Property}s applicable to the given {@link Resource}
      * @throws EditorConfigException
      */
-    public Collection<Option> queryOptions(Resource resource) throws EditorConfigException {
-        Map<String, Option> oldOptions = Collections.emptyMap();
-        Map<String, Option> options = new LinkedHashMap<>();
+    public Collection<Property> queryProperties(Resource resource) throws EditorConfigException {
+        Map<String, Property> oldProperties = Collections.emptyMap();
+        Map<String, Property> properties = new LinkedHashMap<>();
         boolean root = false;
         final String path = resource.getPath();
         ResourcePath dir = resource.getParent();
@@ -187,20 +187,20 @@ public class EditorConfigSession {
                 for (Section section : sections) {
                     if (section.match(path)) {
                         // Section matches the editor file, collect options of the section
-                        List<Option> o = section.getOptions();
-                        for (Option option : o) {
-                            options.put(option.getName(), option);
+                        List<Property> o = section.getProperties();
+                        for (Property property : o) {
+                            properties.put(property.getName(), property);
                         }
                     }
                 }
             }
-            options.putAll(oldOptions);
-            oldOptions = options;
-            options = new LinkedHashMap<String, Option>();
+            properties.putAll(oldProperties);
+            oldProperties = properties;
+            properties = new LinkedHashMap<String, Property>();
             root |= rootDirectories.contains(dir);
             dir = dir.getParent();
         }
-        return oldOptions.values();
+        return oldProperties.values();
     }
 
 }

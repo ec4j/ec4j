@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.ec4j.core.ResourcePaths.ResourcePath;
-import org.eclipse.ec4j.core.model.optiontypes.OptionTypeRegistry;
+import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
 
 /**
  * A immutable model of an {@code .editorconfig} file.
@@ -36,14 +36,14 @@ public class EditorConfig {
      * An {@link EditorConfig} builder.
      */
     public static class Builder {
-        final OptionTypeRegistry registry;
+        final PropertyTypeRegistry registry;
 
         ResourcePath resourcePath;
         Boolean root;
         List<Section> sections;
         Version version = Version.CURRENT;
 
-        public Builder(OptionTypeRegistry registry) {
+        public Builder(PropertyTypeRegistry registry) {
             super();
             this.sections = new ArrayList<>();
             this.registry = registry;
@@ -147,11 +147,11 @@ public class EditorConfig {
 
     /**
      * @param registry
-     *            the {@link OptionTypeRegistry} to use when adding {@link Option}s.
+     *            the {@link PropertyTypeRegistry} to use when adding {@link Property}s.
      *
      * @return a new {@link EditorConfig.Builder}
      */
-    public static Builder builder(OptionTypeRegistry registry) {
+    public static Builder builder(PropertyTypeRegistry registry) {
         return new Builder(registry);
     }
 
@@ -171,7 +171,7 @@ public class EditorConfig {
     private final Version version;
 
     /**
-     * You look for {@link #builder(OptionTypeRegistry)} if you wonder why this constructor this package private.
+     * You look for {@link #builder(PropertyTypeRegistry)} if you wonder why this constructor this package private.
      *
      * @param root
      * @param version

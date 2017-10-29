@@ -16,7 +16,7 @@
  */
 package org.eclipse.ec4j.services.completion;
 
-import org.eclipse.ec4j.core.model.optiontypes.OptionType;
+import org.eclipse.ec4j.core.model.propertytype.PropertyType;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
@@ -35,7 +35,7 @@ public class CompletionEntry implements ICompletionEntry {
     private String prefix;
     private int initialOffset;
     private CompletionContextType contextType;
-    private OptionType<?> optionType;
+    private PropertyType<?> propertyType;
 
     public CompletionEntry(String name) {
         this.name = name;
@@ -65,12 +65,12 @@ public class CompletionEntry implements ICompletionEntry {
     }
 
     @Override
-    public void setOptionType(OptionType<?> optionType) {
-        this.optionType = optionType;
+    public void setPropertyType(PropertyType<?> propertyType) {
+        this.propertyType = propertyType;
     }
 
-    public OptionType<?> getOptionType() {
-        return optionType;
+    public PropertyType<?> getPropertyType() {
+        return propertyType;
     }
 
     @Override

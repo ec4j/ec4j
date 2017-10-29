@@ -24,7 +24,7 @@ To parse a single `.editorconfig` file into an `EditorConfig` model:
 java.nio.file.Path editorConfigFile = Paths.get("path/to/my/.editorconfig");
 EditorConfigParser parser = EditorConfigParser.builder().build();
 EditorConfigModelHandler handler = new EditorConfigModelHandler(EditorConfigConstants.VERSION,
-            OptionTypeRegistry.getDefault());
+            PropertyTypeRegistry.getDefault());
 parser.parse(Resources.ofPath(editorConfigFile), StandardCharsets.UTF_8, handler);
 EditorConfig editorConfig = handler.getEditorConfig();
 ----
@@ -42,8 +42,8 @@ EditorConfigSession mySession = EditorConfigSession.builder()
         .rootDirectory(ResourcePaths.ofPath(Paths.get("/my/dir1")))
         .rootDirectory(ResourcePaths.ofPath(Paths.get("/my/dir2")))
         .build();
-Collection<Option> opts1 = mySession.getOptions(Resources.ofPath(Paths.get("/my/dir1/Class1.java")));
-Collection<Option> opts2 = mySession.getOptions(Resources.ofPath(Paths.get("/my/dir2/Class2.java")));
+Collection<Property> props1 = mySession.queryProperties(Resources.ofPath(Paths.get("/my/dir1/Class1.java")));
+Collection<Property> props2 = mySession.queryProperties(Resources.ofPath(Paths.get("/my/dir2/Class2.java")));
 ----
 
 == How to build

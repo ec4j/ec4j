@@ -23,8 +23,8 @@ import java.util.List;
 
 import org.eclipse.ec4j.core.Resources;
 import org.eclipse.ec4j.core.Resources.RandomReader;
-import org.eclipse.ec4j.core.model.optiontypes.OptionType;
-import org.eclipse.ec4j.core.model.optiontypes.OptionTypeRegistry;
+import org.eclipse.ec4j.core.model.propertytype.PropertyType;
+import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
 import org.eclipse.ec4j.core.parser.EditorConfigParser;
 import org.eclipse.ec4j.services.completion.CompletionContextType;
 import org.eclipse.ec4j.services.completion.CompletionEntry;
@@ -64,10 +64,10 @@ public class EditorConfigService {
      * <li>Syntax error like section which are not closed.</li>
      * <li>Semantic error like :
      * <ul>
-     * <li>check option name is an EditorConfig properties
+     * <li>check property name is an EditorConfig properties
      * {@link https://github.com/editorconfig/editorconfig/wiki/EditorConfig-Properties}
      * </li>
-     * <li>check option value according the option name.</li>
+     * <li>check property value according the property name.</li>
      * </ul>
      * </li>
      * </ul>
@@ -78,7 +78,7 @@ public class EditorConfigService {
      *            used to report errors.
      */
     public static void validate(String content, IReporter reporter, ISeverityProvider provider,
-            OptionTypeRegistry registry) {
+            PropertyTypeRegistry registry) {
         ValidationEditorConfigHandler handler = new ValidationEditorConfigHandler(reporter, provider, registry);
         // Set parser as tolerant to collect the full errors of each line of the
         // editorconfig.
@@ -113,19 +113,19 @@ public class EditorConfigService {
 
     public static List<ICompletionEntry> getCompletionEntries(int offset, RandomReader reader,
             ICompletionEntryMatcher matcher, final CompletionEntryFactory factory,
-            OptionTypeRegistry registry) throws Exception {
+            PropertyTypeRegistry registry) throws Exception {
         if (registry == null) {
-            registry = OptionTypeRegistry.getDefault();
+            registry = PropertyTypeRegistry.getDefault();
         }
         TokenContext context = getTokenContext(offset, reader, false);
         switch (context.type) {
-        case OPTION_NAME: {
+        case PROPERTY_NAME: {
             ICompletionEntry entry = null;
             List<ICompletionEntry> entries = new ArrayList<>();
-            for (OptionType<?> type : registry.getTypes()) {
+            for (PropertyType<?> type : registry.getTypes()) {
                 entry = factory.newEntry(type.getName());
                 entry.setMatcher(matcher);
-                entry.setOptionType(type);
+                entry.setPropertyType(type);
                 entry.setContextType(context.type);
                 entry.setInitialOffset(offset);
                 if (entry.updatePrefix(context.prefix)) {
@@ -134,17 +134,17 @@ public class EditorConfigService {
             }
             return entries;
         }
-        case OPTION_VALUE: {
-            OptionType<?> optionType = registry.getType(context.name);
-            if (optionType != null) {
-                String[] values = optionType.getPossibleValues();
+        case PROPERTY_VALUE: {
+            PropertyType<?> propertyType = registry.getType(context.name);
+            if (propertyType != null) {
+                String[] values = propertyType.getPossibleValues();
                 if (values != null) {
                     ICompletionEntry entry = null;
                     List<ICompletionEntry> entries = new ArrayList<>();
                     for (String value : values) {
                         entry = factory.newEntry(value);
                         entry.setMatcher(matcher);
-                        entry.setOptionType(optionType);
+                        entry.setPropertyType(propertyType);
                         entry.setContextType(context.type);
                         entry.setInitialOffset(offset);
                         if (entry.updatePrefix(context.prefix)) {
@@ -168,19 +168,19 @@ public class EditorConfigService {
         return getHover(offset, reader, null);
     }
 
-    public static <T> String getHover(int offset, RandomReader reader, OptionTypeRegistry registry)
+    public static <T> String getHover(int offset, RandomReader reader, PropertyTypeRegistry registry)
             throws Exception {
         if (registry == null) {
-            registry = OptionTypeRegistry.getDefault();
+            registry = PropertyTypeRegistry.getDefault();
         }
         TokenContext context = getTokenContext(offset, reader, true);
         switch (context.type) {
-        case OPTION_NAME: {
-            OptionType<?> type = registry.getType(context.prefix);
+        case PROPERTY_NAME: {
+            PropertyType<?> type = registry.getType(context.prefix);
             return type != null ? type.getDescription() : null;
         }
-        case OPTION_VALUE: {
-            OptionType<?> type = registry.getType(context.name);
+        case PROPERTY_VALUE: {
+            PropertyType<?> type = registry.getType(context.name);
             return type != null ? type.getDescription() : null;
         }
         default:
@@ -190,7 +190,7 @@ public class EditorConfigService {
 
     private static class TokenContext {
         public final String prefix;
-        public final String name; // option name, only available when context type is an option value
+        public final String name; // property name, only available when context type is an property value
         public final CompletionContextType type;
 
         private TokenContext(String prefix, String name, CompletionContextType type) {
@@ -204,7 +204,7 @@ public class EditorConfigService {
 
         final long length = reader.getLength();
         char c;
-        CompletionContextType type = CompletionContextType.OPTION_NAME;
+        CompletionContextType type = CompletionContextType.PROPERTY_NAME;
         StringBuilder prefix = new StringBuilder();
         StringBuilder name = null;
         long i = offset - 1;
@@ -254,7 +254,7 @@ public class EditorConfigService {
                 break;
             case '=':
                 name = new StringBuilder();
-                type = CompletionContextType.OPTION_VALUE;
+                type = CompletionContextType.PROPERTY_VALUE;
                 break;
             default:
                 if (name != null && Character.isJavaIdentifierPart(c)) {

@@ -14,11 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.ec4j.core.model.optiontypes;
+package org.eclipse.ec4j.core.parser;
 
-public class OptionException extends Exception {
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
+public class PropertyAssignementMissingException extends ParseException {
 
-    public OptionException(String message) {
-        super(message);
+    public PropertyAssignementMissingException(String name, Location location) {
+        super("Assignement misses for the property '" + name + "'. Expected '='", location,
+                ErrorType.PropertyAssignementMissing);
     }
 }

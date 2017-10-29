@@ -14,15 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.ec4j.core.parser;
+package org.eclipse.ec4j.core.model.propertytype;
 
-/**
- * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
- */
-public class OptionValueMissingException extends ParseException {
+public class PropertyException extends Exception {
 
-    public OptionValueMissingException(String name, Location location) {
-        super("None value defined for the option '" + name + "'. Expected a value", location,
-                ErrorType.OptionValueMissing);
+    public PropertyException(String message) {
+        super(message);
     }
 }

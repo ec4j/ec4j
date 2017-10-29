@@ -16,9 +16,9 @@
  */
 package org.eclipse.ec4j.core.model;
 
-import org.eclipse.ec4j.core.model.optiontypes.OptionException;
-import org.eclipse.ec4j.core.model.optiontypes.OptionNames;
-import org.eclipse.ec4j.core.model.optiontypes.OptionType;
+import org.eclipse.ec4j.core.model.propertytype.PropertyException;
+import org.eclipse.ec4j.core.model.propertytype.PropertyName;
+import org.eclipse.ec4j.core.model.propertytype.PropertyType;
 
 /**
  * A key value pair in a {@link Section}.
@@ -26,33 +26,33 @@ import org.eclipse.ec4j.core.model.optiontypes.OptionType;
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
-public class Option {
+public class Property {
 
     public static class Builder {
 
-        static boolean isValid(OptionType<?> type, String value) {
+        static boolean isValid(PropertyType<?> type, String value) {
             if (type == null) {
                 return false;
             }
             try {
                 type.validate(value);
-            } catch (OptionException e) {
+            } catch (PropertyException e) {
                 return false;
             }
             return true;
         }
 
         /**
-         * Return the lowercased option value for certain options.
+         * Return the lowercased value for certain properties.
          *
-         * @param name
-         * @param value
-         * @return the lowercased option value for certain options.
+         * @param propertyName the {@link PropertyName}
+         * @param value the value to transform
+         * @return the transformed value or the same {@code value} as was passed in if no transformation was necessary
          */
-        private static String preprocessOptionValue(OptionNames option, String value) {
+        private static String preprocessValue(PropertyName propertyName, String value) {
             // According test "lowercase_values1" a "lowercase_values2": test that same
             // property values are lowercased (v0.9.0 properties)
-            switch (option) {
+            switch (propertyName) {
             case end_of_line:
             case indent_style:
             case indent_size:
@@ -68,7 +68,7 @@ public class Option {
         private String name;
         private final Section.Builder parentBuilder;
         private Object parsedValue;
-        private OptionType<?> type;
+        private PropertyType<?> type;
         private boolean valid;
         private String value;
 
@@ -88,15 +88,15 @@ public class Option {
         }
 
         /**
-         * Creates a new {@link Option} instance, adds it to the parent {@link Section.Builder} using parent
-         * {@link Section.Builder#option(Option)} and returns the parent {@link Section.Builder}
+         * Creates a new {@link Property} instance, adds it to the parent {@link Section.Builder} using parent
+         * {@link Section.Builder#property(Property)} and returns the parent {@link Section.Builder}
          *
          * @return the parent {@link Section.Builder}
          */
-        public Section.Builder closeOption() {
+        public Section.Builder closeProperty() {
             if (checkMax()) {
-                Option option = new Option(type, name, value, parsedValue, valid);
-                parentBuilder.option(option);
+                Property property = new Property(type, name, value, parsedValue, valid);
+                parentBuilder.property(property);
             }
             return parentBuilder;
         }
@@ -122,7 +122,7 @@ public class Option {
          * @return this {@link Builder}
          */
         public Builder value(String value) {
-            this.value = preprocessOptionValue(OptionNames.get(name), value);
+            this.value = preprocessValue(PropertyName.get(name), value);
             this.valid = isValid(type, value);
             if (valid) {
                 this.parsedValue = type.parse(value);
@@ -136,7 +136,7 @@ public class Option {
     private final Object parsedValue;
 
     private final String sourceValue;
-    private final OptionType<?> type;
+    private final PropertyType<?> type;
     private final boolean valid;
     /**
      * Use the {@link Builder} if you cannot access this constructor
@@ -146,7 +146,7 @@ public class Option {
      * @param parsedValue
      * @param valid
      */
-    Option(OptionType<?> type, String name, String sourceValue, Object parsedValue, boolean valid) {
+    Property(PropertyType<?> type, String name, String sourceValue, Object parsedValue, boolean valid) {
         super();
         this.type = type;
         this.name = name;
@@ -162,7 +162,7 @@ public class Option {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Option other = (Option) obj;
+        Property other = (Property) obj;
         if (name == null) {
             if (other.name != null)
                 return false;
@@ -191,10 +191,10 @@ public class Option {
     }
 
     /**
-     * @return the {@link OptionType} associated with the {@link #name} or {@code null} if no {@link OptionType} is
+     * @return the {@link PropertyType} associated with the {@link #name} or {@code null} if no {@link PropertyType} is
      *         associated with the {@link #getName()}
      */
-    public OptionType<?> getType() {
+    public PropertyType<?> getType() {
         return type;
     }
 
@@ -216,7 +216,7 @@ public class Option {
     }
 
     /**
-     * @return {@code true} if {@link #sourceValue} is a valid value for the associated {@link OptionType};
+     * @return {@code true} if {@link #sourceValue} is a valid value for the associated {@link PropertyType};
      *         {@code false} otherwise
      */
     public boolean isValid() {

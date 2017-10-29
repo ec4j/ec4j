@@ -14,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.ec4j.core.model.optiontypes;
+package org.eclipse.ec4j.core.model.propertytype;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-interface OptionValueParser<T> {
+interface PropertyValueParser<T> {
 
-    OptionValueParser<String> IDENTITY_VALUE_PARSER = new OptionValueParser<String>() {
+    PropertyValueParser<String> IDENTITY_VALUE_PARSER = new PropertyValueParser<String>() {
 
         @Override
         public String parse(final String value) {
@@ -29,12 +29,12 @@ interface OptionValueParser<T> {
         }
 
         @Override
-        public void validate(String name, String value) throws OptionException {
+        public void validate(String name, String value) throws PropertyException {
 
         }
     };
 
-    OptionValueParser<Boolean> BOOLEAN_VALUE_PARSER = new OptionValueParser<Boolean>() {
+    PropertyValueParser<Boolean> BOOLEAN_VALUE_PARSER = new PropertyValueParser<Boolean>() {
 
         @Override
         public Boolean parse(final String value) {
@@ -42,16 +42,16 @@ interface OptionValueParser<T> {
         }
 
         @Override
-        public void validate(String name, String value) throws OptionException {
+        public void validate(String name, String value) throws PropertyException {
             value = value.toLowerCase();
             if (!"true".equals(value) && !"false".equals(value)) {
-                throw new OptionException(
-                        "Option '" + name + "' expects a boolean. The value '" + value + "' is not a boolean.");
+                throw new PropertyException(
+                        "Property '" + name + "' expects a boolean. The value '" + value + "' is not a boolean.");
             }
         }
     };
 
-    OptionValueParser<Integer> POSITIVE_INT_VALUE_PARSER = new OptionValueParser<Integer>() {
+    PropertyValueParser<Integer> POSITIVE_INT_VALUE_PARSER = new PropertyValueParser<Integer>() {
         @Override
         public Integer parse(final String value) {
             try {
@@ -63,17 +63,17 @@ interface OptionValueParser<T> {
         }
 
         @Override
-        public void validate(String name, String value) throws OptionException {
+        public void validate(String name, String value) throws PropertyException {
             try {
                 Integer.valueOf(value);
             } catch (final NumberFormatException e) {
-                throw new OptionException(
-                        "Option '" + name + "' expects an integer. The value '" + value + "' is not an integer.");
+                throw new PropertyException(
+                        "Property '" + name + "' expects an integer. The value '" + value + "' is not an integer.");
             }
         }
     };
 
-    void validate(String name, String value) throws OptionException;
+    void validate(String name, String value) throws PropertyException;
 
     T parse(String value);
 

@@ -83,54 +83,54 @@ public interface EditorConfigHandler {
     void endPattern(ParseContext context, String pattern);
 
     /**
-     * Start of a name value pair
+     * Start of a property
      *
      * @param context
      *            the {@link ParseContext}
      */
-    void startOption(ParseContext context);
+    void startProperty(ParseContext context);
 
     /**
-     * End of a name value pair
+     * End of a property
      *
      * @param context
      *            the {@link ParseContext}
      */
-    void endOption(ParseContext context);
+    void endProperty(ParseContext context);
 
     /**
-     * Start of a name
+     * Start of a property name
      *
      * @param context
      *            the {@link ParseContext}
      */
-    void startOptionName(ParseContext context);
+    void startPropertyName(ParseContext context);
 
     /**
-     * End of a name
+     * End of a property name
      *
      * @param context
      *            the {@link ParseContext}
      * @param name the name
      */
-    void endOptionName(ParseContext context, String name);
+    void endPropertyName(ParseContext context, String name);
 
     /**
-     * Start of a value
+     * Start of a property value
      *
      * @param context
      *            the {@link ParseContext}
      */
-    void startOptionValue(ParseContext context);
+    void startPropertyValue(ParseContext context);
 
     /**
-     * Start of a name
+     * Start of a property name
      *
      * @param context
      *            the {@link ParseContext}
      * @param value the value
      */
-    void endOptionValue(ParseContext context, String value);
+    void endPropertyValue(ParseContext context, String value);
 
     /**
      * A {@link ParseException} occured

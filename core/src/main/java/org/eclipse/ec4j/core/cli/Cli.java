@@ -27,7 +27,7 @@ import org.eclipse.ec4j.core.EditorConfigLoader;
 import org.eclipse.ec4j.core.EditorConfigSession;
 import org.eclipse.ec4j.core.ResourcePaths;
 import org.eclipse.ec4j.core.Resources.Resource;
-import org.eclipse.ec4j.core.model.Option;
+import org.eclipse.ec4j.core.model.Property;
 import org.eclipse.ec4j.core.model.Version;
 
 /**
@@ -118,9 +118,9 @@ public class Cli {
                 }
             }
             Resource file = org.eclipse.ec4j.core.Resources.ofPath(p, StandardCharsets.UTF_8);
-            Collection<Option> opts = editorConfigSession.queryOptions(file);
-            for (Option opt : opts) {
-                System.out.println(opt.getName() + "=" + opt.getSourceValue());
+            Collection<Property> props = editorConfigSession.queryProperties(file);
+            for (Property prop : props) {
+                System.out.println(prop.getName() + "=" + prop.getSourceValue());
             }
         }
     }

@@ -14,15 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.ec4j.core.parser;
+package org.eclipse.ec4j.core.model.propertytype;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-public class OptionAssignementMissingException extends ParseException {
+public enum IndentStyleProperty  {
 
-    public OptionAssignementMissingException(String name, Location location) {
-        super("Assignement misses for the option '" + name + "'. Expected '='", location,
-                ErrorType.OptionAssignementMissing);
+    TAB("Tab"),
+
+    SPACE("Space");
+
+    private final String displayValue;
+
+    IndentStyleProperty(final String displayValue) {
+        this.displayValue = displayValue;
     }
+
+
 }

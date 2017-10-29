@@ -14,22 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.ec4j.core.model.optiontypes;
+package org.eclipse.ec4j.core.model.propertytype;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-public enum IndentStyleOption  {
+public enum EndOfLineProperty {
 
-    TAB("Tab"),
+    LF("Line Feed", "\n"),
 
-    SPACE("Space");
+    CR("Carriage Return", "\r"),
+
+    CRLF("Carriage Return + Line Feed", "\r\n");
 
     private final String displayValue;
 
-    IndentStyleOption(final String displayValue) {
+    private String eolString;
+
+    EndOfLineProperty(final String displayValue, final String eolString) {
         this.displayValue = displayValue;
+        this.eolString = eolString;
     }
 
+    public String getEndOfLineString() {
+        return eolString;
+    }
 
 }

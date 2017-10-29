@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 import org.eclipse.ec4j.core.Resources.Resource;
-import org.eclipse.ec4j.core.model.optiontypes.OptionNames;
+import org.eclipse.ec4j.core.model.propertytype.PropertyName;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
@@ -173,8 +173,8 @@ public class EditorConfigParser implements ParseContext {
             readSection();
             break;
         default:
-            // option line
-            readOption();
+            // property line
+            readProperty();
         }
     }
 
@@ -237,7 +237,7 @@ public class EditorConfigParser implements ParseContext {
     }
 
     private enum StopReading {
-        Pattern, OptionName, OptionValue
+        Pattern, PropertyName, PropertyValue
     }
 
     private String readString(StopReading stop) throws IOException {
@@ -267,9 +267,9 @@ public class EditorConfigParser implements ParseContext {
                 return true;
             }
             return false;
-        case OptionName:
+        case PropertyName:
             return isColonSeparator() || isWhiteSpace();
-        case OptionValue:
+        case PropertyValue:
             if ((current == ';' || current == '#') && isWhiteSpace(last)) {
                 // Inline comment
                 return true;
@@ -280,32 +280,32 @@ public class EditorConfigParser implements ParseContext {
         }
     }
 
-    private void readOption() throws IOException {
+    private void readProperty() throws IOException {
         if (!inSection) {
             handler.startSection(this);
             inSection = true;
         }
 
-        handler.startOption(this);
-        // option name
+        handler.startProperty(this);
+        // property name
         skipWhiteSpace();
-        handler.startOptionName(this);
-        // Get lowercase option name
-        String name = preprocessOptionName(readString(StopReading.OptionName));
-        handler.endOptionName(this, name);
+        handler.startPropertyName(this);
+        // Get property property name
+        String name = preprocessPropertyName(readString(StopReading.PropertyName));
+        handler.endPropertyName(this, name);
         skipWhiteSpace();
         if (!readChar('=') && !readChar(':')) {
-            throw new OptionAssignementMissingException(name, getLocation());
+            throw new PropertyAssignementMissingException(name, getLocation());
         }
-        // option value
+        // property value
         skipWhiteSpace();
-        handler.startOptionValue(this);
-        String value = preprocessOptionValue(name, readString(StopReading.OptionValue));
+        handler.startPropertyValue(this);
+        String value = preprocessPropertyValue(name, readString(StopReading.PropertyValue));
         if (value.length() < 1) {
-            throw new OptionValueMissingException(name, getLocation());
+            throw new PropertyValueMissingException(name, getLocation());
         }
-        handler.endOptionValue(this, value);
-        handler.endOption(this);
+        handler.endPropertyValue(this, value);
+        handler.endProperty(this);
     }
 
     private void readEscape() throws IOException {
@@ -457,12 +457,12 @@ public class EditorConfigParser implements ParseContext {
     }
 
     /**
-     * Return the lowercased option name.
+     * Return the lowercased property name.
      *
      * @param name
-     * @return the lowercased option name.
+     * @return the lowercased property name.
      */
-    private static String preprocessOptionName(String name) {
+    private static String preprocessPropertyName(String name) {
         if (name == null) {
             return name;
         }
@@ -471,20 +471,20 @@ public class EditorConfigParser implements ParseContext {
     }
 
     /**
-     * Return the lowercased option value for certain options.
+     * Return the lowercased property value for certain properties.
      *
      * @param name
      * @param value
-     * @return the lowercased option value for certain options.
+     * @return the lowercased property value for certain properties.
      */
-    private static String preprocessOptionValue(String name, String value) {
+    private static String preprocessPropertyValue(String name, String value) {
         if (name == null || value == null) {
             return value;
         }
         // According test "lowercase_values1" a "lowercase_values2": test that same
         // property values are lowercased (v0.9.0 properties)
-        OptionNames option = OptionNames.get(name);
-        switch (option) {
+        PropertyName propertyName = PropertyName.get(name);
+        switch (propertyName) {
         case end_of_line:
         case indent_style:
         case indent_size:

@@ -23,12 +23,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.ec4j.core.model.optiontypes.OptionNames;
-import org.eclipse.ec4j.core.model.optiontypes.OptionType;
-import org.eclipse.ec4j.core.model.optiontypes.OptionTypeRegistry;
+import org.eclipse.ec4j.core.model.propertytype.PropertyName;
+import org.eclipse.ec4j.core.model.propertytype.PropertyType;
+import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
 
 /**
- * A section in an {@code .editorconfig} file. A section consists of a {@link Glob} and a collection of {@link Option}s.
+ * A section in an {@code .editorconfig} file. A section consists of a {@link Glob} and a collection of {@link Property}s.
  *
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
@@ -42,7 +42,7 @@ public class Section {
 
         private Glob glob;
 
-        private Map<String, Option> options = new LinkedHashMap<>();
+        private Map<String, Property> properties = new LinkedHashMap<>();
         final EditorConfig.Builder parentBuilder;
 
         /**
@@ -60,8 +60,8 @@ public class Section {
          * @return a new {@link Section}
          */
         public Section build() {
-            preprocessOptions();
-            return new Section(glob, Collections.unmodifiableList(new ArrayList<Option>(options.values())));
+            preprocessProperties();
+            return new Section(glob, Collections.unmodifiableList(new ArrayList<Property>(properties.values())));
         }
 
         /**
@@ -73,9 +73,9 @@ public class Section {
         public EditorConfig.Builder closeSection() {
             if (glob == null) {
                 /* this is the first glob-less section */
-                Option rootOption = options.remove(OptionNames.root.name());
-                if (rootOption != null) {
-                    parentBuilder.root(rootOption.getSourceValue().equalsIgnoreCase(Boolean.TRUE.toString()));
+                Property rootProp = properties.remove(PropertyName.root.name());
+                if (rootProp != null) {
+                    parentBuilder.root(rootProp.getSourceValue().equalsIgnoreCase(Boolean.TRUE.toString()));
                 }
             } else {
                 parentBuilder.section(build());
@@ -84,45 +84,45 @@ public class Section {
         }
 
         /**
-         * @return a new {@link Option.Builder}
+         * @return a new {@link Property.Builder}
          */
-        public Option.Builder openOption() {
-            return new Option.Builder(this);
+        public Property.Builder openProperty() {
+            return new Property.Builder(this);
         }
 
         /**
-         * Adds the given {@link Option} to {@link #options}.
+         * Adds the given {@link Property} to {@link #properties}.
          *
-         * @param option the {@link Option} to add
+         * @param property the {@link Property} to add
          * @return this {@link Builder}
          */
-        public Builder option(Option option) {
-            this.options.put(option.getName(), option);
+        public Builder property(Property property) {
+            this.properties.put(property.getName(), property);
             return this;
         }
 
         /**
-         * Adds multiple {@link Option}s to {@link #options}.
+         * Adds multiple {@link Property}s to {@link #properties}.
          *
-         * @param options the {@link Option}s to add
+         * @param properties the {@link Property}s to add
          * @return this {@link Builder}
          */
-        public Builder options(Collection<Option> options) {
-            for (Option option : options) {
-                this.options.put(option.getName(), option);
+        public Builder properties(Collection<Property> properties) {
+            for (Property property : properties) {
+                this.properties.put(property.getName(), property);
             }
             return this;
         }
 
         /**
-         * Adds multiple {@link Option}s to {@link #options}.
+         * Adds multiple {@link Property}s to {@link #properties}.
          *
-         * @param options the {@link Option}s to add
+         * @param properties the {@link Property}s to add
          * @return this {@link Builder}
          */
-        public Builder options(Option... options) {
-            for (Option option : options) {
-                this.options.put(option.getName(), option);
+        public Builder properties(Property... properties) {
+            for (Property property : properties) {
+                this.properties.put(property.getName(), property);
             }
             return this;
         }
@@ -137,24 +137,24 @@ public class Section {
             return this;
         }
 
-        private void preprocessOptions() {
+        private void preprocessProperties() {
             Version version = parentBuilder.version;
-            Option indentStyle = null;
-            Option indentSize = null;
-            Option tabWidth = null;
-            for (Option option : options.values()) {
-                OptionNames name = OptionNames.get(option.getName());
-                // Lowercase option value for certain options
-                // get indent_style, indent_size, tab_width option
+            Property indentStyle = null;
+            Property indentSize = null;
+            Property tabWidth = null;
+            for (Property property : properties.values()) {
+                PropertyName name = PropertyName.get(property.getName());
+                // Lowercase property value for certain properties
+                // get indent_style, indent_size, tab_width property
                 switch (name) {
                 case indent_style:
-                    indentStyle = option;
+                    indentStyle = property;
                     break;
                 case indent_size:
-                    indentSize = option;
+                    indentSize = property;
                     break;
                 case tab_width:
-                    tabWidth = option;
+                    tabWidth = property;
                     break;
                 default:
                     break;
@@ -165,30 +165,30 @@ public class Section {
             // indent_style is set to "tab".
             if (indentStyle != null && "tab".equals(indentStyle.getSourceValue()) && indentSize == null
                     && version.compareTo(Version._0_10_0) >= 0) {
-                final String name = OptionNames.indent_size.name();
-                final OptionType<?> type = parentBuilder.registry.getType(name);
+                final String name = PropertyName.indent_size.name();
+                final PropertyType<?> type = parentBuilder.registry.getType(name);
                 final String value = "tab";
-                indentSize = new Option(type, name, value, type.parse(value), true);
-                this.option(indentSize);
+                indentSize = new Property(type, name, value, type.parse(value), true);
+                this.property(indentSize);
             }
 
             // Set tab_width to indent_size if indent_size is specified and
             // tab_width is unspecified
             if (indentSize != null && !"tab".equals(indentSize.getSourceValue()) && tabWidth == null) {
-                final String name = OptionNames.tab_width.name();
-                final OptionType<?> type = parentBuilder.registry.getType(name);
+                final String name = PropertyName.tab_width.name();
+                final PropertyType<?> type = parentBuilder.registry.getType(name);
                 final String value = indentSize.getSourceValue();
-                tabWidth = new Option(type, name, value, type.parse(value), true);
-                this.option(tabWidth);
+                tabWidth = new Property(type, name, value, type.parse(value), true);
+                this.property(tabWidth);
             }
 
             // Set indent_size to tab_width if indent_size is "tab"
             if (indentSize != null && "tab".equals(indentSize.getSourceValue()) && tabWidth != null) {
-                final String name = OptionNames.indent_size.name();
-                final OptionType<?> type = parentBuilder.registry.getType(name);
+                final String name = PropertyName.indent_size.name();
+                final PropertyType<?> type = parentBuilder.registry.getType(name);
                 final String value = tabWidth.getSourceValue();
-                indentSize = new Option(type, name, value, type.parse(value), true);
-                this.option(indentSize);
+                indentSize = new Property(type, name, value, type.parse(value), true);
+                this.property(indentSize);
             }
         }
 
@@ -196,18 +196,18 @@ public class Section {
 
     private final Glob glob;
 
-    private final List<Option> options;
+    private final List<Property> properties;
 
     /**
-     * You look for {@link #builder(OptionTypeRegistry)} if you wonder why this constructor this package private.
+     * You look for {@link #builder(PropertyTypeRegistry)} if you wonder why this constructor this package private.
      *
      * @param glob
-     * @param options
+     * @param properties
      */
-    Section(Glob glob, List<Option> options) {
+    Section(Glob glob, List<Property> properties) {
         super();
         this.glob = glob;
-        this.options = options;
+        this.properties = properties;
     }
     public void appendTo(StringBuilder s) {
         // patterns
@@ -216,13 +216,13 @@ public class Section {
             s.append(glob.toString());
             s.append("]\n");
         }
-        // options
+        // properties
         int i = 0;
-        for (Option option : options) {
+        for (Property property : properties) {
             if (i > 0) {
                 s.append("\n");
             }
-            s.append(option.toString());
+            s.append(property.toString());
             i++;
         }
     }
@@ -241,10 +241,10 @@ public class Section {
                 return false;
         } else if (!glob.equals(other.glob))
             return false;
-        if (options == null) {
-            if (other.options != null)
+        if (properties == null) {
+            if (other.properties != null)
                 return false;
-        } else if (!options.equals(other.options))
+        } else if (!properties.equals(other.properties))
             return false;
         return true;
     }
@@ -253,8 +253,8 @@ public class Section {
         return glob;
     }
 
-    public List<Option> getOptions() {
-        return options;
+    public List<Property> getProperties() {
+        return properties;
     }
 
     @Override
@@ -262,7 +262,7 @@ public class Section {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((glob == null) ? 0 : glob.hashCode());
-        result = prime * result + ((options == null) ? 0 : options.hashCode());
+        result = prime * result + ((properties == null) ? 0 : properties.hashCode());
         return result;
     }
 

@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.ec4j.core.model.optiontypes;
+package org.eclipse.ec4j.core.model.propertytype;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-class EnumValueParser<T extends Enum<T>> implements OptionValueParser<T> {
+class EnumValueParser<T extends Enum<T>> implements PropertyValueParser<T> {
 
     private final Class<? extends Enum> enumType;
 
@@ -37,11 +37,11 @@ class EnumValueParser<T extends Enum<T>> implements OptionValueParser<T> {
     }
 
     @Override
-    public void validate(final String name, final String value) throws OptionException {
+    public void validate(final String name, final String value) throws PropertyException {
         try {
             Enum.valueOf(enumType, value.toUpperCase());
         } catch (final IllegalArgumentException e) {
-            throw new OptionException("enum");
+            throw new PropertyException("enum");
         }
     }
 

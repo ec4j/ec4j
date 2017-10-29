@@ -21,7 +21,7 @@ import java.io.IOException;
 import org.eclipse.ec4j.core.Resources.Resource;
 import org.eclipse.ec4j.core.model.EditorConfig;
 import org.eclipse.ec4j.core.model.Version;
-import org.eclipse.ec4j.core.model.optiontypes.OptionTypeRegistry;
+import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
 import org.eclipse.ec4j.core.parser.EditorConfigModelHandler;
 import org.eclipse.ec4j.core.parser.EditorConfigParser;
 
@@ -33,36 +33,36 @@ import org.eclipse.ec4j.core.parser.EditorConfigParser;
 public class EditorConfigLoader {
 
     private static final EditorConfigLoader DEFAULT = new EditorConfigLoader(Version.CURRENT,
-            OptionTypeRegistry.getDefault());
+            PropertyTypeRegistry.getDefault());
 
     public static EditorConfigLoader getDefault() {
         return DEFAULT;
     }
 
     public static EditorConfigLoader of(Version version) throws VersionException {
-        return of(version, OptionTypeRegistry.getDefault());
+        return of(version, PropertyTypeRegistry.getDefault());
     }
 
-    public static EditorConfigLoader of(Version version, OptionTypeRegistry registry) throws VersionException {
+    public static EditorConfigLoader of(Version version, PropertyTypeRegistry registry) throws VersionException {
         if (version.compareTo(Version.CURRENT) > 0) {
             throw new VersionException("Required version is greater than the current version.");
         }
         return new EditorConfigLoader(version, registry);
     }
 
-    private final OptionTypeRegistry registry;
+    private final PropertyTypeRegistry registry;
     private final Version version;
 
-    EditorConfigLoader(Version version, OptionTypeRegistry registry) {
+    EditorConfigLoader(Version version, PropertyTypeRegistry registry) {
         super();
         this.version = version;
         this.registry = registry;
     }
 
     /**
-     * @return the {@link OptionTypeRegistry} associated with this {@link EditorConfigLoader}
+     * @return the {@link PropertyTypeRegistry} associated with this {@link EditorConfigLoader}
      */
-    public OptionTypeRegistry getRegistry() {
+    public PropertyTypeRegistry getRegistry() {
         return registry;
     }
 
