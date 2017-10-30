@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.eclipse.ec4j.core.Resources.StringResourceTree;
-import org.eclipse.ec4j.core.model.Option;
+import org.eclipse.ec4j.core.model.Property;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,6 +32,7 @@ import org.junit.Test;
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
 public class EditorConfigGlobTest {
+    private static final boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
 
     @Test
     public void star_after_slash() throws IOException, EditorConfigException {
@@ -53,9 +54,9 @@ public class EditorConfigGlobTest {
             .touch(testFile) //
             .build();
 
-        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
-        Assert.assertEquals(1, options.size());
-        Assert.assertEquals("keyb = valueb", options.iterator().next().toString());
+        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+        Assert.assertEquals(1, properties.size());
+        Assert.assertEquals("keyb = valueb", properties.iterator().next().toString());
     }
 
     @Test
@@ -74,9 +75,9 @@ public class EditorConfigGlobTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
-        Assert.assertEquals(1, options.size());
-        Assert.assertEquals("key = value", options.iterator().next().toString());
+        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+        Assert.assertEquals(1, properties.size());
+        Assert.assertEquals("key = value", properties.iterator().next().toString());
     }
 
     private static final String BRACKETS_DOT_IN = "; test [ and ]\r\n" +
@@ -142,9 +143,9 @@ public class EditorConfigGlobTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
-        Assert.assertEquals(1, options.size());
-        Assert.assertEquals("close_inside = true", options.iterator().next().toString());
+        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+        Assert.assertEquals(1, properties.size());
+        Assert.assertEquals("close_inside = true", properties.iterator().next().toString());
     }
 
     @Test
@@ -156,9 +157,9 @@ public class EditorConfigGlobTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
-        Assert.assertEquals(1, options.size());
-        Assert.assertEquals("close_outside = true", options.iterator().next().toString());
+        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+        Assert.assertEquals(1, properties.size());
+        Assert.assertEquals("close_outside = true", properties.iterator().next().toString());
     }
 
     private static final String BRACES_DOT_IN = "; test { and }\r\n" +
@@ -235,9 +236,9 @@ public class EditorConfigGlobTest {
             .touch(testFile) //
             .build();
 
-        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
-        Assert.assertEquals(1, options.size());
-        Assert.assertEquals("choice = true", options.iterator().next().toString());
+        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+        Assert.assertEquals(1, properties.size());
+        Assert.assertEquals("choice = true", properties.iterator().next().toString());
     }
 
     private static final String STAR_STAR_DOT_IN = "; test **\r\n" +
@@ -267,9 +268,25 @@ public class EditorConfigGlobTest {
                 .build();
 
 
-        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
-        Assert.assertEquals(1, options.size());
-        Assert.assertEquals("key2 = value2", options.iterator().next().toString());
+        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+        Assert.assertEquals(1, properties.size());
+        Assert.assertEquals("key2 = value2", properties.iterator().next().toString());
+    }
+
+    @Test
+    public void braces_escaped_backslash2() throws EditorConfigException {
+        if (!isWindows) {
+            final String testFile = "root/\\.txt";
+            StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig", BRACES_DOT_IN)//
+                .touch(testFile) //
+                .build();
+
+            Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+            Assert.assertEquals(1, properties.size());
+            Assert.assertEquals("backslash = yes", properties.iterator().next().toString());
+        }
+
     }
 
 }

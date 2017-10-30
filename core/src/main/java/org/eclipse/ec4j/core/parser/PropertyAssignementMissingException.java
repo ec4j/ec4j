@@ -14,30 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.ec4j.core.parser.handlers;
-
-import org.eclipse.ec4j.core.parser.EditorConfigParser;
-import org.eclipse.ec4j.core.parser.Location;
+package org.eclipse.ec4j.core.parser;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-public abstract class AbstractEditorConfigHandler<S, O> implements IEditorConfigHandler<S, O> {
+public class PropertyAssignementMissingException extends ParseException {
 
-    private EditorConfigParser<S, O> parser;
-
-    @Override
-    public void setParser(EditorConfigParser<S, O> parser) {
-        this.parser = parser;
+    public PropertyAssignementMissingException(String name, Location location) {
+        super("Assignement misses for the property '" + name + "'. Expected '='", location,
+                ErrorType.PropertyAssignementMissing);
     }
-
-    /**
-     * Returns the current parser location.
-     *
-     * @return the current parser location
-     */
-    protected Location getLocation() {
-        return parser.getLocation();
-    }
-
 }

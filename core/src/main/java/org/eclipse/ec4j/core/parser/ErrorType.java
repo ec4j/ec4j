@@ -21,8 +21,8 @@ package org.eclipse.ec4j.core.parser;
  */
 public enum ErrorType {
 
-    ParsingError(true), SectionNotClosed(true), MultiPatternNotClosed(true), OptionAssignementMissing(
-            true), OptionValueMissing(true), OptionNameNotExists(false), OptionValueType(false), PatternSyntaxType(true);
+    ParsingError(true), SectionNotClosed(true), MultiPatternNotClosed(true), PropertyAssignementMissing(
+            true), PropertyValueMissing(true), PropertyNameNotExists(false), PropertyValueType(false), PatternSyntaxType(true);
 
     private final boolean syntaxError;
 

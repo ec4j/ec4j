@@ -16,7 +16,7 @@
  */
 package org.eclipse.ec4j.services.completion;
 
-import org.eclipse.ec4j.core.model.optiontypes.OptionType;
+import org.eclipse.ec4j.core.model.propertytype.PropertyType;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
@@ -27,7 +27,7 @@ public interface ICompletionEntry {
 
     void setContextType(CompletionContextType type);
 
-    void setOptionType(OptionType<?> optionType);
+    void setPropertyType(PropertyType<?> propertyType);
 
     void setMatcher(ICompletionEntryMatcher matcher);
 

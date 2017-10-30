@@ -18,23 +18,48 @@ package org.eclipse.ec4j.core.parser;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 
-import org.eclipse.ec4j.core.EditorConfigConstants;
-import org.eclipse.ec4j.core.model.optiontypes.OptionNames;
-import org.eclipse.ec4j.core.parser.handlers.IEditorConfigHandler;
+import org.eclipse.ec4j.core.Resources.Resource;
+import org.eclipse.ec4j.core.model.propertytype.PropertyName;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-public class EditorConfigParser<Section, Option> {
+public class EditorConfigParser implements ParseContext {
 
-    private static final int MIN_BUFFER_SIZE = 10;
+    public static class Builder {
+        private boolean tolerant = false;
+        private int bufferSize = DEFAULT_BUFFER_SIZE;
+
+        public Builder tolerant() {
+            this.tolerant = true;
+            return this;
+        }
+
+        public Builder tolerant(boolean tolerant) {
+            this.tolerant = tolerant;
+            return this;
+        }
+
+        public Builder bufferSize(int bufferSize) {
+            this.bufferSize = bufferSize;
+            return this;
+        }
+
+        public EditorConfigParser build() {
+            return new EditorConfigParser(bufferSize, tolerant);
+        }
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
     private static final int DEFAULT_BUFFER_SIZE = 1024;
 
-    private final IEditorConfigHandler<Section, Option> handler;
+    private EditorConfigHandler handler;
     private Reader reader;
-    private char[] buffer;
+    private final char[] buffer;
     private int bufferOffset;
     private int index;
     private int fill;
@@ -42,111 +67,49 @@ public class EditorConfigParser<Section, Option> {
     private int lineOffset;
     private int last;
     private int current;
-    private StringBuilder captureBuffer;
+    private final StringBuilder captureBuffer;
     private int captureStart;
+    private boolean inSection = false;
 
-    private boolean tolerant;
-    private String version;
-    private Section currentSection;
+    private final boolean tolerant;
+    private Resource resource;
 
-    public EditorConfigParser(IEditorConfigHandler<Section, Option> handler) {
-        if (handler == null) {
-            throw new NullPointerException("handler is null");
+    /**
+     * Use the {@link #builder()} to create new instances.
+     *
+     * @param bufferSize
+     * @param tolerant
+     */
+    EditorConfigParser(int bufferSize, boolean tolerant) {
+        if (bufferSize <= 0) {
+            throw new IllegalArgumentException("buffersize is zero or negative");
         }
-        this.handler = handler;
-        handler.setParser(this);
-        setTolerant(false);
-        setVersion(EditorConfigConstants.VERSION);
-    }
-
-    public EditorConfigParser<Section, Option> setTolerant(boolean tolerant) {
+        this.buffer = new char[bufferSize];
         this.tolerant = tolerant;
-        return this;
+        this.captureBuffer = new StringBuilder();
     }
 
     public boolean isTolerant() {
         return tolerant;
     }
 
-    public EditorConfigParser<Section, Option> setVersion(String version) {
-        this.version = version;
-        return this;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
     /**
-     * Parses the given input string. The input must contain a valid .editorconfig
-     * value, optionally padded with whitespace.
+     * Reads the entire input from the {@code resource} and transforms it into a sequence of parse events which are sent
+     * to the given {@link EditorConfigHandler}.
      *
-     * @param string
-     *            the input string, must be valid .editorconfig
-     * @throws ParseException
-     *             if the input is not valid .editorconfig
-     */
-    public void parse(String string) {
-        if (string == null) {
-            throw new NullPointerException("string is null");
-        }
-        int bufferSize = Math.max(MIN_BUFFER_SIZE, Math.min(DEFAULT_BUFFER_SIZE, string.length()));
-        try {
-            parse(new StringReader(string), bufferSize);
-        } catch (IOException exception) {
-            // StringReader does not throw IOException
-            throw new RuntimeException(exception);
-        }
-    }
-
-    /**
-     * Reads the entire input from the given reader and parses it as .editorconfig.
-     * The input must contain a valid .editorconfig value, optionally padded with
-     * whitespace.
-     * <p>
-     * Characters are read in chunks into a default-sized input buffer. Hence,
-     * wrapping a reader in an additional <code>BufferedReader</code> likely won't
-     * improve reading performance.
-     * </p>
-     *
-     * @param reader
-     *            the reader to read the input from
+     * @param resource
+     *            the {@link Resource} to parse
+     * @param handler
+     *            the handler to send the parse events to
      * @throws IOException
-     *             if an I/O error occurs in the reader
+     *             on I/O problems when reading out of the given {@link Resource}
      * @throws ParseException
-     *             if the input is not valid JSON
+     *             only if {@link #tolerant} is {@code false}; otherwise the exceptions are passed to the
+     *             {@link EditorConfigHandler}
      */
-    public void parse(Reader reader) throws IOException {
-        parse(reader, DEFAULT_BUFFER_SIZE);
-    }
-
-    /**
-     * Reads the entire input from the given reader and parses it as JSON. The input
-     * must contain a valid JSON value, optionally padded with whitespace.
-     * <p>
-     * Characters are read in chunks into an input buffer of the given size. Hence,
-     * wrapping a reader in an additional <code>BufferedReader</code> likely won't
-     * improve reading performance.
-     * </p>
-     *
-     * @param reader
-     *            the reader to read the input from
-     * @param buffersize
-     *            the size of the input buffer in chars
-     * @throws IOException
-     *             if an I/O error occurs in the reader
-     * @throws ParseException
-     *             if the input is not valid JSON
-     */
-    public void parse(Reader reader, int buffersize) throws IOException {
-        if (reader == null) {
-            throw new NullPointerException("reader is null");
-        }
-        if (buffersize <= 0) {
-            throw new IllegalArgumentException("buffersize is zero or negative");
-        }
-        this.reader = reader;
-        buffer = new char[buffersize];
+    public void parse(Resource resource, EditorConfigHandler handler) throws IOException {
+        this.resource = resource;
+        this.handler = handler;
         bufferOffset = 0;
         index = 0;
         fill = 0;
@@ -155,14 +118,18 @@ public class EditorConfigParser<Section, Option> {
         current = 0;
         last = -1;
         captureStart = -1;
-        readLines();
-        if (!isEndOfText()) {
-            throw error("Unexpected character");
+
+        try (Reader reader = resource.openReader()) {
+            this.reader = reader;
+            readLines();
+            if (!isEndOfText()) {
+                throw error("Unexpected character");
+            }
         }
     }
 
     private void readLines() throws IOException {
-        handler.startDocument();
+        handler.startDocument(this);
         int currentLine = 0;
         do {
             read();
@@ -171,7 +138,11 @@ public class EditorConfigParser<Section, Option> {
                 readLine();
             }
         } while (!isEndOfText());
-        handler.endDocument();
+        if (inSection) {
+            handler.endSection(this);
+            inSection = false;
+        }
+        handler.endDocument(this);
     }
 
     private void readLine() throws IOException {
@@ -179,7 +150,7 @@ public class EditorConfigParser<Section, Option> {
             readLineAndThrowExceptionIfError();
         } catch (ParseException e) {
             handler.error(e);
-            if (!isTolerant()) {
+            if (!tolerant) {
                 throw e;
             }
         }
@@ -199,11 +170,11 @@ public class EditorConfigParser<Section, Option> {
             break;
         case '[':
             // section line
-            currentSection = readSection();
+            readSection();
             break;
         default:
-            // option line
-            readOption();
+            // property line
+            readProperty();
         }
     }
 
@@ -213,23 +184,26 @@ public class EditorConfigParser<Section, Option> {
         } while (!isEndOfText() && !isNewLine());
     }
 
-    private Section readSection() throws IOException {
-        Section section = handler.startSection();
+    private void readSection() throws IOException {
+        if (inSection) {
+            handler.endSection(this);
+            inSection = false;
+        }
+        handler.startSection(this);
+        inSection = true;
         read();
         if (isEndOfText()) {
             throw new SectionNotClosedException(getLocation());
         }
         if (readChar(']')) {
-            handler.endSection(section);
-            return section;
+            return;
         }
         // read pattern of the given section
-        readPatternAndCloseSection(section);
-        return section;
+        readPatternAndCloseSection();
     }
 
-    private void readPatternAndCloseSection(Section section) throws IOException {
-        handler.startPattern(section);
+    private void readPatternAndCloseSection() throws IOException {
+        handler.startPattern(this);
         String patternAndCloseSection = readString(StopReading.Pattern);
         // Search ']' close section at the end of the line
         char c;
@@ -255,16 +229,15 @@ public class EditorConfigParser<Section, Option> {
         index -= i + 1;
         try {
             String pattern = patternAndCloseSection.substring(0, i);
-            handler.endPattern(section, pattern);
+            handler.endPattern(this, pattern);
             index++;
-            handler.endSection(section);
         } finally {
             index = oldIndex;
         }
     }
 
     private enum StopReading {
-        Pattern, OptionName, OptionValue
+        Pattern, PropertyName, PropertyValue
     }
 
     private String readString(StopReading stop) throws IOException {
@@ -294,9 +267,9 @@ public class EditorConfigParser<Section, Option> {
                 return true;
             }
             return false;
-        case OptionName:
+        case PropertyName:
             return isColonSeparator() || isWhiteSpace();
-        case OptionValue:
+        case PropertyValue:
             if ((current == ';' || current == '#') && isWhiteSpace(last)) {
                 // Inline comment
                 return true;
@@ -307,27 +280,32 @@ public class EditorConfigParser<Section, Option> {
         }
     }
 
-    private void readOption() throws IOException {
-        handler.startOption();
-        // option name
+    private void readProperty() throws IOException {
+        if (!inSection) {
+            handler.startSection(this);
+            inSection = true;
+        }
+
+        handler.startProperty(this);
+        // property name
         skipWhiteSpace();
-        handler.startOptionName();
-        // Get lowercase option name
-        String name = preprocessOptionName(readString(StopReading.OptionName));
-        Option option = handler.endOptionName(name);
+        handler.startPropertyName(this);
+        // Get property property name
+        String name = preprocessPropertyName(readString(StopReading.PropertyName));
+        handler.endPropertyName(this, name);
         skipWhiteSpace();
         if (!readChar('=') && !readChar(':')) {
-            throw new OptionAssignementMissingException(name, getLocation());
+            throw new PropertyAssignementMissingException(name, getLocation());
         }
-        // option value
+        // property value
         skipWhiteSpace();
-        handler.startOptionValue(option, name);
-        String value = preprocessOptionValue(name, readString(StopReading.OptionValue));
+        handler.startPropertyValue(this);
+        String value = preprocessPropertyValue(name, readString(StopReading.PropertyValue));
         if (value.length() < 1) {
-            throw new OptionValueMissingException(name, getLocation());
+            throw new PropertyValueMissingException(name, getLocation());
         }
-        handler.endOptionValue(option, value, name);
-        handler.endOption(option, currentSection);
+        handler.endPropertyValue(this, value);
+        handler.endProperty(this);
     }
 
     private void readEscape() throws IOException {
@@ -409,9 +387,6 @@ public class EditorConfigParser<Section, Option> {
     }
 
     private void startCapture() {
-        if (captureBuffer == null) {
-            captureBuffer = new StringBuilder();
-        }
         captureStart = index - 1;
     }
 
@@ -438,6 +413,8 @@ public class EditorConfigParser<Section, Option> {
         return new String(buffer, start, end - start);
     }
 
+    /** {@inheritDoc} */
+    @Override
     public Location getLocation() {
         int offset = bufferOffset + index - 1;
         int column = offset - lineOffset + 1;
@@ -480,12 +457,12 @@ public class EditorConfigParser<Section, Option> {
     }
 
     /**
-     * Return the lowercased option name.
+     * Return the lowercased property name.
      *
      * @param name
-     * @return the lowercased option name.
+     * @return the lowercased property name.
      */
-    private static String preprocessOptionName(String name) {
+    private static String preprocessPropertyName(String name) {
         if (name == null) {
             return name;
         }
@@ -494,20 +471,20 @@ public class EditorConfigParser<Section, Option> {
     }
 
     /**
-     * Return the lowercased option value for certain options.
+     * Return the lowercased property value for certain properties.
      *
      * @param name
      * @param value
-     * @return the lowercased option value for certain options.
+     * @return the lowercased property value for certain properties.
      */
-    private static String preprocessOptionValue(String name, String value) {
+    private static String preprocessPropertyValue(String name, String value) {
         if (name == null || value == null) {
             return value;
         }
         // According test "lowercase_values1" a "lowercase_values2": test that same
         // property values are lowercased (v0.9.0 properties)
-        OptionNames option = OptionNames.get(name);
-        switch (option) {
+        PropertyName propertyName = PropertyName.get(name);
+        switch (propertyName) {
         case end_of_line:
         case indent_style:
         case indent_size:
@@ -518,5 +495,11 @@ public class EditorConfigParser<Section, Option> {
         default:
             return value;
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Resource getResource() {
+        return resource;
     }
 }

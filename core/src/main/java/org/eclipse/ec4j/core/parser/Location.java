@@ -68,7 +68,4 @@ public class Location {
         return offset == other.offset && column == other.column && line == other.line;
     }
 
-    public Location adjust(int increment) {
-        return new Location(this.offset + increment, this.line, this.column + increment);
-    }
 }

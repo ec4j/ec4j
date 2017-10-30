@@ -17,6 +17,7 @@
 package org.eclipse.ec4j.core;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -24,7 +25,7 @@ import java.util.Iterator;
 
 import org.eclipse.ec4j.core.Resources.Resource;
 import org.eclipse.ec4j.core.Resources.StringResourceTree;
-import org.eclipse.ec4j.core.model.Option;
+import org.eclipse.ec4j.core.model.Property;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -72,17 +73,31 @@ public class EditorConfigFileTreeTest {
     public void path_separator_backslash_in_cmd_line() throws IOException, EditorConfigException {
 
         if (isWindows) {
-            final Resource testFile = Resources.ofPath(testProjectDir.resolve("path\\separator"));
-            Collection<Option> options = EditorConfigSession.default_().queryOptions(testFile);
-            Assert.assertEquals(1, options.size());
-            Iterator<Option> it = options.iterator();
+            final Resource testFile = Resources.ofPath(testProjectDir.resolve("path\\separator"), StandardCharsets.UTF_8);
+            Collection<Property> properties = EditorConfigSession.default_().queryProperties(testFile);
+            Assert.assertEquals(1, properties.size());
+            Iterator<Property> it = properties.iterator();
             Assert.assertEquals("key = value", it.next().toString());
         } else {
-            final Resource testFile = Resources.ofPath(testProjectDir.resolve(Paths.get("", "path\\separator")));
-            Collection<Option> options = EditorConfigSession.default_().queryOptions(testFile);
-            Assert.assertEquals(0, options.size());
+            final Resource testFile = Resources.ofPath(testProjectDir.resolve(Paths.get("", "path\\separator")), StandardCharsets.UTF_8);
+            Collection<Property> properties = EditorConfigSession.default_().queryProperties(testFile);
+            Assert.assertEquals(0, properties.size());
         }
 
+    }
+
+    @Test
+    public void parent_directory() throws IOException, EditorConfigException {
+        final String testFile = "root/parent_directory/test.a";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig", getClass().getResource("/filetree/.editorconfig"), StandardCharsets.UTF_8)//
+                .resource("root/parent_directory/.editorconfig", getClass().getResource("/filetree/parent_directory/.editorconfig"), StandardCharsets.UTF_8)//
+                .touch(testFile) //
+                .build();
+
+        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+        Assert.assertEquals(1, properties.size());
+        Assert.assertEquals("key = value", properties.iterator().next().toString());
     }
 
     @Test
@@ -98,8 +113,7 @@ public class EditorConfigFileTreeTest {
                 .touch(testFile) //
                 .build();
 
-        EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
-        // Assert.assertTrue(options.isEmpty());
+        EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
     }
 
 }

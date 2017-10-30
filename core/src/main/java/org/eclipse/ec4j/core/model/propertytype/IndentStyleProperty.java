@@ -14,42 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.ec4j.core.parser.handlers;
-
-import org.eclipse.ec4j.core.parser.EditorConfigParser;
-import org.eclipse.ec4j.core.parser.ParseException;
+package org.eclipse.ec4j.core.model.propertytype;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-public interface IEditorConfigHandler<S, O> {
+public enum IndentStyleProperty  {
 
-    void setParser(EditorConfigParser<S, O> parser);
+    TAB("Tab"),
 
-    void startDocument();
+    SPACE("Space");
 
-    void endDocument();
+    private final String displayValue;
 
-    S startSection();
+    IndentStyleProperty(final String displayValue) {
+        this.displayValue = displayValue;
+    }
 
-    void endSection(S section);
-
-    void startPattern(S section);
-
-    void endPattern(S section, String pattern);
-
-    void startOption();
-
-    void startOptionName();
-
-    O endOptionName(String name);
-
-    void endOption(O option, S section);
-
-    void startOptionValue(O option, String name);
-
-    void endOptionValue(O option, String value, String name);
-
-    void error(ParseException e);
 
 }

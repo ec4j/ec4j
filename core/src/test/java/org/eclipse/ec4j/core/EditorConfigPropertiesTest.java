@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.eclipse.ec4j.core.Resources.StringResourceTree;
-import org.eclipse.ec4j.core.model.Option;
+import org.eclipse.ec4j.core.model.Property;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -54,10 +54,10 @@ public class EditorConfigPropertiesTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
+        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
 
-        Assert.assertEquals(2, options.size());
-        Iterator<Option> iter = options.iterator();
+        Assert.assertEquals(2, properties.size());
+        Iterator<Property> iter = properties.iterator();
         Assert.assertEquals("indent_style = tab", iter.next().toString());
         Assert.assertEquals("indent_size = tab", iter.next().toString());
     }

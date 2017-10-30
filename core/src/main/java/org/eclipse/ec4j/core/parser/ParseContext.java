@@ -14,22 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.ec4j.core.model.optiontypes;
+package org.eclipse.ec4j.core.parser;
+
+import org.eclipse.ec4j.core.Resources.Resource;
 
 /**
- * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ * The context of a parse notification sent by {@link EditorConfigParser}.
+ *
+ * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
-public enum IndentStyleOption  {
+public interface ParseContext {
 
-    TAB("Tab"),
+    /**
+     * @return the {@link Location} in the parsed {@link Resource} the parser is currently on
+     */
+    Location getLocation();
 
-    SPACE("Space");
-
-    private final String displayValue;
-
-    IndentStyleOption(final String displayValue) {
-        this.displayValue = displayValue;
-    }
-
-
+    /**
+     * @return the resource being parsed
+     */
+    Resource getResource();
 }

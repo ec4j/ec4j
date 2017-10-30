@@ -16,6 +16,7 @@
  */
 package org.eclipse.ec4j.core;
 
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,15 +33,17 @@ public class ResourcePaths {
 
     /**
      * A {@link ResourcePath} implementation based on {@code java.nio.file.Path}. To create a new instance use
-     * {@link ResourcePaths#ofPath(Path)}.
+     * {@link ResourcePaths#ofPath(Path, Charset)}
      */
     static class PathResourcePath implements ResourcePath {
 
         private final Path path;
+        private final Charset encoding;
 
-        PathResourcePath(Path path) {
+        PathResourcePath(Path path, Charset encoding) {
             super();
             this.path = path;
+            this.encoding = encoding;
         }
 
         /** {@inheritDoc} */
@@ -59,7 +62,8 @@ public class ResourcePaths {
         /** {@inheritDoc} */
         @Override
         public ResourcePath getParent() {
-            return new PathResourcePath(path.getParent());
+            Path parent = path.getParent();
+            return parent == null ? null : new PathResourcePath(parent, encoding);
         }
 
         /** {@inheritDoc} */
@@ -67,7 +71,7 @@ public class ResourcePaths {
         public String getPath() {
             StringBuilder result = new StringBuilder();
             final int len = path.getNameCount();
-            for (int i = 0; i < len ; i++) {
+            for (int i = 0; i < len; i++) {
                 if (i != 0 || path.isAbsolute()) {
                     result.append('/');
                 }
@@ -91,7 +95,7 @@ public class ResourcePaths {
         /** {@inheritDoc} */
         @Override
         public Resource resolve(String name) {
-            return new Resources.PathResource(path.resolve(name));
+            return new Resources.PathResource(path.resolve(name), encoding);
         }
 
         @Override
@@ -101,7 +105,9 @@ public class ResourcePaths {
     }
 
     /**
-     * A directory path in filesystem like {@link Resource} hierarchies.
+     * A directory path in filesystem like {@link Resource} hierarchies. The implementations must implement
+     * {@link #hashCode()} and {@link #equals(Object)}
+     *
      */
     public interface ResourcePath {
         /**
@@ -123,7 +129,8 @@ public class ResourcePaths {
         /**
          * Resolves an immediate child of this {@link ResourcePath}.
          *
-         * @param name the name of the child; should not contain path separators
+         * @param name
+         *            the name of the child; should not contain path separators
          * @return the child {@link Resource}
          */
         Resource resolve(String name);
@@ -201,11 +208,14 @@ public class ResourcePaths {
     }
 
     /**
-     * @param path the {@link Path} to create a new {@link ResourcePath} from
+     * @param path
+     *            the {@link Path} to create a new {@link ResourcePath} from
+     * @param encoding
+     *            the {@link Charset} to use when reading {@link Resource}s from the returned {@link ResourcePath}
      * @return a new {@link PathResourcePath}
      */
-    public static ResourcePath ofPath(Path path) {
-        return new PathResourcePath(path);
+    public static ResourcePath ofPath(Path path, Charset encoding) {
+        return new PathResourcePath(path, encoding);
     }
 
     private ResourcePaths() {

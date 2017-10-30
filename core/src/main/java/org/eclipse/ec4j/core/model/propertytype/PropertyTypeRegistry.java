@@ -14,30 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.ec4j.core.model.optiontypes;
+package org.eclipse.ec4j.core.model.propertytype;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.ec4j.core.model.optiontypes.OptionType.Charset;
-import org.eclipse.ec4j.core.model.optiontypes.OptionType.EndOfLine;
-import org.eclipse.ec4j.core.model.optiontypes.OptionType.IndentSize;
-import org.eclipse.ec4j.core.model.optiontypes.OptionType.IndentStyle;
-import org.eclipse.ec4j.core.model.optiontypes.OptionType.InsertFinalNewline;
-import org.eclipse.ec4j.core.model.optiontypes.OptionType.Root;
-import org.eclipse.ec4j.core.model.optiontypes.OptionType.TabWidth;
-import org.eclipse.ec4j.core.model.optiontypes.OptionType.TrimTrailingWhitespace;
+import org.eclipse.ec4j.core.model.propertytype.PropertyType.Charset;
+import org.eclipse.ec4j.core.model.propertytype.PropertyType.EndOfLine;
+import org.eclipse.ec4j.core.model.propertytype.PropertyType.IndentSize;
+import org.eclipse.ec4j.core.model.propertytype.PropertyType.IndentStyle;
+import org.eclipse.ec4j.core.model.propertytype.PropertyType.InsertFinalNewline;
+import org.eclipse.ec4j.core.model.propertytype.PropertyType.Root;
+import org.eclipse.ec4j.core.model.propertytype.PropertyType.TabWidth;
+import org.eclipse.ec4j.core.model.propertytype.PropertyType.TrimTrailingWhitespace;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-public class OptionTypeRegistry {
+public class PropertyTypeRegistry {
 
-    private static final OptionTypeRegistry DEFAULT;
+    private static final PropertyTypeRegistry DEFAULT;
 
     static {
-        DEFAULT = new OptionTypeRegistry();
+        DEFAULT = new PropertyTypeRegistry();
         DEFAULT.register(new IndentStyle());
         DEFAULT.register(new IndentSize());
         DEFAULT.register(new TabWidth());
@@ -48,25 +48,25 @@ public class OptionTypeRegistry {
         DEFAULT.register(new Root());
     }
 
-    public static final OptionTypeRegistry getDefault() {
+    public static final PropertyTypeRegistry getDefault() {
         return DEFAULT;
     }
 
-    private Map<String, OptionType<?>> types;
+    private Map<String, PropertyType<?>> types;
 
-    public OptionTypeRegistry() {
+    public PropertyTypeRegistry() {
         this.types = new HashMap<>();
     }
 
-    public void register(OptionType<?> type) {
+    public void register(PropertyType<?> type) {
         types.put(type.getName().toUpperCase(), type);
     }
 
-    public OptionType<?> getType(String name) {
+    public PropertyType<?> getType(String name) {
         return types.get(name.toUpperCase());
     }
 
-    public Collection<OptionType<?>> getTypes() {
+    public Collection<PropertyType<?>> getTypes() {
         return types.values();
     }
 

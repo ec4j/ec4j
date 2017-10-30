@@ -14,11 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.ec4j.core.model.optiontypes;
+package org.eclipse.ec4j.core.model.propertytype;
 
-public class OptionException extends Exception {
+/**
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ */
+public enum EndOfLineProperty {
 
-    public OptionException(String message) {
-        super(message);
+    LF("Line Feed", "\n"),
+
+    CR("Carriage Return", "\r"),
+
+    CRLF("Carriage Return + Line Feed", "\r\n");
+
+    private final String displayValue;
+
+    private String eolString;
+
+    EndOfLineProperty(final String displayValue, final String eolString) {
+        this.displayValue = displayValue;
+        this.eolString = eolString;
     }
+
+    public String getEndOfLineString() {
+        return eolString;
+    }
+
 }

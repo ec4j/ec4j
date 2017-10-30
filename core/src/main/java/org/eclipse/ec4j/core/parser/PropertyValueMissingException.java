@@ -19,10 +19,10 @@ package org.eclipse.ec4j.core.parser;
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-public class OptionAssignementMissingException extends ParseException {
+public class PropertyValueMissingException extends ParseException {
 
-    public OptionAssignementMissingException(String name, Location location) {
-        super("Assignement misses for the option '" + name + "'. Expected '='", location,
-                ErrorType.OptionAssignementMissing);
+    public PropertyValueMissingException(String name, Location location) {
+        super("None value defined for the property '" + name + "'. Expected a value", location,
+                ErrorType.PropertyValueMissing);
     }
 }

@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.eclipse.ec4j.core.Resources.StringResourceTree;
-import org.eclipse.ec4j.core.model.Option;
+import org.eclipse.ec4j.core.model.Property;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -115,9 +115,9 @@ public class EditorConfigParserTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
-        Assert.assertEquals(1, options.size());
-        Assert.assertEquals("key = value", options.iterator().next().toString());
+        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+        Assert.assertEquals(1, properties.size());
+        Assert.assertEquals("key = value", properties.iterator().next().toString());
     }
 
     private static final String COMMENTS_DOT_IN = "; test comments\r\n" +
@@ -189,28 +189,28 @@ public class EditorConfigParserTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
-        Assert.assertEquals(1, options.size());
-        Assert.assertEquals("key = value ", options.iterator().next().toString());
+        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+        Assert.assertEquals(1, properties.size());
+        Assert.assertEquals("key = value ", properties.iterator().next().toString());
     }
 
 
     private static final String BASIC_DOT_IN = "[*.a]\n" +
-            "option1=value1\n" +
+            "name1=value1\n" +
             "\n" +
             "; repeat section\n" +
             "[*.a]\n" +
-            "option2=value2\n" +
+            "name2=value2\n" +
             "\n" +
             "[*.b]\n" +
-            "option1 = a\n" +
-            "option2 = a\n" +
+            "name1 = a\n" +
+            "name2 = a\n" +
             "\n" +
             "[b.b]\n" +
-            "option2 = b\n" +
+            "name2 = b\n" +
             "\n" +
             "[*.b]\n" +
-            "option1 = c\n";
+            "name1 = c\n";
 
 
 
@@ -223,11 +223,11 @@ public class EditorConfigParserTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
-        Assert.assertEquals(2, options.size());
-        Iterator<Option> it = options.iterator();
-        Assert.assertEquals("option1 = value1", it.next().toString());
-        Assert.assertEquals("option2 = value2", it.next().toString());
+        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+        Assert.assertEquals(2, properties.size());
+        Iterator<Property> it = properties.iterator();
+        Assert.assertEquals("name1 = value1", it.next().toString());
+        Assert.assertEquals("name2 = value2", it.next().toString());
     }
 
     @Test
@@ -238,9 +238,9 @@ public class EditorConfigParserTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
-        Assert.assertEquals(1, options.size());
-        Iterator<Option> it = options.iterator();
+        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+        Assert.assertEquals(1, properties.size());
+        Iterator<Property> it = properties.iterator();
         Assert.assertEquals("key3 = value3", it.next().toString());
     }
 
@@ -252,8 +252,8 @@ public class EditorConfigParserTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Option> options = EditorConfigSession.default_().queryOptions(tree.getResource(testFile));
-        Assert.assertEquals(0, options.size());
+        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+        Assert.assertEquals(0, properties.size());
     }
 }
 

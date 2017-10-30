@@ -14,22 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.ec4j.core.model.optiontypes;
+package org.eclipse.ec4j.core.model.propertytype;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-public abstract class OptionType<T> {
+public abstract class PropertyType<T> {
 
     private static final String[] BOOLEAN_POSSIBLE_VALUES = new String[] { "true", "false" };
 
-    public static class IndentStyle extends OptionType<IndentStyleOption> {
+    public static class IndentStyle extends PropertyType<IndentStyleProperty> {
 
         private static final String[] POSSIBLE_VALUES = new String[] { "tab", "space" };
 
         @Override
         public String getName() {
-            return OptionNames.indent_style.name();
+            return PropertyName.indent_style.name();
         }
 
         @Override
@@ -38,8 +38,8 @@ public abstract class OptionType<T> {
         }
 
         @Override
-        public OptionValueParser<IndentStyleOption> getValueParser() {
-            return new EnumValueParser<IndentStyleOption>(IndentStyleOption.class);
+        public PropertyValueParser<IndentStyleProperty> getValueParser() {
+            return new EnumValueParser<IndentStyleProperty>(IndentStyleProperty.class);
         }
 
         @Override
@@ -49,13 +49,13 @@ public abstract class OptionType<T> {
 
     }
 
-    public static class IndentSize extends OptionType<Integer> {
+    public static class IndentSize extends PropertyType<Integer> {
 
         private static final String[] POSSIBLE_VALUES = new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "tab" };
 
         @Override
         public String getName() {
-            return OptionNames.indent_size.name();
+            return PropertyName.indent_size.name();
         }
 
         @Override
@@ -64,8 +64,8 @@ public abstract class OptionType<T> {
         }
 
         @Override
-        public OptionValueParser<Integer> getValueParser() {
-            return OptionValueParser.POSITIVE_INT_VALUE_PARSER;
+        public PropertyValueParser<Integer> getValueParser() {
+            return PropertyValueParser.POSITIVE_INT_VALUE_PARSER;
         }
 
         @Override
@@ -75,13 +75,13 @@ public abstract class OptionType<T> {
 
     }
 
-    public static class TabWidth extends OptionType<Integer> {
+    public static class TabWidth extends PropertyType<Integer> {
 
         private static final String[] POSSIBLE_VALUES = new String[] { "1", "2", "3", "4", "5", "6", "7", "8" };
 
         @Override
         public String getName() {
-            return OptionNames.tab_width.name();
+            return PropertyName.tab_width.name();
         }
 
         @Override
@@ -90,8 +90,8 @@ public abstract class OptionType<T> {
         }
 
         @Override
-        public OptionValueParser<Integer> getValueParser() {
-            return OptionValueParser.POSITIVE_INT_VALUE_PARSER;
+        public PropertyValueParser<Integer> getValueParser() {
+            return PropertyValueParser.POSITIVE_INT_VALUE_PARSER;
         }
 
         @Override
@@ -100,13 +100,13 @@ public abstract class OptionType<T> {
         }
     }
 
-    public static class EndOfLine extends OptionType<EndOfLineOption> {
+    public static class EndOfLine extends PropertyType<EndOfLineProperty> {
 
         private static final String[] POSSIBLE_VALUES = new String[] { "lf", "crlf", "cr" };
 
         @Override
         public String getName() {
-            return OptionNames.end_of_line.name();
+            return PropertyName.end_of_line.name();
         }
 
         @Override
@@ -115,8 +115,8 @@ public abstract class OptionType<T> {
         }
 
         @Override
-        public OptionValueParser<EndOfLineOption> getValueParser() {
-            return new EnumValueParser<EndOfLineOption>(EndOfLineOption.class);
+        public PropertyValueParser<EndOfLineProperty> getValueParser() {
+            return new EnumValueParser<EndOfLineProperty>(EndOfLineProperty.class);
         }
 
         @Override
@@ -125,14 +125,14 @@ public abstract class OptionType<T> {
         }
     }
 
-    public static class Charset extends OptionType<String> {
+    public static class Charset extends PropertyType<String> {
 
         private static final String[] POSSIBLE_VALUES = new String[] { "utf-8", "utf-8-bom", "utf-16be", "utf-16le",
                 "latin1", "tab" };
 
         @Override
         public String getName() {
-            return OptionNames.charset.name();
+            return PropertyName.charset.name();
         }
 
         @Override
@@ -141,8 +141,8 @@ public abstract class OptionType<T> {
         }
 
         @Override
-        public OptionValueParser<String> getValueParser() {
-            return OptionValueParser.IDENTITY_VALUE_PARSER;
+        public PropertyValueParser<String> getValueParser() {
+            return PropertyValueParser.IDENTITY_VALUE_PARSER;
         }
 
         @Override
@@ -152,11 +152,11 @@ public abstract class OptionType<T> {
 
     }
 
-    public static class TrimTrailingWhitespace extends OptionType<Boolean> {
+    public static class TrimTrailingWhitespace extends PropertyType<Boolean> {
 
         @Override
         public String getName() {
-            return OptionNames.trim_trailing_whitespace.name();
+            return PropertyName.trim_trailing_whitespace.name();
         }
 
         @Override
@@ -165,8 +165,8 @@ public abstract class OptionType<T> {
         }
 
         @Override
-        public OptionValueParser<Boolean> getValueParser() {
-            return OptionValueParser.BOOLEAN_VALUE_PARSER;
+        public PropertyValueParser<Boolean> getValueParser() {
+            return PropertyValueParser.BOOLEAN_VALUE_PARSER;
         }
 
         @Override
@@ -175,11 +175,11 @@ public abstract class OptionType<T> {
         }
     }
 
-    public static class InsertFinalNewline extends OptionType<Boolean> {
+    public static class InsertFinalNewline extends PropertyType<Boolean> {
 
         @Override
         public String getName() {
-            return OptionNames.insert_final_newline.name();
+            return PropertyName.insert_final_newline.name();
         }
 
         @Override
@@ -188,8 +188,8 @@ public abstract class OptionType<T> {
         }
 
         @Override
-        public OptionValueParser<Boolean> getValueParser() {
-            return OptionValueParser.BOOLEAN_VALUE_PARSER;
+        public PropertyValueParser<Boolean> getValueParser() {
+            return PropertyValueParser.BOOLEAN_VALUE_PARSER;
         }
 
         @Override
@@ -198,11 +198,11 @@ public abstract class OptionType<T> {
         }
     }
 
-    public static class Root extends OptionType<Boolean> {
+    public static class Root extends PropertyType<Boolean> {
 
         @Override
         public String getName() {
-            return OptionNames.root.name();
+            return PropertyName.root.name();
         }
 
         @Override
@@ -211,8 +211,8 @@ public abstract class OptionType<T> {
         }
 
         @Override
-        public OptionValueParser<Boolean> getValueParser() {
-            return OptionValueParser.BOOLEAN_VALUE_PARSER;
+        public PropertyValueParser<Boolean> getValueParser() {
+            return PropertyValueParser.BOOLEAN_VALUE_PARSER;
         }
 
         @Override
@@ -225,9 +225,9 @@ public abstract class OptionType<T> {
 
     public abstract String getDescription();
 
-    public abstract OptionValueParser<T> getValueParser();
+    public abstract PropertyValueParser<T> getValueParser();
 
-    public void validate(String value) throws OptionException {
+    public void validate(String value) throws PropertyException {
         getValueParser().validate(getName(), value);
     }
 

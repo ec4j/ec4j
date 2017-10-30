@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 package org.eclipse.ec4j.core.cli;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -26,7 +27,8 @@ import org.eclipse.ec4j.core.EditorConfigLoader;
 import org.eclipse.ec4j.core.EditorConfigSession;
 import org.eclipse.ec4j.core.ResourcePaths;
 import org.eclipse.ec4j.core.Resources.Resource;
-import org.eclipse.ec4j.core.model.Option;
+import org.eclipse.ec4j.core.model.Property;
+import org.eclipse.ec4j.core.model.Version;
 
 /**
  * A simple command line wrapper over {@link EditorConfigManager} so that it can
@@ -46,13 +48,13 @@ public class Cli {
     public static void main(String[] args) throws Exception {
         List<String> paths = new ArrayList<>();
         String editorconfigFileName = EditorConfigConstants.EDITORCONFIG;
-        String version = EditorConfigConstants.VERSION;
+        Version version = Version.CURRENT;
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             switch (arg) {
             case "-b":
                 if (i + 1 < args.length) {
-                    version = args[++i];
+                    version = Version.of(args[++i]);
                     continue;
                 } else {
                     System.err.println("-b option must be followed by a version");
@@ -86,7 +88,7 @@ public class Cli {
 
         EditorConfigSession editorConfigSession = EditorConfigSession.builder() //
                 .configFileName(editorconfigFileName) //
-                .rootDirectory(ResourcePaths.ofPath(Paths.get(".").toAbsolutePath().normalize())) //
+                .rootDirectory(ResourcePaths.ofPath(Paths.get(".").toAbsolutePath().normalize(), StandardCharsets.UTF_8)) //
                 .loader(EditorConfigLoader.of(version)) //
                 .build();
 
@@ -111,13 +113,14 @@ public class Cli {
                 } else {
                     /* Otherwise, we have to use the multiarg Path.get(first, more...) so that the backslashes are not
                      * interpreted as separators. "" segments are ignored by Paths.get() */
-                    p = Paths.get("", path.split("/")).toAbsolutePath().normalize();
+                    final String first = path.startsWith("/") ? "/" : "";
+                    p = Paths.get(first, path.split("/")).toAbsolutePath().normalize();
                 }
             }
-            Resource file = org.eclipse.ec4j.core.Resources.ofPath(p);
-            Collection<Option> opts = editorConfigSession.queryOptions(file);
-            for (Option opt : opts) {
-                System.out.println(opt.getName() + "=" + opt.getValue());
+            Resource file = org.eclipse.ec4j.core.Resources.ofPath(p, StandardCharsets.UTF_8);
+            Collection<Property> props = editorConfigSession.queryProperties(file);
+            for (Property prop : props) {
+                System.out.println(prop.getName() + "=" + prop.getSourceValue());
             }
         }
     }

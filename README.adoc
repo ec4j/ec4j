@@ -15,6 +15,36 @@ Here are some projects that use `ec4j:
 * https://github.com/angelozerr/ec4e[EditorConfig for Eclipse] based on
 GenericEditor and https://github.com/eclipse/tm4e/[tm4e].
 
+== Basic usage
+
+To parse a single `.editorconfig` file into an `EditorConfig` model:
+
+[source,java]
+----
+java.nio.file.Path editorConfigFile = Paths.get("path/to/my/.editorconfig");
+EditorConfigParser parser = EditorConfigParser.builder().build();
+EditorConfigModelHandler handler = new EditorConfigModelHandler(EditorConfigConstants.VERSION,
+            PropertyTypeRegistry.getDefault());
+parser.parse(Resources.ofPath(editorConfigFile), StandardCharsets.UTF_8, handler);
+EditorConfig editorConfig = handler.getEditorConfig();
+----
+
+To query the properties applicable to a file in a source tree:
+
+[source,java]
+----
+Cache myCache = ...; // e.g. Caches.none()
+EditorConfigLoader myLoader = ...; // e.g. EditorConfigLoader.getDefault()
+EditorConfigSession mySession = EditorConfigSession.builder()
+        .cache(myCache)
+        .configFileName("my-custom-editorconfig.txt")
+        .loader(myLoader)
+        .rootDirectory(ResourcePaths.ofPath(Paths.get("/my/dir1")))
+        .rootDirectory(ResourcePaths.ofPath(Paths.get("/my/dir2")))
+        .build();
+Collection<Property> props1 = mySession.queryProperties(Resources.ofPath(Paths.get("/my/dir1/Class1.java")));
+Collection<Property> props2 = mySession.queryProperties(Resources.ofPath(Paths.get("/my/dir2/Class2.java")));
+----
 
 == How to build
 
@@ -28,14 +58,14 @@ The most common build with unit tests:
 
 [source,shell]
 ----
-./mvnw clean instal
+./mvnw clean install
 ----
 
 On Windows:
 
 [source,shell]
 ----
-mvnw.bat clean instal
+mvnw.bat clean install
 ----
 
 A build with https://github.com/editorconfig/editorconfig-core-test[editorconfig-core-test] testsuite:
