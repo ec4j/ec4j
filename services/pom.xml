@@ -22,11 +22,11 @@
 
     <parent>
         <groupId>fr.opensagres.ec4j</groupId>
-        <artifactId>org.eclipse.ec4j</artifactId>
+        <artifactId>fr.opensagres.ec4j</artifactId>
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>org.eclipse.ec4j.services</artifactId>
+    <artifactId>fr.opensagres.ec4j.services</artifactId>
 
     <name>ec4j.services</name>
     <description>EditorConfig validation and completion</description>
@@ -46,7 +46,7 @@
 
         <dependency>
             <groupId>fr.opensagres.ec4j</groupId>
-            <artifactId>org.eclipse.ec4j.core</artifactId>
+            <artifactId>fr.opensagres.ec4j.core</artifactId>
         </dependency>
 
     </dependencies>
