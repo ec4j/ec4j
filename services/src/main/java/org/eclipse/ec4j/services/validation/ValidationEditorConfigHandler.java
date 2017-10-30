@@ -85,6 +85,11 @@ public class ValidationEditorConfigHandler implements EditorConfigHandler {
     }
 
     @Override
+    public void startPropertyName(ParseContext context) {
+    	this.propertyNameStart = context.getLocation();
+    }
+
+    @Override
     public void endPropertyName(ParseContext context, String name) {
         // Validate property name
         this.type = registry.getType(name);
@@ -95,6 +100,11 @@ public class ValidationEditorConfigHandler implements EditorConfigHandler {
                     errorType, provider.getSeverity(errorType));
         }
         propertyNameStart = null;
+    }
+
+    @Override
+    public void startPropertyValue(ParseContext context) {
+    	this.propertyValueStart = context.getLocation();
     }
 
     @Override
@@ -134,16 +144,6 @@ public class ValidationEditorConfigHandler implements EditorConfigHandler {
 
     @Override
     public void endProperty(ParseContext context) {
-
-    }
-
-    @Override
-    public void startPropertyName(ParseContext context) {
-
-    }
-
-    @Override
-    public void startPropertyValue(ParseContext context) {
 
     }
 }
