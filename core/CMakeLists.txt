@@ -17,5 +17,5 @@ if(NOT JAVA_FOUND)
 endif()
 
 enable_testing()
-set(EDITORCONFIG_CMD ${Java_JAVA_EXECUTABLE} -cp ${PROJECT_SOURCE_DIR}/target/fr.opensagres.ec4j.core.jar org.eclipse.ec4j.core.cli.Cli)
+set(EDITORCONFIG_CMD ${Java_JAVA_EXECUTABLE} -cp ${PROJECT_SOURCE_DIR}/target/fr.opensagres.ec4j.core.jar fr.opensagres.ec4j.core.cli.Cli)
 add_subdirectory(editorconfig-core-test)
