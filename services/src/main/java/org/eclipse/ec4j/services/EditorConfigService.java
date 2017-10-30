@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.ec4j.core.EditorConfigConstants;
 import org.eclipse.ec4j.core.Resources;
 import org.eclipse.ec4j.core.Resources.RandomReader;
 import org.eclipse.ec4j.core.model.propertytype.PropertyType;
@@ -84,7 +85,7 @@ public class EditorConfigService {
         // editorconfig.
         EditorConfigParser parser = EditorConfigParser.builder().tolerant().build();
         try {
-            parser.parse(Resources.ofString(content), handler);
+            parser.parse(Resources.ofString(EditorConfigConstants.EDITORCONFIG, content), handler);
         } catch (IOException e) {
             /* should not happen with Resources.ofString(content) */
             throw new RuntimeException(e);

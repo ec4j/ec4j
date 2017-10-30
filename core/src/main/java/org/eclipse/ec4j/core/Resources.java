@@ -89,7 +89,7 @@ public class Resources {
         public String getPath() {
             StringBuilder result = new StringBuilder();
             final int len = path.getNameCount();
-            for (int i = 0; i < len ; i++) {
+            for (int i = 0; i < len; i++) {
                 if (i != 0 || path.isAbsolute()) {
                     result.append('/');
                 }
@@ -144,8 +144,8 @@ public class Resources {
     }
 
     /**
-     * A file in filesystem like {@link Resource} hierarchies. The implementations must implement
-     * {@link #hashCode()} and {@link #equals(Object)}
+     * A file in filesystem like {@link Resource} hierarchies. The implementations must implement {@link #hashCode()}
+     * and {@link #equals(Object)}
      */
     public interface Resource {
         /**
@@ -189,9 +189,11 @@ public class Resources {
         /**
          * Reads the given {@link Reader} into a {@link String} and creates a new {@link StringRandomReader} out of it.
          *
-         * @param reader the {@link Reader} to read
+         * @param reader
+         *            the {@link Reader} to read
          * @return a new {@link StringRandomReader}
-         * @throws IOException in case there is any read problem
+         * @throws IOException
+         *             in case there is any read problem
          */
         public static RandomReader ofReader(Reader reader) throws IOException {
             StringBuilder result = new StringBuilder();
@@ -204,7 +206,8 @@ public class Resources {
         }
 
         /**
-         * @param content the contents the resulting {@link RandomReader} should be based on
+         * @param content
+         *            the contents the resulting {@link RandomReader} should be based on
          * @return a new {@link StringRandomReader}
          */
         public static RandomReader ofString(String content) {
@@ -405,13 +408,19 @@ public class Resources {
     }
 
     /**
+     * @param path
+     *            the file path of this {@link StringResource}, must have at least one segment, e.g.
+     *            {@code "my-file.txt"}, or {@code "path/to/my-file.txt"} or {@code "/path/to/my-file.txt"}
      * @param content
      *            the content of the {@link Resource}
-     * @return a new {@link StringResource} with a zero length path, bound to an empty tree
+     * @return a new {@link StringResource} with the given {@code path}, bound to a {@link StringResourceTree} that
+     *         contains just the given {@code path}
      */
-    public static Resource ofString(String content) {
-        return new StringResource(Collections.<List<String>, Resource>emptyMap(), Collections.<String>emptyList(),
-                content);
+    public static Resource ofString(String path, String content) {
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource(path, content) //
+                .build();
+        return tree.getResource(path);
     }
 
     /**

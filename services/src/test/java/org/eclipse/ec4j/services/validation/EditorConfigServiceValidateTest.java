@@ -26,14 +26,14 @@ import org.junit.Test;
  */
 public class EditorConfigServiceValidateTest {
 
-	@Test
-	public void validate() {
-		EditorConfigService.validate("[*]", new IReporter() {
-			
-			@Override
-			public void addError(String message, Location start, Location end, ErrorType type, Severity severity) {
-				
-			}
-		});
-	}
+    @Test
+    public void validate() {
+        EditorConfigService.validate("[*]", new IReporter() {
+
+            @Override
+            public void addError(String message, Location start, Location end, ErrorType type, Severity severity) {
+
+            }
+        });
+    }
 }
