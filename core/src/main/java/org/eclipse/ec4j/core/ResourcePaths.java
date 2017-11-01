@@ -32,13 +32,118 @@ import org.eclipse.ec4j.core.Resources.Resource;
 public class ResourcePaths {
 
     /**
+     * A {@link ResourcePath} implementation that loads resources from the current class path via the given
+     * {@link ClassLoader}.
+     */
+    static class ClassPathResourcePath implements ResourcePath {
+
+        /**
+         * A utility method to get the parent path out of a class-path like resource path.
+         *
+         * @param path
+         *            a slash delimite path
+         * @return the parent path of the given {@code path} or {@code null} if the path has no parent
+         */
+        public static String parentPath(String path) {
+            if (path == null || "/".equals(path)) {
+                return null;
+            } else {
+                int lastSlash = path.lastIndexOf('/');
+                if (lastSlash < 0) {
+                    return null;
+                } else if (lastSlash == 0) {
+                    return "/";
+                } else {
+                    return path.substring(0, lastSlash);
+                }
+            }
+        }
+
+        private final Charset encoding;
+        private final ClassLoader loader;
+        private final String path;
+
+        ClassPathResourcePath(ClassLoader loader, String path, Charset encoding) {
+            super();
+            this.path = path;
+            this.loader = loader;
+            this.encoding = encoding;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            ClassPathResourcePath other = (ClassPathResourcePath) obj;
+            if (loader == null) {
+                if (other.loader != null)
+                    return false;
+            } else if (!loader.equals(other.loader))
+                return false;
+            if (path == null) {
+                if (other.path != null)
+                    return false;
+            } else if (!path.equals(other.path))
+                return false;
+            return true;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ResourcePath getParent() {
+            String parentPath = parentPath(path);
+            return parentPath == null ? null : new ClassPathResourcePath(loader, parentPath, encoding);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String getPath() {
+            return path;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((loader == null) ? 0 : loader.hashCode());
+            result = prime * result + ((path == null) ? 0 : path.hashCode());
+            return result;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean hasParent() {
+            return parentPath(path) != null;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Resource resolve(String name) {
+            String newPath = path + "/" + name;
+            return new Resources.ClassPathResource(loader, newPath, encoding);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String toString() {
+            return "classpath:" + getPath();
+        }
+
+    }
+
+    /**
      * A {@link ResourcePath} implementation based on {@code java.nio.file.Path}. To create a new instance use
      * {@link ResourcePaths#ofPath(Path, Charset)}
      */
     static class PathResourcePath implements ResourcePath {
 
-        private final Path path;
         private final Charset encoding;
+        private final Path path;
 
         PathResourcePath(Path path, Charset encoding) {
             super();

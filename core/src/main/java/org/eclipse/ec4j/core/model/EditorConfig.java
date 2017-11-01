@@ -30,12 +30,12 @@ import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
-public class EditorConfig {
+public class EditorConfig extends Adaptable {
 
     /**
      * An {@link EditorConfig} builder.
      */
-    public static class Builder {
+    public static class Builder extends Adaptable.Builder<Builder> {
         final PropertyTypeRegistry registry;
 
         ResourcePath resourcePath;
@@ -55,7 +55,7 @@ public class EditorConfig {
         public EditorConfig build() {
             List<Section> useSections = sections;
             sections = null;
-            return new EditorConfig(root, version, resourcePath, Collections.unmodifiableList(useSections));
+            return new EditorConfig(sealAdapters(), root, version, resourcePath, Collections.unmodifiableList(useSections));
         }
 
         /**
@@ -171,15 +171,16 @@ public class EditorConfig {
     private final Version version;
 
     /**
-     * You look for {@link #builder(PropertyTypeRegistry)} if you wonder why this constructor this package private.
+     * You look for {@link #builder(PropertyTypeRegistry)} if you wonder why this constructor is package visible.
      *
+     * @param adapters
      * @param root
      * @param version
      * @param resourcePath
      * @param sections
      */
-    EditorConfig(Boolean root, Version version, ResourcePath resourcePath, List<Section> sections) {
-        super();
+    EditorConfig(List<Object> adapters, Boolean root, Version version, ResourcePath resourcePath, List<Section> sections) {
+        super(adapters);
         this.root = root;
         this.version = version;
         this.resourcePath = resourcePath;

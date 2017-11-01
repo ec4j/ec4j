@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.eclipse.ec4j.core.ResourcePaths.ClassPathResourcePath;
 import org.eclipse.ec4j.core.ResourcePaths.PathResourcePath;
 import org.eclipse.ec4j.core.ResourcePaths.ResourcePath;
 import org.eclipse.ec4j.core.ResourcePaths.StringResourcePath;
@@ -44,13 +45,109 @@ import org.eclipse.ec4j.core.ResourcePaths.StringResourcePath;
 public class Resources {
 
     /**
+     * A {@link Resource} implementation that loads resources from the current class path via the given
+     * {@link ClassLoader}.
+     */
+    static class ClassPathResource implements Resource {
+
+        private final Charset encoding;
+        private final ClassLoader loader;
+        private final String path;
+
+        ClassPathResource(ClassLoader loader, String path, Charset encoding) {
+            super();
+            if (path == null || path.isEmpty()) {
+                throw new IllegalArgumentException(
+                        "Path cannot be null or empty to create a new " + getClass().getName());
+            } else if (path.charAt(0) != '/') {
+                throw new IllegalArgumentException("Unexpected path \"" + path + "\": must start with slash");
+            }
+            this.loader = loader;
+            this.path = path;
+            this.encoding = encoding;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            ClassPathResource other = (ClassPathResource) obj;
+            if (loader == null) {
+                if (other.loader != null)
+                    return false;
+            } else if (!loader.equals(other.loader))
+                return false;
+            if (path == null) {
+                if (other.path != null)
+                    return false;
+            } else if (!path.equals(other.path))
+                return false;
+            return true;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean exists() {
+            return loader.getResource(path.substring(1 /* strip the initial slash */)) != null;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ResourcePaths.ResourcePath getParent() {
+            String parentPath = ClassPathResourcePath.parentPath(path);
+            return new ResourcePaths.ClassPathResourcePath(loader, parentPath, encoding);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String getPath() {
+            return path;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((loader == null) ? 0 : loader.hashCode());
+            result = prime * result + ((path == null) ? 0 : path.hashCode());
+            return result;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public RandomReader openRandomReader() throws IOException {
+            return StringRandomReader.ofUrl(loader.getResource(path.substring(1 /* strip the initial slash */)),
+                    encoding);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Reader openReader() throws IOException {
+            return new InputStreamReader(loader.getResourceAsStream(path.substring(1 /* strip the initial slash */)),
+                    encoding);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String toString() {
+            return "classpath:" + getPath();
+        }
+
+    }
+
+    /**
      * A {@link Resource} implementation based on {@code java.nio.file.Path}. To create a new instance use
      * {@link Resources#ofPath(Path)}.
      */
     static class PathResource implements Resource {
 
-        private final Path path;
         private final Charset encoding;
+        private final Path path;
 
         PathResource(Path path, Charset encoding) {
             super();
@@ -212,6 +309,12 @@ public class Resources {
          */
         public static RandomReader ofString(String content) {
             return new StringRandomReader(content);
+        }
+
+        public static RandomReader ofUrl(URL url, Charset encoding) throws IOException {
+            try (Reader r = new InputStreamReader(url.openStream(), encoding)) {
+                return ofReader(r);
+            }
         }
 
         /** The content to read as a {@link String} */
@@ -396,6 +499,21 @@ public class Resources {
             return resources.get(toSegments(path));
         }
 
+    }
+
+    /**
+     * Returns a new {@link ClassPathResource} associated with the given {@code path} and {@link ClassLoader}.
+     *
+     * @param loader
+     *            the {@link ClassLoader} to load the resource from
+     * @param path
+     *            the path to load
+     * @param encoding
+     *            the encoding of the resource under the given {@code path}
+     * @return a new {@link ClassPathResource}
+     */
+    public static Resource ofClassPath(ClassLoader loader, String path, Charset encoding) {
+        return new ClassPathResource(loader, path, encoding);
     }
 
     /**

@@ -16,16 +16,43 @@
  */
 package org.eclipse.ec4j.core.parser;
 
+import java.util.StringTokenizer;
+
 /**
  * An immutable object that represents a location in the parsed text.
  *
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
 public class Location {
+
     /**
-     * The absolute character index, starting at 0.
+     * Parses a {@link Location} from a {@link String} that has the format defined by {@link #toString()}. Should make
+     * it easier to write tests.
+     *
+     * @param locationString
+     *            the location string to parse
+     * @return a new {@link Location} parsed out of the given {@code locationString}
      */
-    public final int offset;
+    public static Location parse(String locationString) {
+        StringTokenizer st = new StringTokenizer(locationString, ": ()");
+        if (st.hasMoreTokens()) {
+            final int line = Integer.parseInt(st.nextToken());
+            if (st.hasMoreTokens()) {
+                final int column = Integer.parseInt(st.nextToken());
+                if (st.hasMoreTokens()) {
+                    final int offset = Integer.parseInt(st.nextToken());
+                    return new Location(offset, line, column);
+                }
+            }
+        }
+        throw new IllegalArgumentException(
+                "Cannot parse \"" + locationString + "\" into a " + Location.class.getName());
+    }
+
+    /**
+     * The column number, starting at 1.
+     */
+    public final int column;
 
     /**
      * The line number, starting at 1.
@@ -33,9 +60,9 @@ public class Location {
     public final int line;
 
     /**
-     * The column number, starting at 1.
+     * The absolute character index, starting at 0.
      */
-    public final int column;
+    public final int offset;
 
     Location(int offset, int line, int column) {
         this.offset = offset;
@@ -43,16 +70,7 @@ public class Location {
         this.line = line;
     }
 
-    @Override
-    public String toString() {
-        return line + ":" + column + " (" + offset + ")";
-    }
-
-    @Override
-    public int hashCode() {
-        return offset;
-    }
-
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -66,6 +84,18 @@ public class Location {
         }
         Location other = (Location) obj;
         return offset == other.offset && column == other.column && line == other.line;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return offset;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return line + ":" + column + " (" + offset + ")";
     }
 
 }

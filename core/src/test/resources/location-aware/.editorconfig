@@ -1,0 +1,55 @@
+#
+# Copyright (c) 2017 Angelo Zerr and other contributors as
+# indicated by the @author tags.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+
+# initial comment line 1
+# initial comment line 2
+
+# root comment line 1
+# root comment line 2
+root = true
+
+# section a before line 1
+# section a before line 2
+[*.a]
+# option1 a before line 1
+# option1 a before line 2
+option1=value1
+# option1 a after line 1
+# option1 a after line 2
+
+# section b before line 1
+# section b before line 2
+[*.b]
+# option2 a before line 1
+# option2 a before line 2
+option2=value1
+# option2 a after line 1
+# option2 a after line 2
+
+# option3 a before line 1
+# option3 a before line 2
+option3=value1
+# option3 a after line 1
+# option3 a after line 2
+
+
+[*.c]
+option4 = b
+
+# comment
