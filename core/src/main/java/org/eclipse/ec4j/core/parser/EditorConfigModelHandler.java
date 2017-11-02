@@ -31,11 +31,11 @@ import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
  */
 public class EditorConfigModelHandler implements EditorConfigHandler {
 
-    private EditorConfig.Builder editorConfigBuilder;
-    private Section.Builder sectionBuilder;
-    private Property.Builder propertyBuilder;
-    private final PropertyTypeRegistry registry;
-    private final Version version;
+    protected EditorConfig.Builder editorConfigBuilder;
+    protected Section.Builder sectionBuilder;
+    protected Property.Builder propertyBuilder;
+    protected final PropertyTypeRegistry registry;
+    protected final Version version;
 
     public EditorConfigModelHandler(PropertyTypeRegistry registry, Version version) {
         this.registry = registry;

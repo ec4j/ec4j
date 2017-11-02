@@ -48,7 +48,8 @@ public class ValidationEditorConfigHandler implements EditorConfigHandler {
     private Location propertyValueStart;
     private PropertyType<?> type;
 
-    public ValidationEditorConfigHandler(IReporter reporter, ISeverityProvider provider, PropertyTypeRegistry registry) {
+    public ValidationEditorConfigHandler(IReporter reporter, ISeverityProvider provider,
+            PropertyTypeRegistry registry) {
         this.reporter = reporter;
         this.provider = provider != null ? provider : ISeverityProvider.DEFAULT;
         this.registry = registry != null ? registry : PropertyTypeRegistry.getDefault();
@@ -86,7 +87,7 @@ public class ValidationEditorConfigHandler implements EditorConfigHandler {
 
     @Override
     public void startPropertyName(ParseContext context) {
-    	this.propertyNameStart = context.getLocation();
+        this.propertyNameStart = context.getLocation();
     }
 
     @Override
@@ -104,7 +105,7 @@ public class ValidationEditorConfigHandler implements EditorConfigHandler {
 
     @Override
     public void startPropertyValue(ParseContext context) {
-    	this.propertyValueStart = context.getLocation();
+        this.propertyValueStart = context.getLocation();
     }
 
     @Override

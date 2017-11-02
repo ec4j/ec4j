@@ -28,22 +28,23 @@ import org.eclipse.ec4j.core.model.propertytype.PropertyType;
 import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
 
 /**
- * A section in an {@code .editorconfig} file. A section consists of a {@link Glob} and a collection of {@link Property}s.
+ * A section in an {@code .editorconfig} file. A section consists of a {@link Glob} and a collection of
+ * {@link Property}s.
  *
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
-public class Section {
+public class Section extends Adaptable {
 
     /**
      * A {@link Section} builder.
      */
-    public static class Builder {
+    public static class Builder extends Adaptable.Builder<Builder> {
 
         private Glob glob;
 
-        private Map<String, Property> properties = new LinkedHashMap<>();
         final EditorConfig.Builder parentBuilder;
+        private Map<String, Property> properties = new LinkedHashMap<>();
 
         /**
          * Constructs a new {@link Builder}
@@ -61,7 +62,7 @@ public class Section {
          */
         public Section build() {
             preprocessProperties();
-            return new Section(glob, Collections.unmodifiableList(new ArrayList<Property>(properties.values())));
+            return new Section(sealAdapters(), glob, Collections.unmodifiableList(new ArrayList<Property>(properties.values())));
         }
 
         /**
@@ -91,44 +92,8 @@ public class Section {
         }
 
         /**
-         * Adds the given {@link Property} to {@link #properties}.
-         *
-         * @param property the {@link Property} to add
-         * @return this {@link Builder}
-         */
-        public Builder property(Property property) {
-            this.properties.put(property.getName(), property);
-            return this;
-        }
-
-        /**
-         * Adds multiple {@link Property}s to {@link #properties}.
-         *
-         * @param properties the {@link Property}s to add
-         * @return this {@link Builder}
-         */
-        public Builder properties(Collection<Property> properties) {
-            for (Property property : properties) {
-                this.properties.put(property.getName(), property);
-            }
-            return this;
-        }
-
-        /**
-         * Adds multiple {@link Property}s to {@link #properties}.
-         *
-         * @param properties the {@link Property}s to add
-         * @return this {@link Builder}
-         */
-        public Builder properties(Property... properties) {
-            for (Property property : properties) {
-                this.properties.put(property.getName(), property);
-            }
-            return this;
-        }
-
-        /**
          * Creates a new {@link Glob} using the given {@code pattern} and assigns it to #
+         *
          * @param pattern
          * @return
          */
@@ -168,7 +133,7 @@ public class Section {
                 final String name = PropertyName.indent_size.name();
                 final PropertyType<?> type = parentBuilder.registry.getType(name);
                 final String value = "tab";
-                indentSize = new Property(type, name, value, type.parse(value), true);
+                indentSize = new Property(Collections.emptyList(), type, name, value, type.parse(value), true);
                 this.property(indentSize);
             }
 
@@ -178,7 +143,7 @@ public class Section {
                 final String name = PropertyName.tab_width.name();
                 final PropertyType<?> type = parentBuilder.registry.getType(name);
                 final String value = indentSize.getSourceValue();
-                tabWidth = new Property(type, name, value, type.parse(value), true);
+                tabWidth = new Property(Collections.emptyList(), type, name, value, type.parse(value), true);
                 this.property(tabWidth);
             }
 
@@ -187,9 +152,49 @@ public class Section {
                 final String name = PropertyName.indent_size.name();
                 final PropertyType<?> type = parentBuilder.registry.getType(name);
                 final String value = tabWidth.getSourceValue();
-                indentSize = new Property(type, name, value, type.parse(value), true);
+                indentSize = new Property(Collections.emptyList(), type, name, value, type.parse(value), true);
                 this.property(indentSize);
             }
+        }
+
+        /**
+         * Adds multiple {@link Property}s to {@link #properties}.
+         *
+         * @param properties
+         *            the {@link Property}s to add
+         * @return this {@link Builder}
+         */
+        public Builder properties(Collection<Property> properties) {
+            for (Property property : properties) {
+                this.properties.put(property.getName(), property);
+            }
+            return this;
+        }
+
+        /**
+         * Adds multiple {@link Property}s to {@link #properties}.
+         *
+         * @param properties
+         *            the {@link Property}s to add
+         * @return this {@link Builder}
+         */
+        public Builder properties(Property... properties) {
+            for (Property property : properties) {
+                this.properties.put(property.getName(), property);
+            }
+            return this;
+        }
+
+        /**
+         * Adds the given {@link Property} to {@link #properties}.
+         *
+         * @param property
+         *            the {@link Property} to add
+         * @return this {@link Builder}
+         */
+        public Builder property(Property property) {
+            this.properties.put(property.getName(), property);
+            return this;
         }
 
     }
@@ -201,14 +206,16 @@ public class Section {
     /**
      * You look for {@link #builder(PropertyTypeRegistry)} if you wonder why this constructor this package private.
      *
+     * @param adapters
      * @param glob
      * @param properties
      */
-    Section(Glob glob, List<Property> properties) {
-        super();
+    Section(List<Object> adapters, Glob glob, List<Property> properties) {
+        super(adapters);
         this.glob = glob;
         this.properties = properties;
     }
+
     public void appendTo(StringBuilder s) {
         // patterns
         if (!glob.isEmpty()) {

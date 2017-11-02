@@ -16,6 +16,8 @@
  */
 package org.eclipse.ec4j.core.model;
 
+import java.util.List;
+
 import org.eclipse.ec4j.core.model.propertytype.PropertyException;
 import org.eclipse.ec4j.core.model.propertytype.PropertyName;
 import org.eclipse.ec4j.core.model.propertytype.PropertyType;
@@ -26,9 +28,13 @@ import org.eclipse.ec4j.core.model.propertytype.PropertyType;
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
-public class Property {
+public class Property extends Adaptable {
 
-    public static class Builder {
+
+    /**
+     * A {@link Property} builder.
+     */
+    public static class Builder extends Adaptable.Builder<Builder> {
 
         static boolean isValid(PropertyType<?> type, String value) {
             if (type == null) {
@@ -45,8 +51,10 @@ public class Property {
         /**
          * Return the lowercased value for certain properties.
          *
-         * @param propertyName the {@link PropertyName}
-         * @param value the value to transform
+         * @param propertyName
+         *            the {@link PropertyName}
+         * @param value
+         *            the value to transform
          * @return the transformed value or the same {@code value} as was passed in if no transformation was necessary
          */
         private static String preprocessValue(PropertyName propertyName, String value) {
@@ -95,7 +103,7 @@ public class Property {
          */
         public Section.Builder closeProperty() {
             if (checkMax()) {
-                Property property = new Property(type, name, value, parsedValue, valid);
+                Property property = new Property(sealAdapters(), type, name, value, parsedValue, valid);
                 parentBuilder.property(property);
             }
             return parentBuilder;
@@ -136,24 +144,30 @@ public class Property {
     private final Object parsedValue;
 
     private final String sourceValue;
+
     private final PropertyType<?> type;
     private final boolean valid;
+
     /**
      * Use the {@link Builder} if you cannot access this constructor
+     *
+     * @param adapters
      * @param type
      * @param name
      * @param sourceValue
      * @param parsedValue
      * @param valid
      */
-    Property(PropertyType<?> type, String name, String sourceValue, Object parsedValue, boolean valid) {
-        super();
+    Property(List<Object> adapters, PropertyType<?> type, String name, String sourceValue, Object parsedValue,
+            boolean valid) {
+        super(adapters);
         this.type = type;
         this.name = name;
         this.sourceValue = sourceValue;
         this.parsedValue = parsedValue;
         this.valid = valid;
     }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
