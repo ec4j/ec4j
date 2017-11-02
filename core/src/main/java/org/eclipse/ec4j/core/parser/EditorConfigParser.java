@@ -158,8 +158,12 @@ public class EditorConfigParser implements ParseContext {
 
     private void readLineAndThrowExceptionIfError() throws IOException {
         skipWhiteSpace();
-        if (isNewLine() || current == '\ufeff') {
-            // blank line, or BOM character, do nothing
+        if (isNewLine()) {
+            // blank line
+            handler.blankLine(this);
+            return;
+        } else if (current == '\ufeff') {
+            // BOM character, do nothing
             return;
         }
         switch (current) {
@@ -179,9 +183,12 @@ public class EditorConfigParser implements ParseContext {
     }
 
     private void readComment() throws IOException {
+        handler.startComment(this);
+        startCapture();
         do {
             read();
         } while (!isEndOfText() && !isNewLine());
+        handler.endComment(this, endCapture());
     }
 
     private void readSection() throws IOException {

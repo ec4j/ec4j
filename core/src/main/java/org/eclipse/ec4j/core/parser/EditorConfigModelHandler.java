@@ -90,7 +90,9 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
      * @return the {@link EditorConfig} instance parsed out of the event stream
      */
     public EditorConfig getEditorConfig() {
-        return editorConfigBuilder.build();
+        EditorConfig result = editorConfigBuilder.build();
+        editorConfigBuilder = null;
+        return result;
     }
 
     /** {@inheritDoc} */
@@ -124,6 +126,21 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
     @Override
     public void endPropertyValue(ParseContext context, String value) {
         propertyBuilder.value(value);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void startComment(ParseContext context) {
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void endComment(ParseContext context, String comment) {
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void blankLine(ParseContext context) {
     }
 
 }
