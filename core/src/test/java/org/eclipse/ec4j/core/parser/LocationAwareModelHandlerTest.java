@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.eclipse.ec4j.core.Resources;
 import org.eclipse.ec4j.core.Resources.Resource;
+import org.eclipse.ec4j.core.model.Comments.CommentBlocks;
 import org.eclipse.ec4j.core.model.EditorConfig;
 import org.eclipse.ec4j.core.model.Section;
 import org.eclipse.ec4j.core.model.Version;
@@ -35,6 +36,10 @@ public class LocationAwareModelHandlerTest {
     @Test
     public void locations() throws IOException {
         EditorConfig config = parse(Resources.ofClassPath(getClass().getClassLoader(), "/location-aware/.editorconfig", StandardCharsets.UTF_8));
+
+        CommentBlocks commentBlocks = config.getAdapter(CommentBlocks.class);
+        Assert.assertNotNull(commentBlocks);
+        Assert.assertEquals(12, commentBlocks.getCommentBlocks().size());
 
         List<Section> sections = config.getSections();
         Assert.assertEquals(3, sections.size());

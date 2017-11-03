@@ -16,6 +16,8 @@
  */
 package org.eclipse.ec4j.core.parser;
 
+import org.eclipse.ec4j.core.model.Comments.CommentBlock;
+import org.eclipse.ec4j.core.model.Comments.CommentBlocks;
 import org.eclipse.ec4j.core.model.Version;
 import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
 
@@ -27,13 +29,55 @@ import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
  */
 public class LocationAwareModelHandler extends EditorConfigModelHandler {
 
+    private CommentBlock.Builder commentBlockBuilder;
+    private CommentBlocks.Builder commentBlocksBuilder;
+    private Span.Builder commentSpan;
     private Span.Builder patternSpan;
+
     private Span.Builder propertyNameSpan;
     private Span.Builder propertyValueSpan;
     private Span.Builder sectionSpan;
 
     public LocationAwareModelHandler(PropertyTypeRegistry registry, Version version) {
         super(registry, version);
+    }
+
+    @Override
+    public void blankLine(ParseContext context) {
+        super.blankLine(context);
+        closeCommentBlockIfNeeded();
+    }
+
+    private void closeCommentBlockIfNeeded() {
+        if (commentBlockBuilder != null) {
+            commentBlockBuilder.closeCommentBlock();
+            commentBlockBuilder = null;
+        }
+    }
+
+    @Override
+    public void endComment(ParseContext context, String comment) {
+        if (commentBlocksBuilder == null) {
+            commentBlocksBuilder = CommentBlocks.builder();
+        }
+        if (commentBlockBuilder == null) {
+            commentBlockBuilder = commentBlocksBuilder.openCommentBlock();
+        }
+        commentBlockBuilder.openCommentLine().adapter(commentSpan.end(context.getLocation()).buildSpan()).text(comment)
+                .closeComment();
+        commentSpan = null;
+        super.endComment(context, comment);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void endDocument(ParseContext context) {
+        if (commentBlocksBuilder != null) {
+            closeCommentBlockIfNeeded();
+            editorConfigBuilder.adapter(commentBlocksBuilder.build());
+            commentBlocksBuilder = null;
+        }
+        super.endDocument(context);
     }
 
     /** {@inheritDoc} */
@@ -70,9 +114,23 @@ public class LocationAwareModelHandler extends EditorConfigModelHandler {
 
     /** {@inheritDoc} */
     @Override
+    public void startComment(ParseContext context) {
+        super.startComment(context);
+        commentSpan = Span.builder().start(context.getLocation());
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void startPattern(ParseContext context) {
         super.startPattern(context);
         patternSpan = Span.builder().start(context.getLocation());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void startProperty(ParseContext context) {
+        closeCommentBlockIfNeeded();
+        super.startProperty(context);
     }
 
     /** {@inheritDoc} */
@@ -92,6 +150,7 @@ public class LocationAwareModelHandler extends EditorConfigModelHandler {
     /** {@inheritDoc} */
     @Override
     public void startSection(ParseContext context) {
+        closeCommentBlockIfNeeded();
         super.startSection(context);
         sectionSpan = Span.builder().start(context.getLocation());
     }

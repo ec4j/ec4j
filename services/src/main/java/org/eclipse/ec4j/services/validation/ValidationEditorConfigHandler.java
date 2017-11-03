@@ -147,4 +147,16 @@ public class ValidationEditorConfigHandler implements EditorConfigHandler {
     public void endProperty(ParseContext context) {
 
     }
+
+    @Override
+    public void startComment(ParseContext context) {
+    }
+
+    @Override
+    public void endComment(ParseContext context, String comment) {
+    }
+
+    @Override
+    public void blankLine(ParseContext context) {
+    }
 }

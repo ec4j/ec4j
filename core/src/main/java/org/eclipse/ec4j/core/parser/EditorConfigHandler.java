@@ -111,7 +111,8 @@ public interface EditorConfigHandler {
      *
      * @param context
      *            the {@link ParseContext}
-     * @param name the name
+     * @param name
+     *            the name
      */
     void endPropertyName(ParseContext context, String name);
 
@@ -128,15 +129,43 @@ public interface EditorConfigHandler {
      *
      * @param context
      *            the {@link ParseContext}
-     * @param value the value
+     * @param value
+     *            the value
      */
     void endPropertyValue(ParseContext context, String value);
 
     /**
      * A {@link ParseException} occured
      *
-     * @param e the error
+     * @param e
+     *            the error
      */
     void error(ParseException e);
+
+    /**
+     * Start of a comment line
+     *
+     * @param context
+     *            the {@link ParseContext}
+     */
+    void startComment(ParseContext context);
+
+    /**
+     * End of a comment line
+     *
+     * @param context
+     *            the {@link ParseContext}
+     * @param comment
+     *            the comment text
+     */
+    void endComment(ParseContext context, String comment);
+
+    /**
+     * A blank line
+     *
+     * @param context
+     *            the {@link ParseContext}
+     */
+    void blankLine(ParseContext context);
 
 }
