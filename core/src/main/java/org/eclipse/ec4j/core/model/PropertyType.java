@@ -348,10 +348,6 @@ public class PropertyType<T> {
         return possibleValues;
     }
 
-    public PropertyValueParser<T> getValueParser() {
-        return parser;
-    }
-
     /**
      * Editor config tests require that some values need to be processed in various ways before being used. This method
      * is supposed to perform such transformations. This particular implementation performs no transformation. See also
