@@ -29,7 +29,6 @@ import org.eclipse.ec4j.core.model.propertytype.PropertyType;
  */
 public class Property extends Adaptable {
 
-
     /**
      * A {@link Property} builder.
      */
@@ -84,7 +83,9 @@ public class Property extends Adaptable {
         }
 
         /**
-         * Sets the {@link #name}.
+         * Sets the {@link #name}. Note that you should prefer to use {@link #type(PropertyType)} if the type is known,
+         * because {@link #type(PropertyType)} sets both {@link #name} and {@link #type} based on the
+         * {@link PropertyType}.
          *
          * @param name
          *            the key of this key value pair
@@ -92,7 +93,19 @@ public class Property extends Adaptable {
          */
         public Builder name(String name) {
             this.name = name;
-            this.type = parentBuilder.parentBuilder.registry.getType(name);
+            return this;
+        }
+
+        /**
+         * Sets {@link #type} and also sets {@link #name} to {@code type.getName}.
+         *
+         * @param type
+         *            the {@link PropertyType} to set
+         * @return this {@link Builder}
+         */
+        public Builder type(PropertyType<?> type) {
+            this.name = type.getName();
+            this.type = type;
             return this;
         }
 

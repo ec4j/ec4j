@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.ec4j.core.model.propertytype.IndentStyleValue;
 import org.eclipse.ec4j.core.model.propertytype.PropertyType;
 
 /**
@@ -59,7 +60,6 @@ public class Section extends Adaptable {
          * @return a new {@link Section}
          */
         public Section build() {
-            preprocessProperties();
             return new Section(sealAdapters(), glob, Collections.unmodifiableList(new ArrayList<Property>(properties.values())));
         }
 
@@ -100,15 +100,20 @@ public class Section extends Adaptable {
             return this;
         }
 
-        private void preprocessProperties() {
-            Version version = parentBuilder.version;
+        /**
+         * Applies the defaults required by the core-tests, if necessary.
+         *
+         * @return this {@link Builder}
+         */
+        public Builder applyDefaults() {
+            final Version version = parentBuilder.version;
             Property indentStyle = properties.get(PropertyType.indent_style.getName());
             Property indentSize = properties.get(PropertyType.indent_size.getName());
             Property tabWidth = properties.get(PropertyType.tab_width.getName());
 
             // Set indent_size to "tab" if indent_size is unspecified and
             // indent_style is set to "tab".
-            if (indentStyle != null && "tab".equals(indentStyle.getSourceValue()) && indentSize == null
+            if (indentStyle != null && IndentStyleValue.tab.name().equals(indentStyle.getSourceValue()) && indentSize == null
                     && version.compareTo(Version._0_10_0) >= 0) {
                 final PropertyType<?> type = PropertyType.indent_size;
                 final String value = "tab";
@@ -132,6 +137,7 @@ public class Section extends Adaptable {
                 indentSize = new Property(Collections.emptyList(), type, type.getName(), value, type.parse(value), true);
                 this.property(indentSize);
             }
+            return this;
         }
 
         /**

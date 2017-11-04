@@ -22,7 +22,29 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import org.eclipse.ec4j.core.model.Property;
+
+/**
+ * A type of a {@link Property}. This class also contains the <a href=
+ * "https://github.com/editorconfig/editorconfig/wiki/EditorConfig-Properties#widely-supported-by-editors">"widely
+ * supported" property types</a> of as constants.
+ *
+ * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
+ *
+ * @param <T>
+ *            the type of the {@link Property} value
+ */
 public class PropertyType<T> {
+
+    /**
+     * Because some values need to be lowercased, as required by "lowercase_values1" a "lowercase_values2" tests (v0.9.0
+     * properties), this {@link PropertyType} subclass applies the lower-casing in {@link #normalizeIfNeeded(String)}.
+     *
+     * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
+     *
+     * @param <T>
+     *            the type of the {@link Property} value
+     */
     public static class LowerCasingPropertyType<T> extends PropertyType<T> {
 
         public LowerCasingPropertyType(String name, String description, PropertyValueParser<T> parser,
@@ -154,11 +176,13 @@ public class PropertyType<T> {
     }
 
     /**
-     * Some values need to be lowercased, as required by "lowercase_values1" a "lowercase_values2" tests (v0.9.0
-     * properties)
+     * Editor config tests require that some values need to be processed in various ways before being used. This method
+     * is supposed to perform such transformations. This particular implementation performs no transformation. See also
+     * {@link LowerCasingPropertyType}.
      *
      * @param value
-     * @return
+     *            the value to normalize
+     * @return the normalized value or the passed-in {@code value} if no transformation is necessary
      */
     public String normalizeIfNeeded(String value) {
         return value;
