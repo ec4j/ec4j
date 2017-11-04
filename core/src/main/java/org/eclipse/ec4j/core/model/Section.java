@@ -23,7 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.ec4j.core.model.propertytype.IndentStyleValue;
+import org.eclipse.ec4j.core.model.PropertyType.IndentStyleValue;
 
 /**
  * A section in an {@code .editorconfig} file. A section consists of a {@link Glob} and a collection of

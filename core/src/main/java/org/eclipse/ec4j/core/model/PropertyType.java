@@ -22,10 +22,7 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import org.eclipse.ec4j.core.model.propertytype.EndOfLineValue;
-import org.eclipse.ec4j.core.model.propertytype.IndentStyleValue;
 import org.eclipse.ec4j.core.model.propertytype.PropertyException;
-import org.eclipse.ec4j.core.model.propertytype.PropertyValueParser;
 
 /**
  * A type of a {@link Property}. This class also contains the <a href=
@@ -38,6 +35,75 @@ import org.eclipse.ec4j.core.model.propertytype.PropertyValueParser;
  *            the type of the {@link Property} value
  */
 public class PropertyType<T> {
+
+    /**
+     * An enumeration of allowed end of line values.
+     */
+    public enum EndOfLineValue {
+
+        cr("Carriage Return", "\r"),
+
+        crlf("Carriage Return + Line Feed", "\r\n"),
+
+        lf("Line Feed", "\n");
+
+        private static final Set<String> VALUE_SET;
+        static {
+            Set<String> s = new LinkedHashSet<>();
+            for (EndOfLineValue v : values()) {
+                s.add(v.name());
+            }
+            VALUE_SET = Collections.unmodifiableSet(s);
+        }
+
+        public static Set<String> valueSet() {
+            return VALUE_SET;
+        }
+
+        private final String displayValue;
+
+        private final String eolString;
+
+        EndOfLineValue(final String displayValue, final String eolString) {
+            this.displayValue = displayValue;
+            this.eolString = eolString;
+        }
+
+        public String getEndOfLineString() {
+            return eolString;
+        }
+    }
+
+    /**
+     * An enumeration of allowed indentation style values.
+     */
+    public enum IndentStyleValue {
+
+        space("Space"),
+
+        tab("Tab");
+
+        private static final Set<String> VALUE_SET;
+
+        static {
+            Set<String> s = new LinkedHashSet<>();
+            for (IndentStyleValue v : values()) {
+                s.add(v.name());
+            }
+            VALUE_SET = Collections.unmodifiableSet(s);
+        }
+
+        public static Set<String> valueSet() {
+            return VALUE_SET;
+        }
+
+        private final String displayValue;
+
+        IndentStyleValue(final String displayValue) {
+            this.displayValue = displayValue;
+        }
+
+    }
 
     /**
      * Because some values need to be lowercased, as required by "lowercase_values1" a "lowercase_values2" tests (v0.9.0
@@ -64,6 +130,108 @@ public class PropertyType<T> {
         public String normalizeIfNeeded(String value) {
             return value == null ? null : value.toLowerCase(Locale.US);
         }
+
+    }
+
+    /**
+     * A facility able to validate string values and to parse them into other types.
+     *
+     * @param <T>
+     *            the type of the parse result
+     */
+    public interface PropertyValueParser<T> {
+
+        /**
+         * A {@link PropertyValueParser} implementation that allows only members of a given {@link Enum} type.
+         *
+         * @param <T>
+         */
+        class EnumValueParser<T extends Enum<T>> implements PropertyValueParser<T> {
+
+            private final Class<? extends Enum> enumType;
+
+            public EnumValueParser(final Class<? extends T> enumType) {
+                this.enumType = enumType;
+            }
+
+            @Override
+            public T parse(final String value) {
+                try {
+                    return (T) Enum.valueOf(enumType, value.toUpperCase());
+                } catch (final IllegalArgumentException e) {
+                    return null;
+                }
+            }
+
+            @Override
+            public void validate(final String name, final String value) throws PropertyException {
+                try {
+                    Enum.valueOf(enumType, value.toUpperCase());
+                } catch (final IllegalArgumentException e) {
+                    throw new PropertyException("enum");
+                }
+            }
+
+        }
+
+        /** A parser for boolean values {@code true} and {@code false} */
+        PropertyValueParser<Boolean> BOOLEAN_VALUE_PARSER = new PropertyValueParser<Boolean>() {
+
+            @Override
+            public Boolean parse(final String value) {
+                return Boolean.valueOf(value.toLowerCase());
+            }
+
+            @Override
+            public void validate(String name, String value) throws PropertyException {
+                value = value.toLowerCase();
+                if (!"true".equals(value) && !"false".equals(value)) {
+                    throw new PropertyException(
+                            "Property '" + name + "' expects a boolean. The value '" + value + "' is not a boolean.");
+                }
+            }
+        };
+
+        /** A dummy parser that does no parsing at all. */
+        PropertyValueParser<String> IDENTITY_VALUE_PARSER = new PropertyValueParser<String>() {
+
+            @Override
+            public String parse(final String value) {
+                return value;
+            }
+
+            @Override
+            public void validate(String name, String value) throws PropertyException {
+
+            }
+        };
+
+        /** A parser accepting positive integer numbers. */
+        PropertyValueParser<Integer> POSITIVE_INT_VALUE_PARSER = new PropertyValueParser<Integer>() {
+            @Override
+            public Integer parse(final String value) {
+                try {
+                    final Integer integer = Integer.valueOf(value);
+                    return integer <= 0 ? null : integer;
+                } catch (final NumberFormatException e) {
+                    return null;
+                }
+            }
+
+            @Override
+            public void validate(String name, String value) throws PropertyException {
+                try {
+                    Integer.valueOf(value);
+                } catch (final NumberFormatException e) {
+                    throw new PropertyException(
+                            "Property '" + name + "' expects an integer. The value '" + value + "' is not an integer.");
+                }
+            }
+        };
+
+        T parse(String value);
+
+        void validate(String name, String value) throws PropertyException;
 
     }
 
@@ -102,31 +270,37 @@ public class PropertyType<T> {
             new PropertyValueParser.EnumValueParser<IndentStyleValue>(IndentStyleValue.class), //
             IndentStyleValue.valueSet() //
     );
+
     public static final PropertyType<Boolean> insert_final_newline = new LowerCasingPropertyType<>( //
             "insert_final_newline", //
             "set to true to ensure file ends with a newline when saving and false to ensure it doesn't.", //
             PropertyValueParser.BOOLEAN_VALUE_PARSER, //
             BOOLEAN_POSSIBLE_VALUES //
     );
+
     public static final PropertyType<Boolean> root = new LowerCasingPropertyType<>( //
             "root", //
             "special property that should be specified at the top of the file outside of any sections. Set to true to stop .editorconfig files search on current file.", //
             PropertyValueParser.BOOLEAN_VALUE_PARSER, //
             BOOLEAN_POSSIBLE_VALUES //
     );
+
     private static final Set<PropertyType<?>> STANDARD_TYPES;
+
     public static final PropertyType<Integer> tab_width = new PropertyType<>( //
             "tab_width", //
             "a whole number defining the number of columns used to represent a tab character. This defaults to the value of indent_size and doesn't usually need to be specified.", //
             PropertyValueParser.POSITIVE_INT_VALUE_PARSER, //
             "1", "2", "3", "4", "5", "6", "7", "8" //
     );
+
     public static final PropertyType<Boolean> trim_trailing_whitespace = new LowerCasingPropertyType<>( //
             "trim_trailing_whitespace", //
             "set to true to remove any whitespace characters preceding newline characters and false to ensure it doesn't.", //
             PropertyValueParser.BOOLEAN_VALUE_PARSER, //
             BOOLEAN_POSSIBLE_VALUES //
     );
+
     static {
         STANDARD_TYPES = Collections
                 .unmodifiableSet(new LinkedHashSet<PropertyType<?>>(Arrays.asList(charset, end_of_line, indent_size,
