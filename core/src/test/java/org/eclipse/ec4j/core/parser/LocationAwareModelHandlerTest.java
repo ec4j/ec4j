@@ -21,13 +21,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.ec4j.core.PropertyTypeRegistry;
 import org.eclipse.ec4j.core.Resources;
 import org.eclipse.ec4j.core.Resources.Resource;
 import org.eclipse.ec4j.core.model.Comments.CommentBlocks;
 import org.eclipse.ec4j.core.model.EditorConfig;
 import org.eclipse.ec4j.core.model.Section;
 import org.eclipse.ec4j.core.model.Version;
-import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
 import org.junit.Assert;
 import org.junit.Test;
 

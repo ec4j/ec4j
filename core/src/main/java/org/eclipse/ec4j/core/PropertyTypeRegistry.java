@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.ec4j.core.model.propertytype;
+package org.eclipse.ec4j.core;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.ec4j.core.model.Property;
+import org.eclipse.ec4j.core.model.propertytype.PropertyType;
 
 /**
  * A mapping from property names to {@link PropertyType}s. Note that the mapping is case insensitive - i.e. all names

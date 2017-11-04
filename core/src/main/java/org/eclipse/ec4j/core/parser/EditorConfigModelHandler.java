@@ -18,12 +18,12 @@ package org.eclipse.ec4j.core.parser;
 
 import java.util.Locale;
 
+import org.eclipse.ec4j.core.PropertyTypeRegistry;
 import org.eclipse.ec4j.core.model.EditorConfig;
 import org.eclipse.ec4j.core.model.Property;
 import org.eclipse.ec4j.core.model.Section;
 import org.eclipse.ec4j.core.model.Version;
 import org.eclipse.ec4j.core.model.propertytype.PropertyType;
-import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
 
 /**
  * A {@link EditorConfigHandler} implementation that assemles {@link EditorConfig} instances out of the parse
