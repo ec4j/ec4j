@@ -84,9 +84,9 @@ public class EditorConfigService {
         ValidationEditorConfigHandler handler = new ValidationEditorConfigHandler(reporter, provider, registry);
         // Set parser as tolerant to collect the full errors of each line of the
         // editorconfig.
-        EditorConfigParser parser = EditorConfigParser.builder().tolerant().build();
+        EditorConfigParser parser = EditorConfigParser.builder().build();
         try {
-            parser.parse(Resources.ofString(EditorConfigConstants.EDITORCONFIG, content), handler);
+            parser.parse(Resources.ofString(EditorConfigConstants.EDITORCONFIG, content), handler, handler);
         } catch (IOException e) {
             /* should not happen with Resources.ofString(content) */
             throw new RuntimeException(e);

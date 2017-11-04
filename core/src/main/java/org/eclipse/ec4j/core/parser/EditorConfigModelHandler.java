@@ -83,12 +83,6 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
         propertyBuilder = null;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void error(ParseException e) {
-        e.printStackTrace();
-    }
-
     /**
      * @return the {@link EditorConfig} instance parsed out of the event stream
      */

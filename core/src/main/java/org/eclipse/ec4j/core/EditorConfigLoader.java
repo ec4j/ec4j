@@ -23,6 +23,7 @@ import org.eclipse.ec4j.core.model.EditorConfig;
 import org.eclipse.ec4j.core.model.Version;
 import org.eclipse.ec4j.core.parser.EditorConfigModelHandler;
 import org.eclipse.ec4j.core.parser.EditorConfigParser;
+import org.eclipse.ec4j.core.parser.ErrorHandler;
 
 /**
  * Implements the capability of loading an {@link EditorConfig} object out of a {@link Resource}.
@@ -31,8 +32,8 @@ import org.eclipse.ec4j.core.parser.EditorConfigParser;
  */
 public class EditorConfigLoader {
 
-    private static final EditorConfigLoader DEFAULT = new EditorConfigLoader(Version.CURRENT,
-            PropertyTypeRegistry.getDefault());
+    private static final EditorConfigLoader DEFAULT = new EditorConfigLoader(
+            new EditorConfigModelHandler(PropertyTypeRegistry.getDefault(), Version.CURRENT), ErrorHandler.THROWING);
 
     public static EditorConfigLoader getDefault() {
         return DEFAULT;
@@ -43,33 +44,27 @@ public class EditorConfigLoader {
     }
 
     public static EditorConfigLoader of(Version version, PropertyTypeRegistry registry) throws VersionException {
+        return of(version, registry, ErrorHandler.THROWING);
+    }
+
+    public static EditorConfigLoader of(Version version, PropertyTypeRegistry registry, ErrorHandler errorHandler)
+            throws VersionException {
         if (version.compareTo(Version.CURRENT) > 0) {
             throw new VersionException("Required version is greater than the current version.");
         }
-        return new EditorConfigLoader(version, registry);
+        return new EditorConfigLoader(new EditorConfigModelHandler(registry, version), errorHandler);
     }
 
-    private final PropertyTypeRegistry registry;
-    private final Version version;
+    private final ErrorHandler errorHandler;
 
-    EditorConfigLoader(Version version, PropertyTypeRegistry registry) {
+    private final EditorConfigModelHandler handler;
+    private final EditorConfigParser parser;
+
+    public EditorConfigLoader(EditorConfigModelHandler handler, ErrorHandler errorHandler) {
         super();
-        this.version = version;
-        this.registry = registry;
-    }
-
-    /**
-     * @return the {@link PropertyTypeRegistry} associated with this {@link EditorConfigLoader}
-     */
-    public PropertyTypeRegistry getRegistry() {
-        return registry;
-    }
-
-    /**
-     * @return the version of the EditorConfig spec the current {@link EditorConfigLoader} is able to read
-     */
-    public Version getVersion() {
-        return version;
+        this.parser = EditorConfigParser.builder().build();
+        this.handler = handler;
+        this.errorHandler = errorHandler;
     }
 
     /**
@@ -83,9 +78,7 @@ public class EditorConfigLoader {
      */
     public EditorConfig load(Resource configFile) throws EditorConfigException {
         try {
-            EditorConfigModelHandler handler = new EditorConfigModelHandler(registry, version);
-            EditorConfigParser parser = EditorConfigParser.builder().build();
-            parser.parse(configFile, handler);
+            parser.parse(configFile, handler, errorHandler);
             EditorConfig result = handler.getEditorConfig();
             return result;
         } catch (IOException e) {

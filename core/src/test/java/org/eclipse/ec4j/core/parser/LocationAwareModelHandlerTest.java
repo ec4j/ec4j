@@ -52,7 +52,7 @@ public class LocationAwareModelHandlerTest {
     private EditorConfig parse(Resource file) throws IOException {
         EditorConfigModelHandler handler = new LocationAwareModelHandler(PropertyTypeRegistry.getDefault(), Version.CURRENT);
         EditorConfigParser parser = EditorConfigParser.builder().build();
-        parser.parse(file, handler);
+        parser.parse(file, handler, ErrorHandler.THROWING);
         return handler.getEditorConfig();
     }
 
