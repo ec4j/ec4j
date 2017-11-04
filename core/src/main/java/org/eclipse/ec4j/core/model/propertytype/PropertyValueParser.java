@@ -21,6 +21,34 @@ package org.eclipse.ec4j.core.model.propertytype;
  */
 public interface PropertyValueParser<T> {
 
+    class EnumValueParser<T extends Enum<T>> implements PropertyValueParser<T> {
+
+        private final Class<? extends Enum> enumType;
+
+        public EnumValueParser(final Class<? extends T> enumType) {
+            this.enumType = enumType;
+        }
+
+        @Override
+        public T parse(final String value) {
+            try {
+                return (T) Enum.valueOf(enumType, value.toUpperCase());
+            } catch (final IllegalArgumentException e) {
+                return null;
+            }
+        }
+
+        @Override
+        public void validate(final String name, final String value) throws PropertyException {
+            try {
+                Enum.valueOf(enumType, value.toUpperCase());
+            } catch (final IllegalArgumentException e) {
+                throw new PropertyException("enum");
+            }
+        }
+
+    }
+
     PropertyValueParser<String> IDENTITY_VALUE_PARSER = new PropertyValueParser<String>() {
 
         @Override

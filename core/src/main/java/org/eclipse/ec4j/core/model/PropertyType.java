@@ -23,7 +23,6 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.eclipse.ec4j.core.model.propertytype.EndOfLineValue;
-import org.eclipse.ec4j.core.model.propertytype.EnumValueParser;
 import org.eclipse.ec4j.core.model.propertytype.IndentStyleValue;
 import org.eclipse.ec4j.core.model.propertytype.PropertyException;
 import org.eclipse.ec4j.core.model.propertytype.PropertyValueParser;
@@ -81,7 +80,7 @@ public class PropertyType<T> {
     public static final PropertyType<EndOfLineValue> end_of_line = new LowerCasingPropertyType<>(//
             "end_of_line", //
             "set to lf, cr, or crlf to control how line breaks are represented.", //
-            new EnumValueParser<EndOfLineValue>(EndOfLineValue.class), //
+            new PropertyValueParser.EnumValueParser<EndOfLineValue>(EndOfLineValue.class), //
             EndOfLineValue.valueSet() //
     );
 
@@ -100,7 +99,7 @@ public class PropertyType<T> {
     public static final PropertyType<IndentStyleValue> indent_style = new LowerCasingPropertyType<>( //
             "indent_style", //
             "set to tab or space to use hard tabs or soft tabs respectively.",
-            new EnumValueParser<IndentStyleValue>(IndentStyleValue.class), //
+            new PropertyValueParser.EnumValueParser<IndentStyleValue>(IndentStyleValue.class), //
             IndentStyleValue.valueSet() //
     );
     public static final PropertyType<Boolean> insert_final_newline = new LowerCasingPropertyType<>( //
