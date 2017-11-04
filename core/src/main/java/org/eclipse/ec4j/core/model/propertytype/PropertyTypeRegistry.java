@@ -17,9 +17,12 @@
 package org.eclipse.ec4j.core.model.propertytype;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
+import org.eclipse.ec4j.core.model.Property;
 import org.eclipse.ec4j.core.model.propertytype.PropertyType.Charset;
 import org.eclipse.ec4j.core.model.propertytype.PropertyType.EndOfLine;
 import org.eclipse.ec4j.core.model.propertytype.PropertyType.IndentSize;
@@ -30,42 +33,109 @@ import org.eclipse.ec4j.core.model.propertytype.PropertyType.TabWidth;
 import org.eclipse.ec4j.core.model.propertytype.PropertyType.TrimTrailingWhitespace;
 
 /**
+ * A mapping from property names to {@link PropertyType}s. Note that the mapping is case insensitive - i.e. all names
+ * are internally transformed to lower case using {@link Locale#US} {@link Locale}.
+ *
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
 public class PropertyTypeRegistry {
 
-    private static final PropertyTypeRegistry DEFAULT;
+    /**
+     * A {@link PropertyTypeRegistry} builder.
+     */
+    public static class Builder {
+        private Map<String, PropertyType<?>> types = new LinkedHashMap<>();
 
-    static {
-        DEFAULT = new PropertyTypeRegistry();
-        DEFAULT.register(new IndentStyle());
-        DEFAULT.register(new IndentSize());
-        DEFAULT.register(new TabWidth());
-        DEFAULT.register(new EndOfLine());
-        DEFAULT.register(new Charset());
-        DEFAULT.register(new TrimTrailingWhitespace());
-        DEFAULT.register(new InsertFinalNewline());
-        DEFAULT.register(new Root());
+        /**
+         * @return a new {@link PropertyTypeRegistry}
+         */
+        public PropertyTypeRegistry build() {
+            Map<String, PropertyType<?>> useTypes = Collections.unmodifiableMap(types);
+            types = null;
+            return new PropertyTypeRegistry(useTypes);
+        }
+
+        /**
+         * Adds the following {@link PropertyType}s:
+         * <ul>
+         * <li>{@link IndentStyle}</li>
+         * <li>{@link IndentSize}</li>
+         * <li>{@link TabWidth}</li>
+         * <li>{@link EndOfLine}</li>
+         * <li>{@link Charset}</li>
+         * <li>{@link TrimTrailingWhitespace}</li>
+         * <li>{@link InsertFinalNewline}</li>
+         * <li>{@link Root}</li>
+         * </ul>
+         *
+         * @return this {@link Builder}
+         */
+        public Builder defaults() {
+            type(new IndentStyle());
+            type(new IndentSize());
+            type(new TabWidth());
+            type(new EndOfLine());
+            type(new Charset());
+            type(new TrimTrailingWhitespace());
+            type(new InsertFinalNewline());
+            type(new Root());
+            return this;
+        }
+
+        /**
+         * Adds a single {@link PropertyType}
+         *
+         * @param type
+         *            the {@link PropertyType} to add
+         * @return this {@link Builder}
+         */
+        public Builder type(PropertyType<?> type) {
+            types.put(type.getName().toLowerCase(Locale.US), type);
+            return this;
+        }
     }
 
+    private static final PropertyTypeRegistry DEFAULT = builder().defaults().build();
+
+    /**
+     * @return a new {@link Builder}
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
+     * @return a registry containing default mappings. See {@link Builder#defaults()}
+     */
     public static final PropertyTypeRegistry getDefault() {
         return DEFAULT;
     }
 
-    private Map<String, PropertyType<?>> types;
+    private final Map<String, PropertyType<?>> types;
 
-    public PropertyTypeRegistry() {
-        this.types = new HashMap<>();
+    /**
+     * Use the {@link #builder()} to create new instances.
+     *
+     * @param types
+     */
+    PropertyTypeRegistry(Map<String, PropertyType<?>> types) {
+        this.types = types;
     }
 
-    public void register(PropertyType<?> type) {
-        types.put(type.getName().toUpperCase(), type);
-    }
-
+    /**
+     * @param name
+     *            the name of a {@link Property}
+     * @return the {@link PropertyType} associated with the given {@code name} or {@code null} if there is no
+     *         {@link PropertyType} associated with the given {@code name}
+     */
     public PropertyType<?> getType(String name) {
-        return types.get(name.toUpperCase());
+        return types.get(name.toLowerCase(Locale.US));
     }
 
+    /**
+     * @return the collection of the registered types
+     */
     public Collection<PropertyType<?>> getTypes() {
         return types.values();
     }
