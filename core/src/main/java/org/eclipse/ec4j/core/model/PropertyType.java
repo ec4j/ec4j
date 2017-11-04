@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.ec4j.core.model.propertytype;
+package org.eclipse.ec4j.core.model;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,7 +22,11 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import org.eclipse.ec4j.core.model.Property;
+import org.eclipse.ec4j.core.model.propertytype.EndOfLineValue;
+import org.eclipse.ec4j.core.model.propertytype.EnumValueParser;
+import org.eclipse.ec4j.core.model.propertytype.IndentStyleValue;
+import org.eclipse.ec4j.core.model.propertytype.PropertyException;
+import org.eclipse.ec4j.core.model.propertytype.PropertyValueParser;
 
 /**
  * A type of a {@link Property}. This class also contains the <a href=

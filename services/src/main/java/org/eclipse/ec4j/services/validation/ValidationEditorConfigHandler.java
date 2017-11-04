@@ -19,10 +19,10 @@ package org.eclipse.ec4j.services.validation;
 import java.text.MessageFormat;
 import java.util.regex.PatternSyntaxException;
 
+import org.eclipse.ec4j.core.PropertyTypeRegistry;
 import org.eclipse.ec4j.core.model.Glob;
+import org.eclipse.ec4j.core.model.PropertyType;
 import org.eclipse.ec4j.core.model.propertytype.PropertyException;
-import org.eclipse.ec4j.core.model.propertytype.PropertyType;
-import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
 import org.eclipse.ec4j.core.parser.EditorConfigHandler;
 import org.eclipse.ec4j.core.parser.ErrorType;
 import org.eclipse.ec4j.core.parser.Location;

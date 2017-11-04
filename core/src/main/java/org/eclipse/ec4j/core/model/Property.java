@@ -19,7 +19,6 @@ package org.eclipse.ec4j.core.model;
 import java.util.List;
 
 import org.eclipse.ec4j.core.model.propertytype.PropertyException;
-import org.eclipse.ec4j.core.model.propertytype.PropertyType;
 
 /**
  * A key value pair in a {@link Section}.

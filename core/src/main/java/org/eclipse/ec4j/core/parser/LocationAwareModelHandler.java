@@ -16,9 +16,9 @@
  */
 package org.eclipse.ec4j.core.parser;
 
+import org.eclipse.ec4j.core.PropertyTypeRegistry;
 import org.eclipse.ec4j.core.model.Comments.CommentBlock;
 import org.eclipse.ec4j.core.model.Comments.CommentBlocks;
-import org.eclipse.ec4j.core.PropertyTypeRegistry;
 import org.eclipse.ec4j.core.model.Version;
 
 /**

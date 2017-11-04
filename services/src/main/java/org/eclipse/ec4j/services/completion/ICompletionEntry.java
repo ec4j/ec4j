@@ -16,7 +16,7 @@
  */
 package org.eclipse.ec4j.services.completion;
 
-import org.eclipse.ec4j.core.model.propertytype.PropertyType;
+import org.eclipse.ec4j.core.model.PropertyType;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>

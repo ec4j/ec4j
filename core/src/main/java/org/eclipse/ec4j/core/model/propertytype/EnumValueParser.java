@@ -19,11 +19,11 @@ package org.eclipse.ec4j.core.model.propertytype;
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-class EnumValueParser<T extends Enum<T>> implements PropertyValueParser<T> {
+public class EnumValueParser<T extends Enum<T>> implements PropertyValueParser<T> {
 
     private final Class<? extends Enum> enumType;
 
-    EnumValueParser(final Class<? extends T> enumType) {
+    public EnumValueParser(final Class<? extends T> enumType) {
         this.enumType = enumType;
     }
 
