@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.ec4j.core.EditorConfigConstants;
 import org.eclipse.ec4j.core.Resources;
@@ -138,7 +139,7 @@ public class EditorConfigService {
         case PROPERTY_VALUE: {
             PropertyType<?> propertyType = registry.getType(context.name);
             if (propertyType != null) {
-                String[] values = propertyType.getPossibleValues();
+                Set<String> values = propertyType.getPossibleValues();
                 if (values != null) {
                     ICompletionEntry entry = null;
                     List<ICompletionEntry> entries = new ArrayList<>();

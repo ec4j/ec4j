@@ -23,14 +23,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.ec4j.core.model.Property;
-import org.eclipse.ec4j.core.model.propertytype.PropertyType.Charset;
-import org.eclipse.ec4j.core.model.propertytype.PropertyType.EndOfLine;
-import org.eclipse.ec4j.core.model.propertytype.PropertyType.IndentSize;
-import org.eclipse.ec4j.core.model.propertytype.PropertyType.IndentStyle;
-import org.eclipse.ec4j.core.model.propertytype.PropertyType.InsertFinalNewline;
-import org.eclipse.ec4j.core.model.propertytype.PropertyType.Root;
-import org.eclipse.ec4j.core.model.propertytype.PropertyType.TabWidth;
-import org.eclipse.ec4j.core.model.propertytype.PropertyType.TrimTrailingWhitespace;
 
 /**
  * A mapping from property names to {@link PropertyType}s. Note that the mapping is case insensitive - i.e. all names
@@ -57,29 +49,14 @@ public class PropertyTypeRegistry {
         }
 
         /**
-         * Adds the following {@link PropertyType}s:
-         * <ul>
-         * <li>{@link IndentStyle}</li>
-         * <li>{@link IndentSize}</li>
-         * <li>{@link TabWidth}</li>
-         * <li>{@link EndOfLine}</li>
-         * <li>{@link Charset}</li>
-         * <li>{@link TrimTrailingWhitespace}</li>
-         * <li>{@link InsertFinalNewline}</li>
-         * <li>{@link Root}</li>
-         * </ul>
+         * Adds the {@link PropertyType}s from {@link PropertyType#standardTypes()}
          *
          * @return this {@link Builder}
          */
         public Builder defaults() {
-            type(new IndentStyle());
-            type(new IndentSize());
-            type(new TabWidth());
-            type(new EndOfLine());
-            type(new Charset());
-            type(new TrimTrailingWhitespace());
-            type(new InsertFinalNewline());
-            type(new Root());
+            for (PropertyType<?> t : PropertyType.standardTypes()) {
+                type(t);
+            }
             return this;
         }
 

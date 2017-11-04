@@ -16,230 +16,164 @@
  */
 package org.eclipse.ec4j.core.model.propertytype;
 
-/**
- * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
- */
-public abstract class PropertyType<T> {
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Locale;
+import java.util.Set;
 
-    private static final String[] BOOLEAN_POSSIBLE_VALUES = new String[] { "true", "false" };
+public class PropertyType<T> {
+    public static class LowerCasingPropertyType<T> extends PropertyType<T> {
 
-    public static class IndentStyle extends PropertyType<IndentStyleProperty> {
+        public LowerCasingPropertyType(String name, String description, PropertyValueParser<T> parser,
+                Set<String> possibleValues) {
+            super(name, description, parser, possibleValues);
+        }
 
-        private static final String[] POSSIBLE_VALUES = new String[] { "tab", "space" };
-
-        @Override
-        public String getName() {
-            return PropertyName.indent_style.name();
+        public LowerCasingPropertyType(String name, String description, PropertyValueParser<T> parser,
+                String... possibleValues) {
+            super(name, description, parser, possibleValues);
         }
 
         @Override
-        public String getDescription() {
-            return "set to tab or space to use hard tabs or soft tabs respectively.";
-        }
-
-        @Override
-        public PropertyValueParser<IndentStyleProperty> getValueParser() {
-            return new EnumValueParser<IndentStyleProperty>(IndentStyleProperty.class);
-        }
-
-        @Override
-        public String[] getPossibleValues() {
-            return POSSIBLE_VALUES;
+        public String normalizeIfNeeded(String value) {
+            return value == null ? null : value.toLowerCase(Locale.US);
         }
 
     }
 
-    public static class IndentSize extends PropertyType<Integer> {
+    private static final String[] BOOLEAN_POSSIBLE_VALUES = new String[] { Boolean.TRUE.toString(),
+            Boolean.FALSE.toString() };
 
-        private static final String[] POSSIBLE_VALUES = new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "tab" };
+    public static final PropertyType<String> charset = new LowerCasingPropertyType<>( //
+            "charset", //
+            "set to latin1, utf-8, utf-8-bom, utf-16be or utf-16le to control the character set. Use of utf-8-bom is discouraged.", //
+            PropertyValueParser.IDENTITY_VALUE_PARSER, //
+            "utf-8", "utf-8-bom", "utf-16be", "utf-16le", "latin1", "tab" //
+    );
 
-        @Override
-        public String getName() {
-            return PropertyName.indent_size.name();
-        }
+    public static final PropertyType<EndOfLineValue> end_of_line = new LowerCasingPropertyType<>(//
+            "end_of_line", //
+            "set to lf, cr, or crlf to control how line breaks are represented.", //
+            new EnumValueParser<EndOfLineValue>(EndOfLineValue.class), //
+            EndOfLineValue.valueSet() //
+    );
 
-        @Override
-        public String getDescription() {
-            return "a whole number defining the number of columns used for each indentation level and the width of soft tabs (when supported). When set to tab, the value of tab_width (if specified) will be used.";
-        }
+    /**
+     * Indeed, {@code tab} is a legal value - see
+     * https://github.com/editorconfig/editorconfig/wiki/EditorConfig-Properties#indent_size and
+     * https://github.com/editorconfig/editorconfig/issues/54
+     */
+    public static final PropertyType<Integer> indent_size = new LowerCasingPropertyType<>( //
+            "indent_size", //
+            "a whole number defining the number of columns used for each indentation level and the width of soft tabs (when supported). When set to tab, the value of tab_width (if specified) will be used.", //
+            PropertyValueParser.POSITIVE_INT_VALUE_PARSER, //
+            "1", "2", "3", "4", "5", "6", "7", "8", "tab" //
+    );
 
-        @Override
-        public PropertyValueParser<Integer> getValueParser() {
-            return PropertyValueParser.POSITIVE_INT_VALUE_PARSER;
-        }
-
-        @Override
-        public String[] getPossibleValues() {
-            return POSSIBLE_VALUES;
-        }
-
+    public static final PropertyType<IndentStyleValue> indent_style = new LowerCasingPropertyType<>( //
+            "indent_style", //
+            "set to tab or space to use hard tabs or soft tabs respectively.",
+            new EnumValueParser<IndentStyleValue>(IndentStyleValue.class), //
+            IndentStyleValue.valueSet() //
+    );
+    public static final PropertyType<Boolean> insert_final_newline = new LowerCasingPropertyType<>( //
+            "insert_final_newline", //
+            "set to true to ensure file ends with a newline when saving and false to ensure it doesn't.", //
+            PropertyValueParser.BOOLEAN_VALUE_PARSER, //
+            BOOLEAN_POSSIBLE_VALUES //
+    );
+    public static final PropertyType<Boolean> root = new LowerCasingPropertyType<>( //
+            "root", //
+            "special property that should be specified at the top of the file outside of any sections. Set to true to stop .editorconfig files search on current file.", //
+            PropertyValueParser.BOOLEAN_VALUE_PARSER, //
+            BOOLEAN_POSSIBLE_VALUES //
+    );
+    private static final Set<PropertyType<?>> STANDARD_TYPES;
+    public static final PropertyType<Integer> tab_width = new PropertyType<>( //
+            "tab_width", //
+            "a whole number defining the number of columns used to represent a tab character. This defaults to the value of indent_size and doesn't usually need to be specified.", //
+            PropertyValueParser.POSITIVE_INT_VALUE_PARSER, //
+            "1", "2", "3", "4", "5", "6", "7", "8" //
+    );
+    public static final PropertyType<Boolean> trim_trailing_whitespace = new LowerCasingPropertyType<>( //
+            "trim_trailing_whitespace", //
+            "set to true to remove any whitespace characters preceding newline characters and false to ensure it doesn't.", //
+            PropertyValueParser.BOOLEAN_VALUE_PARSER, //
+            BOOLEAN_POSSIBLE_VALUES //
+    );
+    static {
+        STANDARD_TYPES = Collections
+                .unmodifiableSet(new LinkedHashSet<PropertyType<?>>(Arrays.asList(charset, end_of_line, indent_size,
+                        indent_style, insert_final_newline, root, tab_width, trim_trailing_whitespace)));
     }
 
-    public static class TabWidth extends PropertyType<Integer> {
-
-        private static final String[] POSSIBLE_VALUES = new String[] { "1", "2", "3", "4", "5", "6", "7", "8" };
-
-        @Override
-        public String getName() {
-            return PropertyName.tab_width.name();
-        }
-
-        @Override
-        public String getDescription() {
-            return "a whole number defining the number of columns used to represent a tab character. This defaults to the value of indent_size and doesn't usually need to be specified.";
-        }
-
-        @Override
-        public PropertyValueParser<Integer> getValueParser() {
-            return PropertyValueParser.POSITIVE_INT_VALUE_PARSER;
-        }
-
-        @Override
-        public String[] getPossibleValues() {
-            return POSSIBLE_VALUES;
-        }
+    public static Set<PropertyType<?>> standardTypes() {
+        return STANDARD_TYPES;
     }
 
-    public static class EndOfLine extends PropertyType<EndOfLineProperty> {
-
-        private static final String[] POSSIBLE_VALUES = new String[] { "lf", "crlf", "cr" };
-
-        @Override
-        public String getName() {
-            return PropertyName.end_of_line.name();
+    private static Set<String> toSet(String[] possibleValues2) {
+        Set<String> s = new LinkedHashSet<>();
+        for (String v : possibleValues2) {
+            s.add(v);
         }
-
-        @Override
-        public String getDescription() {
-            return "set to lf, cr, or crlf to control how line breaks are represented.";
-        }
-
-        @Override
-        public PropertyValueParser<EndOfLineProperty> getValueParser() {
-            return new EnumValueParser<EndOfLineProperty>(EndOfLineProperty.class);
-        }
-
-        @Override
-        public String[] getPossibleValues() {
-            return POSSIBLE_VALUES;
-        }
+        return Collections.unmodifiableSet(s);
     }
 
-    public static class Charset extends PropertyType<String> {
+    private final String description;
+    private final String name;
+    private final PropertyValueParser<T> parser;
+    private final Set<String> possibleValues;
 
-        private static final String[] POSSIBLE_VALUES = new String[] { "utf-8", "utf-8-bom", "utf-16be", "utf-16le",
-                "latin1", "tab" };
-
-        @Override
-        public String getName() {
-            return PropertyName.charset.name();
-        }
-
-        @Override
-        public String getDescription() {
-            return "set to latin1, utf-8, utf-8-bom, utf-16be or utf-16le to control the character set. Use of utf-8-bom is discouraged.";
-        }
-
-        @Override
-        public PropertyValueParser<String> getValueParser() {
-            return PropertyValueParser.IDENTITY_VALUE_PARSER;
-        }
-
-        @Override
-        public String[] getPossibleValues() {
-            return POSSIBLE_VALUES;
-        }
-
+    public PropertyType(String name, String description, PropertyValueParser<T> parser, Set<String> possibleValues) {
+        super();
+        this.name = name;
+        this.description = description;
+        this.possibleValues = possibleValues;
+        this.parser = parser;
     }
 
-    public static class TrimTrailingWhitespace extends PropertyType<Boolean> {
-
-        @Override
-        public String getName() {
-            return PropertyName.trim_trailing_whitespace.name();
-        }
-
-        @Override
-        public String getDescription() {
-            return "set to true to remove any whitespace characters preceding newline characters and false to ensure it doesn't.";
-        }
-
-        @Override
-        public PropertyValueParser<Boolean> getValueParser() {
-            return PropertyValueParser.BOOLEAN_VALUE_PARSER;
-        }
-
-        @Override
-        public String[] getPossibleValues() {
-            return BOOLEAN_POSSIBLE_VALUES;
-        }
+    public PropertyType(String name, String description, PropertyValueParser<T> parser, String... possibleValues) {
+        this(name, description, parser, toSet(possibleValues));
     }
 
-    public static class InsertFinalNewline extends PropertyType<Boolean> {
-
-        @Override
-        public String getName() {
-            return PropertyName.insert_final_newline.name();
-        }
-
-        @Override
-        public String getDescription() {
-            return "set to true to ensure file ends with a newline when saving and false to ensure it doesn't.";
-        }
-
-        @Override
-        public PropertyValueParser<Boolean> getValueParser() {
-            return PropertyValueParser.BOOLEAN_VALUE_PARSER;
-        }
-
-        @Override
-        public String[] getPossibleValues() {
-            return BOOLEAN_POSSIBLE_VALUES;
-        }
+    public String getDescription() {
+        return description;
     }
 
-    public static class Root extends PropertyType<Boolean> {
-
-        @Override
-        public String getName() {
-            return PropertyName.root.name();
-        }
-
-        @Override
-        public String getDescription() {
-            return "special property that should be specified at the top of the file outside of any sections. Set to true to stop .editorconfig files search on current file.";
-        }
-
-        @Override
-        public PropertyValueParser<Boolean> getValueParser() {
-            return PropertyValueParser.BOOLEAN_VALUE_PARSER;
-        }
-
-        @Override
-        public String[] getPossibleValues() {
-            return BOOLEAN_POSSIBLE_VALUES;
-        }
+    public String getName() {
+        return name;
     }
 
-    public abstract String getName();
+    public Set<String> getPossibleValues() {
+        return possibleValues;
+    }
 
-    public abstract String getDescription();
+    public PropertyValueParser<T> getValueParser() {
+        return parser;
+    }
 
-    public abstract PropertyValueParser<T> getValueParser();
-
-    public void validate(String value) throws PropertyException {
-        getValueParser().validate(getName(), value);
+    /**
+     * Some values need to be lowercased, as required by "lowercase_values1" a "lowercase_values2" tests (v0.9.0
+     * properties)
+     *
+     * @param value
+     * @return
+     */
+    public String normalizeIfNeeded(String value) {
+        return value;
     }
 
     public T parse(String value) {
-        return getValueParser().parse(value);
+        return parser.parse(value);
     }
-
-    public abstract String[] getPossibleValues();
 
     @Override
     public String toString() {
-        return getName();
+        return name;
     }
 
+    public void validate(String value) throws PropertyException {
+        parser.validate(name, value);
+    }
 }

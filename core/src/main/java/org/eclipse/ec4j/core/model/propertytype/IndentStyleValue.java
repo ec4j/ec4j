@@ -16,19 +16,37 @@
  */
 package org.eclipse.ec4j.core.model.propertytype;
 
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-public enum IndentStyleProperty  {
+public enum IndentStyleValue {
 
-    TAB("Tab"),
+    space("Space"),
 
-    SPACE("Space");
+    tab("Tab");
+
+    private static final Set<String> VALUE_SET;
+
+    static {
+        Set<String> s = new LinkedHashSet<>();
+        for (IndentStyleValue v : values()) {
+            s.add(v.name());
+        }
+        VALUE_SET = Collections.unmodifiableSet(s);
+    }
 
     private final String displayValue;
 
-    IndentStyleProperty(final String displayValue) {
+    IndentStyleValue(final String displayValue) {
         this.displayValue = displayValue;
+    }
+
+    public static Set<String> valueSet() {
+        return VALUE_SET;
     }
 
 

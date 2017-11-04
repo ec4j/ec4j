@@ -16,22 +16,35 @@
  */
 package org.eclipse.ec4j.core.model.propertytype;
 
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-public enum EndOfLineProperty {
+public enum EndOfLineValue {
 
-    LF("Line Feed", "\n"),
+    lf("Line Feed", "\n"),
 
-    CR("Carriage Return", "\r"),
+    cr("Carriage Return", "\r"),
 
-    CRLF("Carriage Return + Line Feed", "\r\n");
+    crlf("Carriage Return + Line Feed", "\r\n");
+
+    private static final Set<String> VALUE_SET;
+    static {
+        Set<String> s = new LinkedHashSet<>();
+        for (EndOfLineValue v : values()) {
+            s.add(v.name());
+        }
+        VALUE_SET = Collections.unmodifiableSet(s);
+    }
 
     private final String displayValue;
 
-    private String eolString;
+    private final String eolString;
 
-    EndOfLineProperty(final String displayValue, final String eolString) {
+    EndOfLineValue(final String displayValue, final String eolString) {
         this.displayValue = displayValue;
         this.eolString = eolString;
     }
@@ -40,4 +53,7 @@ public enum EndOfLineProperty {
         return eolString;
     }
 
+    public static Set<String> valueSet() {
+        return VALUE_SET;
+    }
 }

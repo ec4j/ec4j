@@ -19,7 +19,7 @@ package org.eclipse.ec4j.core.model.propertytype;
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-interface PropertyValueParser<T> {
+public interface PropertyValueParser<T> {
 
     PropertyValueParser<String> IDENTITY_VALUE_PARSER = new PropertyValueParser<String>() {
 

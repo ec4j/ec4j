@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.Reader;
 
 import org.eclipse.ec4j.core.Resources.Resource;
-import org.eclipse.ec4j.core.model.propertytype.PropertyName;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
@@ -307,7 +306,7 @@ public class EditorConfigParser implements ParseContext {
         // property value
         skipWhiteSpace();
         handler.startPropertyValue(this);
-        String value = preprocessPropertyValue(name, readString(StopReading.PropertyValue));
+        String value = readString(StopReading.PropertyValue);
         if (value.length() < 1) {
             throw new PropertyValueMissingException(name, getLocation());
         }
@@ -475,33 +474,6 @@ public class EditorConfigParser implements ParseContext {
         }
         // According test "lowercase_names" : all property names are lowercased.
         return name.toLowerCase();
-    }
-
-    /**
-     * Return the lowercased property value for certain properties.
-     *
-     * @param name
-     * @param value
-     * @return the lowercased property value for certain properties.
-     */
-    private static String preprocessPropertyValue(String name, String value) {
-        if (name == null || value == null) {
-            return value;
-        }
-        // According test "lowercase_values1" a "lowercase_values2": test that same
-        // property values are lowercased (v0.9.0 properties)
-        PropertyName propertyName = PropertyName.get(name);
-        switch (propertyName) {
-        case end_of_line:
-        case indent_style:
-        case indent_size:
-        case insert_final_newline:
-        case trim_trailing_whitespace:
-        case charset:
-            return value.toLowerCase();
-        default:
-            return value;
-        }
     }
 
     /** {@inheritDoc} */
