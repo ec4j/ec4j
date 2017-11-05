@@ -17,6 +17,7 @@
 package org.eclipse.ec4j.core;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -175,8 +176,8 @@ public class EditorConfigSession {
      *             on I/O problems during the reading from the given {@link Resource}
      */
     public Collection<Property> queryProperties(Resource resource) throws IOException {
-        Map<String, Property> oldProperties = Collections.emptyMap();
         Map<String, Property> properties = new LinkedHashMap<>();
+        ArrayList<EditorConfig> editorConfigs = new ArrayList<>();
         boolean root = false;
         final String path = resource.getPath();
         ResourcePath dir = resource.getParent();
@@ -185,24 +186,26 @@ public class EditorConfigSession {
             if (configFile.exists()) {
                 EditorConfig config = cache.get(configFile, loader);
                 root = config.isRoot();
-                List<Section> sections = config.getSections();
-                for (Section section : sections) {
-                    if (section.match(path)) {
-                        // Section matches the editor file, collect options of the section
-                        List<Property> o = section.getProperties();
-                        for (Property property : o) {
-                            properties.put(property.getName(), property);
-                        }
-                    }
-                }
+                editorConfigs.add(config);
             }
-            properties.putAll(oldProperties);
-            oldProperties = properties;
-            properties = new LinkedHashMap<String, Property>();
             root |= rootDirectories.contains(dir);
             dir = dir.getParent();
         }
-        return oldProperties.values();
+        int i = editorConfigs.size() - 1;
+        while (i >= 0) {
+            final EditorConfig config = editorConfigs.get(i--);
+            List<Section> sections = config.getSections();
+            for (Section section : sections) {
+                if (section.match(path)) {
+                    // Section matches the editor file, collect options of the section
+                    List<Property> o = section.getProperties();
+                    for (Property property : o) {
+                        properties.put(property.getName(), property);
+                    }
+                }
+            }
+        }
+        return properties.values();
     }
 
 }
