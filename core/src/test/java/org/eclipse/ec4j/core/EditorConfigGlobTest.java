@@ -35,7 +35,7 @@ public class EditorConfigGlobTest {
     private static final boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
 
     @Test
-    public void star_after_slash() throws IOException, EditorConfigException {
+    public void star_after_slash() throws IOException {
         String content = "; test *\r\n" +
                 "\r\n" +
                 "root=true\r\n" +
@@ -60,7 +60,7 @@ public class EditorConfigGlobTest {
     }
 
     @Test
-    public void utf_8_char() throws IOException, EditorConfigException {
+    public void utf_8_char() throws IOException {
         String content = "; test EditorConfig files with UTF-8 characters larger than 127\r\n" +
                 "\r\n" +
                 "root = true\r\n" +
@@ -135,7 +135,7 @@ public class EditorConfigGlobTest {
 
     @Ignore
     @Test()
-    public void brackets_close_inside() throws IOException, EditorConfigException {
+    public void brackets_close_inside() throws IOException {
 
         final String testFile = "root/].g";
         StringResourceTree tree = StringResourceTree.builder() //
@@ -149,7 +149,7 @@ public class EditorConfigGlobTest {
     }
 
     @Test
-    public void brackets_close_outside() throws IOException, EditorConfigException {
+    public void brackets_close_outside() throws IOException {
 
         final String testFile = "root/b].g";
         StringResourceTree tree = StringResourceTree.builder() //
@@ -228,7 +228,7 @@ public class EditorConfigGlobTest {
             "";
 
     @Test
-    public void braces_word_choice1() throws IOException, EditorConfigException {
+    public void braces_word_choice1() throws IOException {
 
         final String testFile = "root/test.py";
         StringResourceTree tree = StringResourceTree.builder() //
@@ -259,7 +259,7 @@ public class EditorConfigGlobTest {
             "";
 
     @Test
-    public void star_star_over_separator7() throws IOException, EditorConfigException {
+    public void star_star_over_separator7() throws IOException {
 
         final String testFile = "root/b/z.c";
         StringResourceTree tree = StringResourceTree.builder() //
@@ -274,7 +274,7 @@ public class EditorConfigGlobTest {
     }
 
     @Test
-    public void braces_escaped_backslash2() throws EditorConfigException {
+    public void braces_escaped_backslash2() throws IOException {
         if (!isWindows) {
             final String testFile = "root/\\.txt";
             StringResourceTree tree = StringResourceTree.builder() //

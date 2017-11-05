@@ -34,7 +34,7 @@ import org.junit.Test;
 public class EditorConfigPropertiesTest {
 
     @Test
-    public void indent_size_default() throws IOException, EditorConfigException {
+    public void indent_size_default() throws IOException {
         String content = "root = true\r\n" +
                 "\r\n" +
                 "[test.c]\r\n" +

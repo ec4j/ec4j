@@ -39,19 +39,15 @@ public class EditorConfigLoader {
         return DEFAULT;
     }
 
-    public static EditorConfigLoader of(Version version) throws VersionException {
+    public static EditorConfigLoader of(Version version) {
         return of(version, PropertyTypeRegistry.getDefault());
     }
 
-    public static EditorConfigLoader of(Version version, PropertyTypeRegistry registry) throws VersionException {
+    public static EditorConfigLoader of(Version version, PropertyTypeRegistry registry) {
         return of(version, registry, ErrorHandler.THROWING);
     }
 
-    public static EditorConfigLoader of(Version version, PropertyTypeRegistry registry, ErrorHandler errorHandler)
-            throws VersionException {
-        if (version.compareTo(Version.CURRENT) > 0) {
-            throw new VersionException("Required version is greater than the current version.");
-        }
+    public static EditorConfigLoader of(Version version, PropertyTypeRegistry registry, ErrorHandler errorHandler) {
         return new EditorConfigLoader(new EditorConfigModelHandler(registry, version), errorHandler);
     }
 
@@ -73,16 +69,16 @@ public class EditorConfigLoader {
      * @param configFile
      *            the {@link Resource} to read the EditorConfig model from
      * @return a new {@link EditorConfig} instance
-     * @throws EditorConfigException
-     *             if anything goes wrong, incl IO problems that get wrapped as {@link EditorConfigException}s
+     * @throws IOException
+     *             on I/O problems during the reading from the given {@link Resource}
      */
-    public EditorConfig load(Resource configFile) throws EditorConfigException {
+    public EditorConfig load(Resource configFile) throws IOException {
         try {
             parser.parse(configFile, handler, errorHandler);
             EditorConfig result = handler.getEditorConfig();
             return result;
         } catch (IOException e) {
-            throw new EditorConfigException("Could not load " + configFile.getPath(), e);
+            throw new IOException("Could not load " + configFile.getPath(), e);
         }
     }
 }

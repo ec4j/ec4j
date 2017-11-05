@@ -16,6 +16,7 @@
  */
 package org.eclipse.ec4j.core;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -170,9 +171,10 @@ public class EditorConfigSession {
      * @param resource
      *            the resource to query the {@link Property}s for
      * @return an immutable {@link Collection} of {@link Property}s applicable to the given {@link Resource}
-     * @throws EditorConfigException
+     * @throws IOException
+     *             on I/O problems during the reading from the given {@link Resource}
      */
-    public Collection<Property> queryProperties(Resource resource) throws EditorConfigException {
+    public Collection<Property> queryProperties(Resource resource) throws IOException {
         Map<String, Property> oldProperties = Collections.emptyMap();
         Map<String, Property> properties = new LinkedHashMap<>();
         boolean root = false;

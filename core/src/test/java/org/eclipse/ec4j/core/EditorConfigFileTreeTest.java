@@ -67,10 +67,9 @@ public class EditorConfigFileTreeTest {
      * Windows style path separator in the command line should work on Windows, but should not work on other systems
      *
      * @throws IOException
-     * @throws EditorConfigException
      */
     @Test
-    public void path_separator_backslash_in_cmd_line() throws IOException, EditorConfigException {
+    public void path_separator_backslash_in_cmd_line() throws IOException {
 
         if (isWindows) {
             final Resource testFile = Resources.ofPath(testProjectDir.resolve("path\\separator"), StandardCharsets.UTF_8);
@@ -87,7 +86,7 @@ public class EditorConfigFileTreeTest {
     }
 
     @Test
-    public void parent_directory() throws IOException, EditorConfigException {
+    public void parent_directory() throws IOException {
         final String testFile = "root/parent_directory/test.a";
         StringResourceTree tree = StringResourceTree.builder() //
                 .resource("root/.editorconfig", getClass().getResource("/filetree/.editorconfig"), StandardCharsets.UTF_8)//
@@ -101,7 +100,7 @@ public class EditorConfigFileTreeTest {
     }
 
     @Test
-    public void windows_separator() throws IOException, EditorConfigException {
+    public void windows_separator() throws IOException {
         String content = "; test for path separator\r\n" + "\r\n" + "root=true\r\n" + "\r\n" + "[path/separator]\r\n"
                 + "key=value\r\n" + "\r\n" + "[/top/of/path]\r\n" + "key=value\r\n" + "\r\n"
                 + "[windows\\separator]\r\n" + "key=value\r\n" + "\r\n" + "[windows\\\\separator2]\r\n"

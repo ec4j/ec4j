@@ -107,7 +107,7 @@ public class EditorConfigParserTest {
             "";
 
     @Test
-    public void spaces_in_section_name() throws IOException, EditorConfigException {
+    public void spaces_in_section_name() throws IOException {
 
         final String testFile = "root/ test 7 ";
         StringResourceTree tree = StringResourceTree.builder() //
@@ -181,7 +181,7 @@ public class EditorConfigParserTest {
             "";
 
     @Test
-    public void comments_after_property() throws IOException, EditorConfigException {
+    public void comments_after_property() throws IOException {
 
         final String testFile = "root/test7.c";
         StringResourceTree tree = StringResourceTree.builder() //
@@ -215,7 +215,7 @@ public class EditorConfigParserTest {
 
 
     @Test
-    public void repeat_sections() throws IOException, EditorConfigException {
+    public void repeat_sections() throws IOException {
 
         final String testFile = "root/a.a";
         StringResourceTree tree = StringResourceTree.builder() //
@@ -231,7 +231,7 @@ public class EditorConfigParserTest {
     }
 
     @Test
-    public void max_section_name_ok() throws EditorConfigException, IOException {
+    public void max_section_name_ok() throws IOException {
         final String testFile = "root/test3";
         StringResourceTree tree = StringResourceTree.builder() //
                 .resource("root/.editorconfig", getClass().getResource("/parser/.editorconfig"), StandardCharsets.UTF_8)//
@@ -245,7 +245,7 @@ public class EditorConfigParserTest {
     }
 
     @Test
-    public void max_section_name_ignore() throws EditorConfigException, IOException {
+    public void max_section_name_ignore() throws IOException {
         final String testFile = "root/test4";
         StringResourceTree tree = StringResourceTree.builder() //
                 .resource("root/.editorconfig", getClass().getResource("/parser/.editorconfig"), StandardCharsets.UTF_8)//

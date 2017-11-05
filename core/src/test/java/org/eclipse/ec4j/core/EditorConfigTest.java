@@ -30,7 +30,7 @@ import org.junit.Test;
 public class EditorConfigTest {
 
     @Test
-    public void load() throws IOException, EditorConfigException {
+    public void load() throws IOException {
         String s = "# EditorConfig is awesome: http://EditorConfig.org\n";
         s += "\n";
         s += "# top-most EditorConfig file\n";
