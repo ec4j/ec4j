@@ -86,6 +86,31 @@ git submodule update
 mvn -Pcore-test clean install && ( cd core && cmake . && ctest . )
 ----
 
+== Relationship to `editorconfig-core-java`
+
+`ec4j` aims at offering a superset of `https://github.com/editorconfig/editorconfig-core-java[editorconfig-core-java]` 's functionality.
+
+While `editorconfig-core-java` supports just the basic use case of querying the EditorConfig properties
+applicable to a given file, `ec4j` offers much more in addition to that:
+
+* A proper link:core/src/main/java/org/eclipse/ec4j/core/model/EditorConfig.java[model of an `.editorconfig` file]
+* link:src/main/java/org/eclipse/ec4j/core/model/Property.java[Type safe property values]
+* link:core/src/main/java/org/eclipse/ec4j/core/parser/EditorConfigParser.java[EditorConfigParser] and
+  link:core/src/main/java/org/eclipse/ec4j/core/parser/EditorConfigHandler.java[EditorConfigHandler] interface
+  designed to support syntax highlighting, validation, folding, etc. of `.editorconfig` files in IDEs.
+* `ec4j` *will* release to Maven Central
+* `ec4j` performs better against the
+  https://github.com/editorconfig/editorconfig-core-test[editorconfig-core test suite]:
++
+|===
+| Library                  | Lib. revision | No. tests passed/total
+| `ec4j`                   | 4a35a29       | 181/182
+| `editorconfig-core-java` | e3e0905       | 177/182
+|===
++
+Testing platform: Linux, `editorconfig-core-test` revision: https://github.com/editorconfig/editorconfig-core-test/commit/172eb8324225f09f3e331af26454a5b45e314edb[172eb83]
+
+`ec4j` took portions of code from `editorconfig-core-java`. Such ones are clearly marked in `ec4j`'s JavaDoc.
 
 == Get support and contribute
 
