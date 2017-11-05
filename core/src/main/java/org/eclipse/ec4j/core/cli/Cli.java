@@ -123,7 +123,7 @@ public class Cli {
                 }
             }
             Resource file = org.eclipse.ec4j.core.Resources.ofPath(p, StandardCharsets.UTF_8);
-            Collection<Property> props = editorConfigSession.queryProperties(file);
+            Collection<Property> props = editorConfigSession.queryProperties(file).getProperties().values();
             for (Property prop : props) {
                 System.out.println(prop.getName() + "=" + prop.getSourceValue());
             }

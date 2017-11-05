@@ -37,13 +37,22 @@ Cache myCache = ...; // e.g. Caches.none()
 EditorConfigLoader myLoader = ...; // e.g. EditorConfigLoader.getDefault()
 EditorConfigSession mySession = EditorConfigSession.builder()
         .cache(myCache)
-        .configFileName("my-custom-editorconfig.txt")
         .loader(myLoader)
-        .rootDirectory(ResourcePaths.ofPath(Paths.get("/my/dir1")))
-        .rootDirectory(ResourcePaths.ofPath(Paths.get("/my/dir2")))
+        .rootDirectory(ResourcePaths.ofPath(Paths.get("/my/dir")))
         .build();
-Collection<Property> props1 = mySession.queryProperties(Resources.ofPath(Paths.get("/my/dir1/Class1.java")));
-Collection<Property> props2 = mySession.queryProperties(Resources.ofPath(Paths.get("/my/dir2/Class2.java")));
+QueryResult result = mySession.queryProperties(Resources.ofPath(Paths.get("/my/dir1/Class1.java")));
+IndentStyleValue indentStyleValue = result.getValue(PropertyType.indent_style, IndentStyleValue.space);
+switch (indentStyleVal) {
+    case space:
+        // ...
+        break;
+    case tab:
+        //...
+        break;
+    default:
+        throw new IllegalStateException("Huh "+ indentStyleVal +"?");
+    }
+}
 ----
 
 == How to build

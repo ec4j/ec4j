@@ -36,74 +36,74 @@ import org.junit.Test;
  */
 public class EditorConfigParserTest {
 
-    private static final String WHITESPACE_DOT_IN = "; test whitespace usage\r\n" +
-            "\r\n" +
-            "root = true\r\n" +
-            "\r\n" +
-            "; no whitespace\r\n" +
-            "[test1.c]\r\n" +
-            "key=value\r\n" +
-            "\r\n" +
-            "; spaces around equals\r\n" +
-            "[test2.c]\r\n" +
-            "key = value\r\n" +
-            "\r\n" +
-            "; lots of space after equals\r\n" +
-            "[test3.c]\r\n" +
-            "key  =   value\r\n" +
-            "\r\n" +
-            "; spaces before property name\r\n" +
-            "[test4.c]\r\n" +
-            "  key=value\r\n" +
-            "\r\n" +
-            "; spaces after property value\r\n" +
-            "[test5.c]\r\n" +
-            "key=value  \r\n" +
-            "\r\n" +
-            "; blank lines between properties\r\n" +
-            "[test6.c]\r\n" +
-            "\r\n" +
-            "key1=value1\r\n" +
-            "\r\n" +
-            "key2=value2\r\n" +
-            "\r\n" +
-            "; spaces in section name\r\n" +
-            "[ test 7 ]\r\n" +
-            "key=value\r\n" +
-            "\r\n" +
-            "; spaces before section name\r\n" +
-            "  [test8.c]\r\n" +
-            "key=value\r\n" +
-            "\r\n" +
-            "; spaces after section name\r\n" +
-            "[test9.c]  \r\n" +
-            "key=value\r\n" +
-            "\r\n" +
-            "; spacing before middle property\r\n" +
-            "[test10.c]\r\n" +
-            "key1=value1\r\n" +
-            "  key2=value2\r\n" +
-            "key3=value3\r\n" +
-            "\r\n" +
-            "; colon separator with no spaces\r\n" +
-            "[test1.d]\r\n" +
-            "key:value\r\n" +
-            "\r\n" +
-            "; colon separator with space after\r\n" +
-            "[test2.d]\r\n" +
-            "key: value\r\n" +
-            "\r\n" +
-            "; colon separator with space before and after\r\n" +
-            "[test3.d]\r\n" +
-            "key : value\r\n" +
-            "\r\n" +
-            "; colon separator with spaces befor\r\n" +
-            "[test4.d]\r\n" +
-            "  key:value\r\n" +
-            "\r\n" +
-            "; colon seperator with spaces after property value\r\n" +
-            "[test5.d]\r\n" +
-            "key:value  \r\n" +
+    private static final String WHITESPACE_DOT_IN = "; test whitespace usage\r\n" + //
+            "\r\n" + //
+            "root = true\r\n" + //
+            "\r\n" + //
+            "; no whitespace\r\n" + //
+            "[test1.c]\r\n" + //
+            "key=value\r\n" + //
+            "\r\n" + //
+            "; spaces around equals\r\n" + //
+            "[test2.c]\r\n" + //
+            "key = value\r\n" + //
+            "\r\n" + //
+            "; lots of space after equals\r\n" + //
+            "[test3.c]\r\n" + //
+            "key  =   value\r\n" + //
+            "\r\n" + //
+            "; spaces before property name\r\n" + //
+            "[test4.c]\r\n" + //
+            "  key=value\r\n" + //
+            "\r\n" + //
+            "; spaces after property value\r\n" + //
+            "[test5.c]\r\n" + //
+            "key=value  \r\n" + //
+            "\r\n" + //
+            "; blank lines between properties\r\n" + //
+            "[test6.c]\r\n" + //
+            "\r\n" + //
+            "key1=value1\r\n" + //
+            "\r\n" + //
+            "key2=value2\r\n" + //
+            "\r\n" + //
+            "; spaces in section name\r\n" + //
+            "[ test 7 ]\r\n" + //
+            "key=value\r\n" + //
+            "\r\n" + //
+            "; spaces before section name\r\n" + //
+            "  [test8.c]\r\n" + //
+            "key=value\r\n" + //
+            "\r\n" + //
+            "; spaces after section name\r\n" + //
+            "[test9.c]  \r\n" + //
+            "key=value\r\n" + //
+            "\r\n" + //
+            "; spacing before middle property\r\n" + //
+            "[test10.c]\r\n" + //
+            "key1=value1\r\n" + //
+            "  key2=value2\r\n" + //
+            "key3=value3\r\n" + //
+            "\r\n" + //
+            "; colon separator with no spaces\r\n" + //
+            "[test1.d]\r\n" + //
+            "key:value\r\n" + //
+            "\r\n" + //
+            "; colon separator with space after\r\n" + //
+            "[test2.d]\r\n" + //
+            "key: value\r\n" + //
+            "\r\n" + //
+            "; colon separator with space before and after\r\n" + //
+            "[test3.d]\r\n" + //
+            "key : value\r\n" + //
+            "\r\n" + //
+            "; colon separator with spaces befor\r\n" + //
+            "[test4.d]\r\n" + //
+            "  key:value\r\n" + //
+            "\r\n" + //
+            "; colon seperator with spaces after property value\r\n" + //
+            "[test5.d]\r\n" + //
+            "key:value  \r\n" + //
             "";
 
     @Test
@@ -115,69 +115,69 @@ public class EditorConfigParserTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(1, properties.size());
         Assert.assertEquals("key = value", properties.iterator().next().toString());
     }
 
-    private static final String COMMENTS_DOT_IN = "; test comments\r\n" +
-            "\r\n" +
-            "root = true\r\n" +
-            "\r\n" +
-            "[test1.c]\r\n" +
-            "key=value ; Comment after property is ignored\r\n" +
-            "\r\n" +
-            "[test2.c] ; Comment ignored, even with ] character\r\n" +
-            "key=value\r\n" +
-            "\r\n" +
-            "[test3.c]\r\n" +
-            "; Comment before properties ignored\r\n" +
-            "key=value\r\n" +
-            "\r\n" +
-            "[test4.c]\r\n" +
-            "key1=value1\r\n" +
-            "; Comment between properties ignored\r\n" +
-            "key2=value2\r\n" +
-            "\r\n" +
-            "; Semicolon at end of value read as part of value\r\n" +
-            "[test5.c]\r\n" +
-            "key=value; not comment\r\n" +
-            "\r\n" +
-            "; Escaped semicolon in value\r\n" +
-            "[test6.c]\r\n" +
-            "key=value \\; not comment\r\n" +
-            "\r\n" +
-            "; Escaped semicolon in section name\r\n" +
-            "[test\\;.c]\r\n" +
-            "key=value\r\n" +
-            "\r\n" +
-            "[test7.c]\r\n" +
-            "key=value # Comment after property is ignored\r\n" +
-            "\r\n" +
-            "[test8.c] # Comment ignored, even with ] character\r\n" +
-            "key=value\r\n" +
-            "\r\n" +
-            "[test9.c]\r\n" +
-            "# Comment before properties ignored\r\n" +
-            "key=value\r\n" +
-            "\r\n" +
-            "[test10.c]\r\n" +
-            "key1=value1\r\n" +
-            "# Comment between properties ignored\r\n" +
-            "key2=value2\r\n" +
-            "\r\n" +
-            "# Semicolon at end of value read as part of value\r\n" +
-            "[test11.c]\r\n" +
-            "key=value# not comment\r\n" +
-            "\r\n" +
-            "# Escaped semicolon in value\r\n" +
-            "[test12.c]\r\n" +
-            "key=value \\# not comment\r\n" +
-            "\r\n" +
-            "# Escaped semicolon in section name\r\n" +
-            "[test\\#.c]\r\n" +
-            "key=value\r\n" +
-            "\r\n" +
+    private static final String COMMENTS_DOT_IN = "; test comments\r\n" +  //
+            "\r\n" + //
+            "root = true\r\n" + //
+            "\r\n" + //
+            "[test1.c]\r\n" + //
+            "key=value ; Comment after property is ignored\r\n" + //
+            "\r\n" + //
+            "[test2.c] ; Comment ignored, even with ] character\r\n" + //
+            "key=value\r\n" + //
+            "\r\n" + //
+            "[test3.c]\r\n" + //
+            "; Comment before properties ignored\r\n" + //
+            "key=value\r\n" + //
+            "\r\n" + //
+            "[test4.c]\r\n" + //
+            "key1=value1\r\n" + //
+            "; Comment between properties ignored\r\n" + //
+            "key2=value2\r\n" + //
+            "\r\n" + //
+            "; Semicolon at end of value read as part of value\r\n" + //
+            "[test5.c]\r\n" + //
+            "key=value; not comment\r\n" + //
+            "\r\n" + //
+            "; Escaped semicolon in value\r\n" + //
+            "[test6.c]\r\n" + //
+            "key=value \\; not comment\r\n" + //
+            "\r\n" + //
+            "; Escaped semicolon in section name\r\n" + //
+            "[test\\;.c]\r\n" + //
+            "key=value\r\n" + //
+            "\r\n" + //
+            "[test7.c]\r\n" + //
+            "key=value # Comment after property is ignored\r\n" + //
+            "\r\n" + //
+            "[test8.c] # Comment ignored, even with ] character\r\n" + //
+            "key=value\r\n" + //
+            "\r\n" + //
+            "[test9.c]\r\n" + //
+            "# Comment before properties ignored\r\n" + //
+            "key=value\r\n" + //
+            "\r\n" + //
+            "[test10.c]\r\n" + //
+            "key1=value1\r\n" + //
+            "# Comment between properties ignored\r\n" + //
+            "key2=value2\r\n" + //
+            "\r\n" + //
+            "# Semicolon at end of value read as part of value\r\n" + //
+            "[test11.c]\r\n" + //
+            "key=value# not comment\r\n" + //
+            "\r\n" + //
+            "# Escaped semicolon in value\r\n" + //
+            "[test12.c]\r\n" + //
+            "key=value \\# not comment\r\n" + //
+            "\r\n" + //
+            "# Escaped semicolon in section name\r\n" + //
+            "[test\\#.c]\r\n" + //
+            "key=value\r\n" + //
+            "\r\n" + //
             "";
 
     @Test
@@ -189,27 +189,27 @@ public class EditorConfigParserTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(1, properties.size());
         Assert.assertEquals("key = value ", properties.iterator().next().toString());
     }
 
 
-    private static final String BASIC_DOT_IN = "[*.a]\n" +
-            "name1=value1\n" +
-            "\n" +
-            "; repeat section\n" +
-            "[*.a]\n" +
-            "name2=value2\n" +
-            "\n" +
-            "[*.b]\n" +
-            "name1 = a\n" +
-            "name2 = a\n" +
-            "\n" +
-            "[b.b]\n" +
-            "name2 = b\n" +
-            "\n" +
-            "[*.b]\n" +
+    private static final String BASIC_DOT_IN = "[*.a]\n" + //
+            "name1=value1\n" + //
+            "\n" + //
+            "; repeat section\n" + //
+            "[*.a]\n" + //
+            "name2=value2\n" + //
+            "\n" + //
+            "[*.b]\n" + //
+            "name1 = a\n" + //
+            "name2 = a\n" + //
+            "\n" + //
+            "[b.b]\n" + //
+            "name2 = b\n" + //
+            "\n" + //
+            "[*.b]\n" + //
             "name1 = c\n";
 
 
@@ -223,7 +223,7 @@ public class EditorConfigParserTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(2, properties.size());
         Iterator<Property> it = properties.iterator();
         Assert.assertEquals("name1 = value1", it.next().toString());
@@ -238,7 +238,7 @@ public class EditorConfigParserTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(1, properties.size());
         Iterator<Property> it = properties.iterator();
         Assert.assertEquals("key3 = value3", it.next().toString());
@@ -252,7 +252,7 @@ public class EditorConfigParserTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(0, properties.size());
     }
 }
