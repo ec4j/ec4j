@@ -16,7 +16,6 @@
  */
 package org.eclipse.ec4j.core.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -59,7 +58,9 @@ public class Section extends Adaptable {
          * @return a new {@link Section}
          */
         public Section build() {
-            return new Section(sealAdapters(), glob, Collections.unmodifiableList(new ArrayList<Property>(properties.values())));
+            Map<String, Property> useProps = Collections.unmodifiableMap(properties);
+            this.properties = null;
+            return new Section(sealAdapters(), glob, useProps);
         }
 
         /**
@@ -183,7 +184,7 @@ public class Section extends Adaptable {
 
     private final Glob glob;
 
-    private final List<Property> properties;
+    private final Map<String, Property> properties;
 
     /**
      * Use the {@link Builder} to create new instances.
@@ -192,7 +193,7 @@ public class Section extends Adaptable {
      * @param glob
      * @param properties
      */
-    Section(List<Object> adapters, Glob glob, List<Property> properties) {
+    Section(List<Object> adapters, Glob glob, Map<String, Property> properties) {
         super(adapters);
         this.glob = glob;
         this.properties = properties;
@@ -207,7 +208,7 @@ public class Section extends Adaptable {
         }
         // properties
         int i = 0;
-        for (Property property : properties) {
+        for (Property property : properties.values()) {
             if (i > 0) {
                 s.append("\n");
             }
@@ -242,7 +243,7 @@ public class Section extends Adaptable {
         return glob;
     }
 
-    public List<Property> getProperties() {
+    public Map<String, Property> getProperties() {
         return properties;
     }
 

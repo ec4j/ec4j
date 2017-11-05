@@ -198,10 +198,7 @@ public class EditorConfigSession {
             for (Section section : sections) {
                 if (section.match(path)) {
                     // Section matches the editor file, collect options of the section
-                    List<Property> o = section.getProperties();
-                    for (Property property : o) {
-                        properties.put(property.getName(), property);
-                    }
+                    properties.putAll(section.getProperties());
                 }
             }
         }
