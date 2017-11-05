@@ -37,7 +37,12 @@ import java.util.regex.PatternSyntaxException;
  * <li>{num1..num2} Matches any integer numbers between num1 and num2, where num1 and num2 can be either positive or
  * negative</li>
  * </ul>
+ * <p>
+ * Methods in this class stating so were copied from <a href=
+ * "https://github.com/editorconfig/editorconfig-core-java/blob/e3e090545f44d20f5f228ef1068af4c9d7323a51/src/main/java/org/editorconfig/core/EditorConfig.java">EditorConfig</a>
+ * by Dennis Ushakov.
  *
+ * @author Dennis Ushakov
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
@@ -132,6 +137,10 @@ public class Glob {
 
     /**
      * Matches the given slash ({@code /}) separated path against this {@link Glob}.
+     * <p>
+     * Based on <a href=
+     * "https://github.com/editorconfig/editorconfig-core-java/blob/e3e090545f44d20f5f228ef1068af4c9d7323a51/src/main/java/org/editorconfig/core/EditorConfig.java#L242">EditorConfig</a>
+     * by Dennis Ushakov.
      *
      * @param filePath
      *            a slash ({@code /}) separated file path to match against this {@link Glob}
@@ -167,19 +176,24 @@ public class Glob {
         return source;
     }
 
-    static String convertGlobToRegEx(String pattern, List<int[]> ranges) {
-        int length = pattern.length();
+    /**
+     * Copied from <a href=
+     * "https://github.com/editorconfig/editorconfig-core-java/blob/e3e090545f44d20f5f228ef1068af4c9d7323a51/src/main/java/org/editorconfig/core/EditorConfig.java#L256">EditorConfig</a>
+     * by Dennis Ushakov.
+     */
+    static String convertGlobToRegEx(String globString, List<int[]> ranges) {
+        int length = globString.length();
         StringBuilder result = new StringBuilder(length);
         int i = 0;
         int braceLevel = 0;
-        boolean matchingBraces = countAll(OPENING_BRACES, pattern) == countAll(CLOSING_BRACES, pattern);
+        boolean matchingBraces = countAll(OPENING_BRACES, globString) == countAll(CLOSING_BRACES, globString);
         boolean escaped = false;
         boolean inBrackets = false;
         while (i < length) {
-            char current = pattern.charAt(i);
+            char current = globString.charAt(i);
             i++;
             if ('*' == current) {
-                if (i < length && pattern.charAt(i) == '*') {
+                if (i < length && globString.charAt(i) == '*') {
                     result.append(".*");
                     i++;
                 } else {
@@ -188,10 +202,10 @@ public class Glob {
             } else if ('?' == current) {
                 result.append(".");
             } else if ('[' == current) {
-                boolean seenSlash = findChar('/', ']', pattern, length, i) >= 0;
+                boolean seenSlash = findChar('/', ']', globString, length, i) >= 0;
                 if (seenSlash || escaped) {
                     result.append("\\[");
-                } else if (i < length && "!^".indexOf(pattern.charAt(i)) >= 0) {
+                } else if (i < length && "!^".indexOf(globString.charAt(i)) >= 0) {
                     i++;
                     result.append("[^");
                 } else {
@@ -205,9 +219,9 @@ public class Glob {
                 result.append(current);
                 inBrackets = current != ']' || escaped;
             } else if ('{' == current) {
-                int j = findChar(',', '}', pattern, length, i);
+                int j = findChar(',', '}', globString, length, i);
                 if (j < 0 && -j < length) {
-                    final String choice = pattern.substring(i, -j);
+                    final String choice = globString.substring(i, -j);
                     final int[] range = getNumericRange(choice);
                     if (range != null) {
                         result.append("(\\d+)");
@@ -228,9 +242,9 @@ public class Glob {
             } else if (',' == current) {
                 result.append(braceLevel > 0 && !escaped ? "|" : ",");
             } else if ('/' == current) {
-                if (i < length && pattern.charAt(i) == '*') {
-                    if (i + 1 < length && pattern.charAt(i + 1) == '*' && i + 2 < length
-                            && pattern.charAt(i + 2) == '/') {
+                if (i < length && globString.charAt(i) == '*') {
+                    if (i + 1 < length && globString.charAt(i + 1) == '*' && i + 2 < length
+                            && globString.charAt(i + 2) == '/') {
                         result.append("(?:/|/.*/)");
                         i += 3;
                     } else {
@@ -260,6 +274,11 @@ public class Glob {
         return result.toString();
     }
 
+    /**
+     * Copied from <a href=
+     * "https://github.com/editorconfig/editorconfig-core-java/blob/e3e090545f44d20f5f228ef1068af4c9d7323a51/src/main/java/org/editorconfig/core/EditorConfig.java#L349">EditorConfig</a>
+     * by Dennis Ushakov.
+     */
     private static int[] getNumericRange(String choice) {
         final int separator = choice.indexOf("..");
         if (separator < 0)
@@ -273,6 +292,11 @@ public class Glob {
         return null;
     }
 
+    /**
+     * Copied from <a href=
+     * "https://github.com/editorconfig/editorconfig-core-java/blob/e3e090545f44d20f5f228ef1068af4c9d7323a51/src/main/java/org/editorconfig/core/EditorConfig.java#L360">EditorConfig</a>
+     * by Dennis Ushakov.
+     */
     static int findChar(final char c, final char stopAt, String pattern, int length, int start) {
         int j = start;
         boolean escapedChar = false;
@@ -286,6 +310,11 @@ public class Glob {
         return -j;
     }
 
+    /**
+     * Copied from <a href=
+     * "https://github.com/editorconfig/editorconfig-core-java/blob/e3e090545f44d20f5f228ef1068af4c9d7323a51/src/main/java/org/editorconfig/core/EditorConfig.java#L373">EditorConfig</a>
+     * by Dennis Ushakov.
+     */
     static String escapeToRegex(String group) {
         final StringBuilder builder = new StringBuilder(group.length());
         for (char c : group.toCharArray()) {
@@ -300,6 +329,11 @@ public class Glob {
         return builder.toString();
     }
 
+    /**
+     * Copied from <a href=
+     * "https://github.com/editorconfig/editorconfig-core-java/blob/e3e090545f44d20f5f228ef1068af4c9d7323a51/src/main/java/org/editorconfig/core/EditorConfig.java#L387">EditorConfig</a>
+     * by Dennis Ushakov.
+     */
     private static int countAll(Pattern regex, String pattern) {
         final Matcher matcher = regex.matcher(pattern);
         int count = 0;
