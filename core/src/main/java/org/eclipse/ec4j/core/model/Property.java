@@ -19,8 +19,6 @@ package org.eclipse.ec4j.core.model;
 import java.util.List;
 
 import org.eclipse.ec4j.core.model.propertytype.PropertyException;
-import org.eclipse.ec4j.core.model.propertytype.PropertyName;
-import org.eclipse.ec4j.core.model.propertytype.PropertyType;
 
 /**
  * A key value pair in a {@link Section}.
@@ -29,7 +27,6 @@ import org.eclipse.ec4j.core.model.propertytype.PropertyType;
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
 public class Property extends Adaptable {
-
 
     /**
      * A {@link Property} builder.
@@ -46,31 +43,6 @@ public class Property extends Adaptable {
                 return false;
             }
             return true;
-        }
-
-        /**
-         * Return the lowercased value for certain properties.
-         *
-         * @param propertyName
-         *            the {@link PropertyName}
-         * @param value
-         *            the value to transform
-         * @return the transformed value or the same {@code value} as was passed in if no transformation was necessary
-         */
-        private static String preprocessValue(PropertyName propertyName, String value) {
-            // According test "lowercase_values1" a "lowercase_values2": test that same
-            // property values are lowercased (v0.9.0 properties)
-            switch (propertyName) {
-            case end_of_line:
-            case indent_style:
-            case indent_size:
-            case insert_final_newline:
-            case trim_trailing_whitespace:
-            case charset:
-                return value.toLowerCase();
-            default:
-                return value;
-            }
         }
 
         private String name;
@@ -110,7 +82,9 @@ public class Property extends Adaptable {
         }
 
         /**
-         * Sets the {@link #name}.
+         * Sets the {@link #name}. Note that you should prefer to use {@link #type(PropertyType)} if the type is known,
+         * because {@link #type(PropertyType)} sets both {@link #name} and {@link #type} based on the
+         * {@link PropertyType}.
          *
          * @param name
          *            the key of this key value pair
@@ -118,7 +92,19 @@ public class Property extends Adaptable {
          */
         public Builder name(String name) {
             this.name = name;
-            type = parentBuilder.parentBuilder.registry.getType(name);
+            return this;
+        }
+
+        /**
+         * Sets {@link #type} and also sets {@link #name} to {@code type.getName}.
+         *
+         * @param type
+         *            the {@link PropertyType} to set
+         * @return this {@link Builder}
+         */
+        public Builder type(PropertyType<?> type) {
+            this.name = type.getName();
+            this.type = type;
             return this;
         }
 
@@ -130,7 +116,7 @@ public class Property extends Adaptable {
          * @return this {@link Builder}
          */
         public Builder value(String value) {
-            this.value = preprocessValue(PropertyName.get(name), value);
+            this.value = type == null ? value : type.normalizeIfNeeded(value);
             this.valid = isValid(type, value);
             if (valid) {
                 this.parsedValue = type.parse(value);

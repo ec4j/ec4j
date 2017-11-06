@@ -16,10 +16,10 @@
  */
 package org.eclipse.ec4j.core.parser;
 
+import org.eclipse.ec4j.core.PropertyTypeRegistry;
 import org.eclipse.ec4j.core.model.Comments.CommentBlock;
 import org.eclipse.ec4j.core.model.Comments.CommentBlocks;
 import org.eclipse.ec4j.core.model.Version;
-import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
 
 /**
  * An {@link EditorConfigHandler} that stores the start and end location information to the individual model elements

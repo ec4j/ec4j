@@ -135,14 +135,6 @@ public interface EditorConfigHandler {
     void endPropertyValue(ParseContext context, String value);
 
     /**
-     * A {@link ParseException} occured
-     *
-     * @param e
-     *            the error
-     */
-    void error(ParseException e);
-
-    /**
      * Start of a comment line
      *
      * @param context

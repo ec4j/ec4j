@@ -67,45 +67,63 @@ public class EditorConfigFileTreeTest {
      * Windows style path separator in the command line should work on Windows, but should not work on other systems
      *
      * @throws IOException
-     * @throws EditorConfigException
      */
     @Test
-    public void path_separator_backslash_in_cmd_line() throws IOException, EditorConfigException {
+    public void path_separator_backslash_in_cmd_line() throws IOException {
 
         if (isWindows) {
-            final Resource testFile = Resources.ofPath(testProjectDir.resolve("path\\separator"), StandardCharsets.UTF_8);
-            Collection<Property> properties = EditorConfigSession.default_().queryProperties(testFile);
+            final Resource testFile = Resources.ofPath(testProjectDir.resolve("path\\separator"),
+                    StandardCharsets.UTF_8);
+            Collection<Property> properties = EditorConfigSession.default_().queryProperties(testFile).getProperties()
+                    .values();
             Assert.assertEquals(1, properties.size());
             Iterator<Property> it = properties.iterator();
             Assert.assertEquals("key = value", it.next().toString());
         } else {
-            final Resource testFile = Resources.ofPath(testProjectDir.resolve(Paths.get("", "path\\separator")), StandardCharsets.UTF_8);
-            Collection<Property> properties = EditorConfigSession.default_().queryProperties(testFile);
+            final Resource testFile = Resources.ofPath(testProjectDir.resolve(Paths.get("", "path\\separator")),
+                    StandardCharsets.UTF_8);
+            Collection<Property> properties = EditorConfigSession.default_().queryProperties(testFile).getProperties()
+                    .values();
             Assert.assertEquals(0, properties.size());
         }
 
     }
 
     @Test
-    public void parent_directory() throws IOException, EditorConfigException {
+    public void parent_directory() throws IOException {
         final String testFile = "root/parent_directory/test.a";
         StringResourceTree tree = StringResourceTree.builder() //
-                .resource("root/.editorconfig", getClass().getResource("/filetree/.editorconfig"), StandardCharsets.UTF_8)//
-                .resource("root/parent_directory/.editorconfig", getClass().getResource("/filetree/parent_directory/.editorconfig"), StandardCharsets.UTF_8)//
+                .resource("root/.editorconfig", getClass().getResource("/filetree/.editorconfig"),
+                        StandardCharsets.UTF_8)//
+                .resource("root/parent_directory/.editorconfig",
+                        getClass().getResource("/filetree/parent_directory/.editorconfig"), StandardCharsets.UTF_8)//
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile))
+                .getProperties().values();
         Assert.assertEquals(1, properties.size());
         Assert.assertEquals("key = value", properties.iterator().next().toString());
     }
 
     @Test
-    public void windows_separator() throws IOException, EditorConfigException {
-        String content = "; test for path separator\r\n" + "\r\n" + "root=true\r\n" + "\r\n" + "[path/separator]\r\n"
-                + "key=value\r\n" + "\r\n" + "[/top/of/path]\r\n" + "key=value\r\n" + "\r\n"
-                + "[windows\\separator]\r\n" + "key=value\r\n" + "\r\n" + "[windows\\\\separator2]\r\n"
-                + "key=value\r\n" + "";
+    public void windows_separator() throws IOException {
+        String content = "; test for path separator\r\n" + //
+                "\r\n" + //
+                "root=true\r\n" + //
+                "\r\n" + //
+                "[path/separator]\r\n" + //
+                "key=value\r\n" + //
+                "\r\n" + //
+                "[/top/of/path]\r\n" + //
+                "key=value\r\n" + //
+                "\r\n" + //
+                "[windows\\separator]\r\n" + //
+                "key=value\r\n" + //
+                "\r\n" + //
+                "[windows\\\\separator2]\r\n" + //
+                "key=value\r\n" + //
+                "";
 
         final String testFile = "root/windows/separator";
         StringResourceTree tree = StringResourceTree.builder() //

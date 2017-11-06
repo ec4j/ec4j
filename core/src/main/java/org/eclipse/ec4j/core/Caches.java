@@ -16,6 +16,8 @@
  */
 package org.eclipse.ec4j.core;
 
+import java.io.IOException;
+
 import org.eclipse.ec4j.core.Resources.Resource;
 import org.eclipse.ec4j.core.model.EditorConfig;
 
@@ -35,13 +37,13 @@ public class Caches {
      * The implementations should state clearly if their instances can be accessed from concurrent threads.
      */
     public interface Cache {
-        EditorConfig get(Resource editorConfigFile, EditorConfigLoader loader) throws EditorConfigException;
+        EditorConfig get(Resource editorConfigFile, EditorConfigLoader loader) throws IOException;
     }
 
     /** {@link #NO_CACHE} keeps no state, we can thus have a singleton */
     private static final Cache NO_CACHE = new Cache() {
         @Override
-        public EditorConfig get(Resource editorConfigFile, EditorConfigLoader loader) throws EditorConfigException {
+        public EditorConfig get(Resource editorConfigFile, EditorConfigLoader loader) throws IOException {
             return loader.load(editorConfigFile);
         }
     };

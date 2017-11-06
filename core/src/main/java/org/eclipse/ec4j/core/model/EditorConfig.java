@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.ec4j.core.ResourcePaths.ResourcePath;
-import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
 
 /**
  * A immutable model of an {@code .editorconfig} file.
@@ -36,17 +35,15 @@ public class EditorConfig extends Adaptable {
      * An {@link EditorConfig} builder.
      */
     public static class Builder extends Adaptable.Builder<Builder> {
-        final PropertyTypeRegistry registry;
 
         ResourcePath resourcePath;
         Boolean root;
         List<Section> sections;
         Version version = Version.CURRENT;
 
-        public Builder(PropertyTypeRegistry registry) {
+        public Builder() {
             super();
             this.sections = new ArrayList<>();
-            this.registry = registry;
         }
 
         /**
@@ -146,13 +143,10 @@ public class EditorConfig extends Adaptable {
     }
 
     /**
-     * @param registry
-     *            the {@link PropertyTypeRegistry} to use when adding {@link Property}s.
-     *
      * @return a new {@link EditorConfig.Builder}
      */
-    public static Builder builder(PropertyTypeRegistry registry) {
-        return new Builder(registry);
+    public static Builder builder() {
+        return new Builder();
     }
 
     private final ResourcePath resourcePath;
@@ -171,7 +165,7 @@ public class EditorConfig extends Adaptable {
     private final Version version;
 
     /**
-     * You look for {@link #builder(PropertyTypeRegistry)} if you wonder why this constructor is package visible.
+     * You look for {@link #builder()} if you wonder why this constructor is package visible.
      *
      * @param adapters
      * @param root

@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.Reader;
 
 import org.eclipse.ec4j.core.Resources.Resource;
-import org.eclipse.ec4j.core.model.propertytype.PropertyName;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
@@ -28,18 +27,7 @@ import org.eclipse.ec4j.core.model.propertytype.PropertyName;
 public class EditorConfigParser implements ParseContext {
 
     public static class Builder {
-        private boolean tolerant = false;
         private int bufferSize = DEFAULT_BUFFER_SIZE;
-
-        public Builder tolerant() {
-            this.tolerant = true;
-            return this;
-        }
-
-        public Builder tolerant(boolean tolerant) {
-            this.tolerant = tolerant;
-            return this;
-        }
 
         public Builder bufferSize(int bufferSize) {
             this.bufferSize = bufferSize;
@@ -47,7 +35,7 @@ public class EditorConfigParser implements ParseContext {
         }
 
         public EditorConfigParser build() {
-            return new EditorConfigParser(bufferSize, tolerant);
+            return new EditorConfigParser(bufferSize);
         }
     }
 
@@ -58,6 +46,7 @@ public class EditorConfigParser implements ParseContext {
     private static final int DEFAULT_BUFFER_SIZE = 1024;
 
     private EditorConfigHandler handler;
+    private ErrorHandler errorHandler;
     private Reader reader;
     private final char[] buffer;
     private int bufferOffset;
@@ -71,7 +60,6 @@ public class EditorConfigParser implements ParseContext {
     private int captureStart;
     private boolean inSection = false;
 
-    private final boolean tolerant;
     private Resource resource;
 
     /**
@@ -80,17 +68,12 @@ public class EditorConfigParser implements ParseContext {
      * @param bufferSize
      * @param tolerant
      */
-    EditorConfigParser(int bufferSize, boolean tolerant) {
+    EditorConfigParser(int bufferSize) {
         if (bufferSize <= 0) {
             throw new IllegalArgumentException("buffersize is zero or negative");
         }
         this.buffer = new char[bufferSize];
-        this.tolerant = tolerant;
         this.captureBuffer = new StringBuilder();
-    }
-
-    public boolean isTolerant() {
-        return tolerant;
     }
 
     /**
@@ -101,15 +84,18 @@ public class EditorConfigParser implements ParseContext {
      *            the {@link Resource} to parse
      * @param handler
      *            the handler to send the parse events to
+     * @param errorHandler
+     *            an {@link ErrorHandler} to notify on parse errors
      * @throws IOException
      *             on I/O problems when reading out of the given {@link Resource}
      * @throws ParseException
      *             only if {@link #tolerant} is {@code false}; otherwise the exceptions are passed to the
      *             {@link EditorConfigHandler}
      */
-    public void parse(Resource resource, EditorConfigHandler handler) throws IOException {
+    public void parse(Resource resource, EditorConfigHandler handler, ErrorHandler errorHandler) throws IOException {
         this.resource = resource;
         this.handler = handler;
+        this.errorHandler = errorHandler;
         bufferOffset = 0;
         index = 0;
         fill = 0;
@@ -149,10 +135,7 @@ public class EditorConfigParser implements ParseContext {
         try {
             readLineAndThrowExceptionIfError();
         } catch (ParseException e) {
-            handler.error(e);
-            if (!tolerant) {
-                throw e;
-            }
+            errorHandler.error(this, e);
         }
     }
 
@@ -307,7 +290,7 @@ public class EditorConfigParser implements ParseContext {
         // property value
         skipWhiteSpace();
         handler.startPropertyValue(this);
-        String value = preprocessPropertyValue(name, readString(StopReading.PropertyValue));
+        String value = readString(StopReading.PropertyValue);
         if (value.length() < 1) {
             throw new PropertyValueMissingException(name, getLocation());
         }
@@ -475,33 +458,6 @@ public class EditorConfigParser implements ParseContext {
         }
         // According test "lowercase_names" : all property names are lowercased.
         return name.toLowerCase();
-    }
-
-    /**
-     * Return the lowercased property value for certain properties.
-     *
-     * @param name
-     * @param value
-     * @return the lowercased property value for certain properties.
-     */
-    private static String preprocessPropertyValue(String name, String value) {
-        if (name == null || value == null) {
-            return value;
-        }
-        // According test "lowercase_values1" a "lowercase_values2": test that same
-        // property values are lowercased (v0.9.0 properties)
-        PropertyName propertyName = PropertyName.get(name);
-        switch (propertyName) {
-        case end_of_line:
-        case indent_style:
-        case indent_size:
-        case insert_final_newline:
-        case trim_trailing_whitespace:
-        case charset:
-            return value.toLowerCase();
-        default:
-            return value;
-        }
     }
 
     /** {@inheritDoc} */

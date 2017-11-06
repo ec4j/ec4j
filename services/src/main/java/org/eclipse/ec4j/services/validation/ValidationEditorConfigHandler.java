@@ -19,11 +19,12 @@ package org.eclipse.ec4j.services.validation;
 import java.text.MessageFormat;
 import java.util.regex.PatternSyntaxException;
 
+import org.eclipse.ec4j.core.PropertyTypeRegistry;
 import org.eclipse.ec4j.core.model.Glob;
+import org.eclipse.ec4j.core.model.PropertyType;
 import org.eclipse.ec4j.core.model.propertytype.PropertyException;
-import org.eclipse.ec4j.core.model.propertytype.PropertyType;
-import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
 import org.eclipse.ec4j.core.parser.EditorConfigHandler;
+import org.eclipse.ec4j.core.parser.ErrorHandler;
 import org.eclipse.ec4j.core.parser.ErrorType;
 import org.eclipse.ec4j.core.parser.Location;
 import org.eclipse.ec4j.core.parser.ParseContext;
@@ -32,7 +33,7 @@ import org.eclipse.ec4j.core.parser.ParseException;
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-public class ValidationEditorConfigHandler implements EditorConfigHandler {
+public class ValidationEditorConfigHandler implements EditorConfigHandler, ErrorHandler {
 
     private static final String PATTERN_SYNTAX_MESSAGE = "The pattern ''{0}'' is not valid ''{1}''";
     private static final String PROPERTY_NAME_NOT_EXISTS_MESSAGE = "The property ''{0}'' is not supported by .editorconfig";
@@ -125,7 +126,7 @@ public class ValidationEditorConfigHandler implements EditorConfigHandler {
     }
 
     @Override
-    public void error(ParseException e) {
+    public void error(ParseContext context, ParseException e) throws ParseException {
         reporter.addError(e.getMessage(), e.getLocation(), null, e.getErrorType(), getSeverity(e));
     }
 
@@ -159,4 +160,5 @@ public class ValidationEditorConfigHandler implements EditorConfigHandler {
     @Override
     public void blankLine(ParseContext context) {
     }
+
 }

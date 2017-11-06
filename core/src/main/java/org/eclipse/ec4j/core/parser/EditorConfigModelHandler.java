@@ -16,11 +16,14 @@
  */
 package org.eclipse.ec4j.core.parser;
 
+import java.util.Locale;
+
+import org.eclipse.ec4j.core.PropertyTypeRegistry;
 import org.eclipse.ec4j.core.model.EditorConfig;
 import org.eclipse.ec4j.core.model.Property;
+import org.eclipse.ec4j.core.model.PropertyType;
 import org.eclipse.ec4j.core.model.Section;
 import org.eclipse.ec4j.core.model.Version;
-import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
 
 /**
  * A {@link EditorConfigHandler} implementation that assemles {@link EditorConfig} instances out of the parse
@@ -45,7 +48,7 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
     /** {@inheritDoc} */
     @Override
     public void startDocument(ParseContext context) {
-        editorConfigBuilder = EditorConfig.builder(registry).version(version);
+        editorConfigBuilder = EditorConfig.builder().version(version);
         editorConfigBuilder.resourcePath(context.getResource().getParent());
     }
 
@@ -63,7 +66,7 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
     /** {@inheritDoc} */
     @Override
     public void endSection(ParseContext context) {
-        sectionBuilder.closeSection();
+        sectionBuilder.applyDefaults().closeSection();
         sectionBuilder = null;
     }
 
@@ -78,12 +81,6 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
     public void endProperty(ParseContext context) {
         propertyBuilder.closeProperty();
         propertyBuilder = null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void error(ParseException e) {
-        e.printStackTrace();
     }
 
     /**
@@ -114,7 +111,24 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
     /** {@inheritDoc} */
     @Override
     public void endPropertyName(ParseContext context, String name) {
-        propertyBuilder.name(name);
+        name = normalizePropertyName(name);
+        PropertyType<?> type = registry.getType(name);
+        if (type != null) {
+            /* propertyBuilder.type(type) sets also the (lowercased) name */
+            propertyBuilder.type(type);
+        } else {
+            propertyBuilder.name(name);
+        }
+    }
+
+    /**
+     * Lower-cases the given property {@code name}.
+     *
+     * @param name the property name to normalize
+     * @return the normalized property name
+     */
+    protected String normalizePropertyName(String name) {
+        return name == null ? null : name.toLowerCase(Locale.US);
     }
 
     /** {@inheritDoc} */

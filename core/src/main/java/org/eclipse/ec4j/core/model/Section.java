@@ -16,16 +16,13 @@
  */
 package org.eclipse.ec4j.core.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.ec4j.core.model.propertytype.PropertyName;
-import org.eclipse.ec4j.core.model.propertytype.PropertyType;
-import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
+import org.eclipse.ec4j.core.model.PropertyType.IndentStyleValue;
 
 /**
  * A section in an {@code .editorconfig} file. A section consists of a {@link Glob} and a collection of
@@ -61,8 +58,9 @@ public class Section extends Adaptable {
          * @return a new {@link Section}
          */
         public Section build() {
-            preprocessProperties();
-            return new Section(sealAdapters(), glob, Collections.unmodifiableList(new ArrayList<Property>(properties.values())));
+            Map<String, Property> useProps = Collections.unmodifiableMap(properties);
+            this.properties = null;
+            return new Section(sealAdapters(), glob, useProps);
         }
 
         /**
@@ -74,7 +72,7 @@ public class Section extends Adaptable {
         public EditorConfig.Builder closeSection() {
             if (glob == null) {
                 /* this is the first glob-less section */
-                Property rootProp = properties.remove(PropertyName.root.name());
+                Property rootProp = properties.remove(PropertyType.root.getName());
                 if (rootProp != null) {
                     parentBuilder.root(rootProp.getSourceValue().equalsIgnoreCase(Boolean.TRUE.toString()));
                 }
@@ -102,59 +100,44 @@ public class Section extends Adaptable {
             return this;
         }
 
-        private void preprocessProperties() {
-            Version version = parentBuilder.version;
-            Property indentStyle = null;
-            Property indentSize = null;
-            Property tabWidth = null;
-            for (Property property : properties.values()) {
-                PropertyName name = PropertyName.get(property.getName());
-                // Lowercase property value for certain properties
-                // get indent_style, indent_size, tab_width property
-                switch (name) {
-                case indent_style:
-                    indentStyle = property;
-                    break;
-                case indent_size:
-                    indentSize = property;
-                    break;
-                case tab_width:
-                    tabWidth = property;
-                    break;
-                default:
-                    break;
-                }
-            }
+        /**
+         * Applies the defaults required by the core-tests, if necessary.
+         *
+         * @return this {@link Builder}
+         */
+        public Builder applyDefaults() {
+            final Version version = parentBuilder.version;
+            Property indentStyle = properties.get(PropertyType.indent_style.getName());
+            Property indentSize = properties.get(PropertyType.indent_size.getName());
+            Property tabWidth = properties.get(PropertyType.tab_width.getName());
 
             // Set indent_size to "tab" if indent_size is unspecified and
             // indent_style is set to "tab".
-            if (indentStyle != null && "tab".equals(indentStyle.getSourceValue()) && indentSize == null
+            if (indentStyle != null && IndentStyleValue.tab.name().equals(indentStyle.getSourceValue()) && indentSize == null
                     && version.compareTo(Version._0_10_0) >= 0) {
-                final String name = PropertyName.indent_size.name();
-                final PropertyType<?> type = parentBuilder.registry.getType(name);
+                final PropertyType<?> type = PropertyType.indent_size;
                 final String value = "tab";
-                indentSize = new Property(Collections.emptyList(), type, name, value, type.parse(value), true);
+                indentSize = new Property(Collections.emptyList(), type, type.getName(), value, type.parse(value), true);
                 this.property(indentSize);
             }
 
             // Set tab_width to indent_size if indent_size is specified and
             // tab_width is unspecified
             if (indentSize != null && !"tab".equals(indentSize.getSourceValue()) && tabWidth == null) {
-                final String name = PropertyName.tab_width.name();
-                final PropertyType<?> type = parentBuilder.registry.getType(name);
+                final PropertyType<?> type = PropertyType.tab_width;
                 final String value = indentSize.getSourceValue();
-                tabWidth = new Property(Collections.emptyList(), type, name, value, type.parse(value), true);
+                tabWidth = new Property(Collections.emptyList(), type, type.getName(), value, type.parse(value), true);
                 this.property(tabWidth);
             }
 
             // Set indent_size to tab_width if indent_size is "tab"
             if (indentSize != null && "tab".equals(indentSize.getSourceValue()) && tabWidth != null) {
-                final String name = PropertyName.indent_size.name();
-                final PropertyType<?> type = parentBuilder.registry.getType(name);
+                final PropertyType<?> type = PropertyType.indent_size;
                 final String value = tabWidth.getSourceValue();
-                indentSize = new Property(Collections.emptyList(), type, name, value, type.parse(value), true);
+                indentSize = new Property(Collections.emptyList(), type, type.getName(), value, type.parse(value), true);
                 this.property(indentSize);
             }
+            return this;
         }
 
         /**
@@ -201,16 +184,16 @@ public class Section extends Adaptable {
 
     private final Glob glob;
 
-    private final List<Property> properties;
+    private final Map<String, Property> properties;
 
     /**
-     * You look for {@link #builder(PropertyTypeRegistry)} if you wonder why this constructor this package private.
+     * Use the {@link Builder} to create new instances.
      *
      * @param adapters
      * @param glob
      * @param properties
      */
-    Section(List<Object> adapters, Glob glob, List<Property> properties) {
+    Section(List<Object> adapters, Glob glob, Map<String, Property> properties) {
         super(adapters);
         this.glob = glob;
         this.properties = properties;
@@ -225,7 +208,7 @@ public class Section extends Adaptable {
         }
         // properties
         int i = 0;
-        for (Property property : properties) {
+        for (Property property : properties.values()) {
             if (i > 0) {
                 s.append("\n");
             }
@@ -260,7 +243,7 @@ public class Section extends Adaptable {
         return glob;
     }
 
-    public List<Property> getProperties() {
+    public Map<String, Property> getProperties() {
         return properties;
     }
 

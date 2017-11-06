@@ -21,9 +21,9 @@ import java.io.IOException;
 import org.eclipse.ec4j.core.Resources.Resource;
 import org.eclipse.ec4j.core.model.EditorConfig;
 import org.eclipse.ec4j.core.model.Version;
-import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
 import org.eclipse.ec4j.core.parser.EditorConfigModelHandler;
 import org.eclipse.ec4j.core.parser.EditorConfigParser;
+import org.eclipse.ec4j.core.parser.ErrorHandler;
 
 /**
  * Implements the capability of loading an {@link EditorConfig} object out of a {@link Resource}.
@@ -32,45 +32,35 @@ import org.eclipse.ec4j.core.parser.EditorConfigParser;
  */
 public class EditorConfigLoader {
 
-    private static final EditorConfigLoader DEFAULT = new EditorConfigLoader(Version.CURRENT,
-            PropertyTypeRegistry.getDefault());
+    private static final EditorConfigLoader DEFAULT = new EditorConfigLoader(
+            new EditorConfigModelHandler(PropertyTypeRegistry.getDefault(), Version.CURRENT), ErrorHandler.THROWING);
 
     public static EditorConfigLoader getDefault() {
         return DEFAULT;
     }
 
-    public static EditorConfigLoader of(Version version) throws VersionException {
+    public static EditorConfigLoader of(Version version) {
         return of(version, PropertyTypeRegistry.getDefault());
     }
 
-    public static EditorConfigLoader of(Version version, PropertyTypeRegistry registry) throws VersionException {
-        if (version.compareTo(Version.CURRENT) > 0) {
-            throw new VersionException("Required version is greater than the current version.");
-        }
-        return new EditorConfigLoader(version, registry);
+    public static EditorConfigLoader of(Version version, PropertyTypeRegistry registry) {
+        return of(version, registry, ErrorHandler.THROWING);
     }
 
-    private final PropertyTypeRegistry registry;
-    private final Version version;
+    public static EditorConfigLoader of(Version version, PropertyTypeRegistry registry, ErrorHandler errorHandler) {
+        return new EditorConfigLoader(new EditorConfigModelHandler(registry, version), errorHandler);
+    }
 
-    EditorConfigLoader(Version version, PropertyTypeRegistry registry) {
+    private final ErrorHandler errorHandler;
+
+    private final EditorConfigModelHandler handler;
+    private final EditorConfigParser parser;
+
+    public EditorConfigLoader(EditorConfigModelHandler handler, ErrorHandler errorHandler) {
         super();
-        this.version = version;
-        this.registry = registry;
-    }
-
-    /**
-     * @return the {@link PropertyTypeRegistry} associated with this {@link EditorConfigLoader}
-     */
-    public PropertyTypeRegistry getRegistry() {
-        return registry;
-    }
-
-    /**
-     * @return the version of the EditorConfig spec the current {@link EditorConfigLoader} is able to read
-     */
-    public Version getVersion() {
-        return version;
+        this.parser = EditorConfigParser.builder().build();
+        this.handler = handler;
+        this.errorHandler = errorHandler;
     }
 
     /**
@@ -79,18 +69,16 @@ public class EditorConfigLoader {
      * @param configFile
      *            the {@link Resource} to read the EditorConfig model from
      * @return a new {@link EditorConfig} instance
-     * @throws EditorConfigException
-     *             if anything goes wrong, incl IO problems that get wrapped as {@link EditorConfigException}s
+     * @throws IOException
+     *             on I/O problems during the reading from the given {@link Resource}
      */
-    public EditorConfig load(Resource configFile) throws EditorConfigException {
+    public EditorConfig load(Resource configFile) throws IOException {
         try {
-            EditorConfigModelHandler handler = new EditorConfigModelHandler(registry, version);
-            EditorConfigParser parser = EditorConfigParser.builder().build();
-            parser.parse(configFile, handler);
+            parser.parse(configFile, handler, errorHandler);
             EditorConfig result = handler.getEditorConfig();
             return result;
         } catch (IOException e) {
-            throw new EditorConfigException("Could not load " + configFile.getPath(), e);
+            throw new IOException("Could not load " + configFile.getPath(), e);
         }
     }
 }

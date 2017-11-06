@@ -72,7 +72,7 @@ public class Cli {
                 break;
             case "--version":
             case "-v":
-                System.out.println("EditorConfig Java Version " + version);
+                System.out.println("EditorConfig Java Version " + Version.CURRENT);
                 System.exit(0);
                 break;
             default:
@@ -83,6 +83,11 @@ public class Cli {
 
         if (paths.isEmpty()) {
             System.err.println("At least one file path needs to be specified");
+            System.exit(1);
+        }
+
+        if (version.compareTo(Version.CURRENT) > 0) {
+            System.err.println("Required version "+ version +" is greater than the current version "+ Version.CURRENT +".");
             System.exit(1);
         }
 
@@ -118,7 +123,7 @@ public class Cli {
                 }
             }
             Resource file = org.eclipse.ec4j.core.Resources.ofPath(p, StandardCharsets.UTF_8);
-            Collection<Property> props = editorConfigSession.queryProperties(file);
+            Collection<Property> props = editorConfigSession.queryProperties(file).getProperties().values();
             for (Property prop : props) {
                 System.out.println(prop.getName() + "=" + prop.getSourceValue());
             }

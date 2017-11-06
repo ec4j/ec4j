@@ -34,18 +34,18 @@ import org.junit.Test;
 public class EditorConfigPropertiesTest {
 
     @Test
-    public void indent_size_default() throws IOException, EditorConfigException {
-        String content = "root = true\r\n" +
-                "\r\n" +
-                "[test.c]\r\n" +
-                "indent_style = tab\r\n" +
-                "\r\n" +
-                "[test2.c]\r\n" +
-                "indent_style = space\r\n" +
-                "\r\n" +
-                "[test3.c]\r\n" +
-                "indent_style = tab\r\n" +
-                "tab_width = 2\r\n" +
+    public void indent_size_default() throws IOException {
+        String content = "root = true\r\n" + //
+                "\r\n" + //
+                "[test.c]\r\n" + //
+                "indent_style = tab\r\n" + //
+                "\r\n" + //
+                "[test2.c]\r\n" + //
+                "indent_style = space\r\n" + //
+                "\r\n" + //
+                "[test3.c]\r\n" + //
+                "indent_style = tab\r\n" + //
+                "tab_width = 2\r\n" + //
                 "";
 
         final String testFile = "root/test.c";
@@ -54,7 +54,7 @@ public class EditorConfigPropertiesTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
 
         Assert.assertEquals(2, properties.size());
         Iterator<Property> iter = properties.iterator();

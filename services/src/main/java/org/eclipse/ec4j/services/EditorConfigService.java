@@ -20,12 +20,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.ec4j.core.EditorConfigConstants;
+import org.eclipse.ec4j.core.PropertyTypeRegistry;
 import org.eclipse.ec4j.core.Resources;
 import org.eclipse.ec4j.core.Resources.RandomReader;
-import org.eclipse.ec4j.core.model.propertytype.PropertyType;
-import org.eclipse.ec4j.core.model.propertytype.PropertyTypeRegistry;
+import org.eclipse.ec4j.core.model.PropertyType;
 import org.eclipse.ec4j.core.parser.EditorConfigParser;
 import org.eclipse.ec4j.services.completion.CompletionContextType;
 import org.eclipse.ec4j.services.completion.CompletionEntry;
@@ -83,9 +84,9 @@ public class EditorConfigService {
         ValidationEditorConfigHandler handler = new ValidationEditorConfigHandler(reporter, provider, registry);
         // Set parser as tolerant to collect the full errors of each line of the
         // editorconfig.
-        EditorConfigParser parser = EditorConfigParser.builder().tolerant().build();
+        EditorConfigParser parser = EditorConfigParser.builder().build();
         try {
-            parser.parse(Resources.ofString(EditorConfigConstants.EDITORCONFIG, content), handler);
+            parser.parse(Resources.ofString(EditorConfigConstants.EDITORCONFIG, content), handler, handler);
         } catch (IOException e) {
             /* should not happen with Resources.ofString(content) */
             throw new RuntimeException(e);
@@ -138,7 +139,7 @@ public class EditorConfigService {
         case PROPERTY_VALUE: {
             PropertyType<?> propertyType = registry.getType(context.name);
             if (propertyType != null) {
-                String[] values = propertyType.getPossibleValues();
+                Set<String> values = propertyType.getPossibleValues();
                 if (values != null) {
                     ICompletionEntry entry = null;
                     List<ICompletionEntry> entries = new ArrayList<>();

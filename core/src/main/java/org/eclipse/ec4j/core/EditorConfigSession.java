@@ -16,12 +16,12 @@
  */
 package org.eclipse.ec4j.core;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.ec4j.core.Caches.Cache;
@@ -32,8 +32,8 @@ import org.eclipse.ec4j.core.model.Property;
 import org.eclipse.ec4j.core.model.Section;
 
 /**
- * A session that keeps a {@link Cache} and {@link EditorConfigLoader} to be able to query {@link Property}s applicable to
- * a {@link Resource}.
+ * A session that keeps a {@link Cache} and {@link EditorConfigLoader} to be able to query {@link Property}s applicable
+ * to a {@link Resource}.
  * <p>
  * This is a typical entry point for the users of {@code ec4j.core}.
  * <p>
@@ -50,13 +50,24 @@ import org.eclipse.ec4j.core.model.Section;
  * EditorConfigLoader myLoader = ...;
  * EditorConfigSession mySession = EditorConfigSession.builder()
  *         .cache(myCache)
- *         .configFileName("my-custom-editorconfig.txt")
  *         .loader(myLoader)
- *         .rootDirectory(ResourcePaths.ofPath(Paths.get("/my/dir1")))
- *         .rootDirectory(ResourcePaths.ofPath(Paths.get("/my/dir2")))
+ *         .rootDirectory(ResourcePaths.ofPath(Paths.get("/my/dir")))
  *         .build();
- * Collection<Property> opts1 = mySession.queryProperties(Resources.ofPath(Paths.get("/my/dir1/Class1.java")));
- * Collection<Property> opts2 = mySession.queryProperties(Resources.ofPath(Paths.get("/my/dir2/Class2.java")));
+ *
+ * QueryResult result = mySession.queryProperties(Resources.ofPath(Paths.get("/my/dir1/Class1.java")));
+ * IndentStyleValue indentStyleValue = result.getValue(PropertyType.indent_style, IndentStyleValue.space);
+ * switch (indentStyleVal) {
+ *     case space:
+ *         // ...
+ *         break;
+ *     case tab:
+ *         //...
+ *         break;
+ *     default:
+ *         throw new IllegalStateException("Huh "+ indentStyleVal +"?");
+ *     }
+ * }
+ *
  * </pre>
  *
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
@@ -169,12 +180,13 @@ public class EditorConfigSession {
      *
      * @param resource
      *            the resource to query the {@link Property}s for
-     * @return an immutable {@link Collection} of {@link Property}s applicable to the given {@link Resource}
-     * @throws EditorConfigException
+     * @return a {@link QueryResult} that contains {@link Property}s applicable to the given {@link Resource}
+     * @throws IOException
+     *             on I/O problems during the reading from the given {@link Resource}
      */
-    public Collection<Property> queryProperties(Resource resource) throws EditorConfigException {
-        Map<String, Property> oldProperties = Collections.emptyMap();
-        Map<String, Property> properties = new LinkedHashMap<>();
+    public QueryResult queryProperties(Resource resource) throws IOException {
+        QueryResult.Builder result = QueryResult.builder();
+        ArrayList<EditorConfig> editorConfigs = new ArrayList<>();
         boolean root = false;
         final String path = resource.getPath();
         ResourcePath dir = resource.getParent();
@@ -183,24 +195,23 @@ public class EditorConfigSession {
             if (configFile.exists()) {
                 EditorConfig config = cache.get(configFile, loader);
                 root = config.isRoot();
-                List<Section> sections = config.getSections();
-                for (Section section : sections) {
-                    if (section.match(path)) {
-                        // Section matches the editor file, collect options of the section
-                        List<Property> o = section.getProperties();
-                        for (Property property : o) {
-                            properties.put(property.getName(), property);
-                        }
-                    }
-                }
+                editorConfigs.add(config);
             }
-            properties.putAll(oldProperties);
-            oldProperties = properties;
-            properties = new LinkedHashMap<String, Property>();
             root |= rootDirectories.contains(dir);
             dir = dir.getParent();
         }
-        return oldProperties.values();
+        int i = editorConfigs.size() - 1;
+        while (i >= 0) {
+            final EditorConfig config = editorConfigs.get(i--);
+            List<Section> sections = config.getSections();
+            for (Section section : sections) {
+                if (section.match(path)) {
+                    // Section matches the editor file, collect options of the section
+                    result.properties(section.getProperties());
+                }
+            }
+        }
+        return result.build();
     }
 
 }
