@@ -18,7 +18,8 @@ package org.eclipse.ec4j.core.model;
 
 import java.util.List;
 
-import org.eclipse.ec4j.core.model.propertytype.PropertyException;
+import org.eclipse.ec4j.core.InvalidPropertyValueException;
+import org.eclipse.ec4j.core.model.PropertyType.ParsedValue;
 
 /**
  * A key value pair in a {@link Section}.
@@ -33,23 +34,10 @@ public class Property extends Adaptable {
      */
     public static class Builder extends Adaptable.Builder<Builder> {
 
-        static boolean isValid(PropertyType<?> type, String value) {
-            if (type == null) {
-                return false;
-            }
-            try {
-                type.validate(value);
-            } catch (PropertyException e) {
-                return false;
-            }
-            return true;
-        }
-
         private String name;
         private final Section.Builder parentBuilder;
-        private Object parsedValue;
+        private ParsedValue<?> parsedValue;
         private PropertyType<?> type;
-        private boolean valid;
         private String value;
 
         public Builder(org.eclipse.ec4j.core.model.Section.Builder parentBuilder) {
@@ -75,7 +63,7 @@ public class Property extends Adaptable {
          */
         public Section.Builder closeProperty() {
             if (checkMax()) {
-                Property property = new Property(sealAdapters(), type, name, value, parsedValue, valid);
+                Property property = new Property(sealAdapters(), type, name, value, parsedValue);
                 parentBuilder.property(property);
             }
             return parentBuilder;
@@ -116,9 +104,11 @@ public class Property extends Adaptable {
          * @return this {@link Builder}
          */
         public Builder value(String value) {
-            this.value = type == null ? value : type.normalizeIfNeeded(value);
-            this.valid = isValid(type, value);
-            if (valid) {
+            if (type == null) {
+                this.value = value;
+                this.parsedValue = ParsedValue.valid(value);
+            } else {
+                this.value = type.normalizeIfNeeded(value);
                 this.parsedValue = type.parse(value);
             }
             return this;
@@ -127,12 +117,11 @@ public class Property extends Adaptable {
 
     private final String name;
 
-    private final Object parsedValue;
+    private final ParsedValue<?> parsedValue;
 
     private final String sourceValue;
 
     private final PropertyType<?> type;
-    private final boolean valid;
 
     /**
      * Use the {@link Builder} if you cannot access this constructor
@@ -142,16 +131,13 @@ public class Property extends Adaptable {
      * @param name
      * @param sourceValue
      * @param parsedValue
-     * @param valid
      */
-    Property(List<Object> adapters, PropertyType<?> type, String name, String sourceValue, Object parsedValue,
-            boolean valid) {
+    Property(List<Object> adapters, PropertyType<?> type, String name, String sourceValue, ParsedValue<?> parsedValue) {
         super(adapters);
         this.type = type;
         this.name = name;
         this.sourceValue = sourceValue;
         this.parsedValue = parsedValue;
-        this.valid = valid;
     }
 
     @Override
@@ -200,9 +186,16 @@ public class Property extends Adaptable {
 
     /**
      * @return the parsed value
+     * @throws InvalidPropertyValueException
+     *             if the {@link #sourceValue} is not a valid value for the associated {@link PropertyType}
      */
     @SuppressWarnings("unchecked")
     public <T> T getValueAs() {
+        if (parsedValue.isValid()) {
+            parsedValue.getValue();
+        } else {
+            throw new InvalidPropertyValueException(parsedValue.getErrorMessage());
+        }
         return (T) parsedValue;
     }
 
@@ -216,11 +209,11 @@ public class Property extends Adaptable {
     }
 
     /**
-     * @return {@code true} if {@link #sourceValue} is a valid value for the associated {@link PropertyType};
+     * @return {@code true} if {@link #type} is {@code null} or {@link #sourceValue} is a valid value for the associated {@link PropertyType};
      *         {@code false} otherwise
      */
     public boolean isValid() {
-        return valid;
+        return parsedValue.isValid();
     }
 
     @Override

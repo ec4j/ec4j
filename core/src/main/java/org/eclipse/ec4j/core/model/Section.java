@@ -117,7 +117,7 @@ public class Section extends Adaptable {
                     && version.compareTo(Version._0_10_0) >= 0) {
                 final PropertyType<?> type = PropertyType.indent_size;
                 final String value = "tab";
-                indentSize = new Property(Collections.emptyList(), type, type.getName(), value, type.parse(value), true);
+                indentSize = new Property(Collections.emptyList(), type, type.getName(), value, type.parse(value));
                 this.property(indentSize);
             }
 
@@ -126,7 +126,7 @@ public class Section extends Adaptable {
             if (indentSize != null && !"tab".equals(indentSize.getSourceValue()) && tabWidth == null) {
                 final PropertyType<?> type = PropertyType.tab_width;
                 final String value = indentSize.getSourceValue();
-                tabWidth = new Property(Collections.emptyList(), type, type.getName(), value, type.parse(value), true);
+                tabWidth = new Property(Collections.emptyList(), type, type.getName(), value, type.parse(value));
                 this.property(tabWidth);
             }
 
@@ -134,7 +134,7 @@ public class Section extends Adaptable {
             if (indentSize != null && "tab".equals(indentSize.getSourceValue()) && tabWidth != null) {
                 final PropertyType<?> type = PropertyType.indent_size;
                 final String value = tabWidth.getSourceValue();
-                indentSize = new Property(Collections.emptyList(), type, type.getName(), value, type.parse(value), true);
+                indentSize = new Property(Collections.emptyList(), type, type.getName(), value, type.parse(value));
                 this.property(indentSize);
             }
             return this;

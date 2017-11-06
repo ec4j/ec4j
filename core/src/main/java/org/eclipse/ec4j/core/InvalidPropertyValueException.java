@@ -14,11 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.ec4j.core.model.propertytype;
+package org.eclipse.ec4j.core;
 
-public class PropertyException extends Exception {
+import org.eclipse.ec4j.core.model.Property;
 
-    public PropertyException(String message) {
+/**
+ * Thrown when an invalid {@link Property} value is accessesd.
+ *
+ * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
+ * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
+ */
+public class InvalidPropertyValueException extends RuntimeException {
+
+    private static final long serialVersionUID = 111772326725147819L;
+
+    public InvalidPropertyValueException(String message) {
         super(message);
     }
 }
