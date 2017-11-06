@@ -186,7 +186,7 @@ public class EditorConfigSession {
      */
     public QueryResult queryProperties(Resource resource) throws IOException {
         QueryResult.Builder result = QueryResult.builder();
-        ArrayList<EditorConfig> editorConfigs = new ArrayList<>();
+        List<EditorConfig> editorConfigs = new ArrayList<>();
         boolean root = false;
         final String path = resource.getPath();
         ResourcePath dir = resource.getParent();
