@@ -45,6 +45,13 @@ public class Property extends Adaptable {
             this.parentBuilder = parentBuilder;
         }
 
+        /**
+         * @return a new {@link Property}
+         */
+        public Property build() {
+            return new Property(sealAdapters(), type, name, value, parsedValue);
+        }
+
         boolean checkMax() {
             if (name != null && name.length() > 50) {
                 return false;
@@ -63,8 +70,7 @@ public class Property extends Adaptable {
          */
         public Section.Builder closeProperty() {
             if (checkMax()) {
-                Property property = new Property(sealAdapters(), type, name, value, parsedValue);
-                parentBuilder.property(property);
+                parentBuilder.property(build());
             }
             return parentBuilder;
         }
@@ -192,11 +198,10 @@ public class Property extends Adaptable {
     @SuppressWarnings("unchecked")
     public <T> T getValueAs() {
         if (parsedValue.isValid()) {
-            parsedValue.getValue();
+            return (T) parsedValue.getValue();
         } else {
             throw new InvalidPropertyValueException(parsedValue.getErrorMessage());
         }
-        return (T) parsedValue;
     }
 
     @Override

@@ -157,6 +157,29 @@ public class PropertyType<T> {
             this.errorMessage = errorMessage;
         }
 
+        /** {@inheritDoc} */
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            ParsedValue other = (ParsedValue) obj;
+            if (errorMessage == null) {
+                if (other.errorMessage != null)
+                    return false;
+            } else if (!errorMessage.equals(other.errorMessage))
+                return false;
+            if (value == null) {
+                if (other.value != null)
+                    return false;
+            } else if (!value.equals(other.value))
+                return false;
+            return true;
+        }
+
         /**
          * @return the error message describing why the parsing failed or {@code null} if the parsing succeeded
          */
@@ -171,11 +194,26 @@ public class PropertyType<T> {
             return value;
         }
 
+        /** {@inheritDoc} */
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((errorMessage == null) ? 0 : errorMessage.hashCode());
+            result = prime * result + ((value == null) ? 0 : value.hashCode());
+            return result;
+        }
+
         /**
          * @return {@code true} if the parsing succeeded or {@code false} otherwise
          */
         public boolean isValid() {
             return errorMessage == null;
+        }
+
+        @Override
+        public String toString() {
+            return "ParsedValue [value=" + value + ", errorMessage=" + errorMessage + "]";
         }
     }
 
@@ -203,8 +241,11 @@ public class PropertyType<T> {
             @SuppressWarnings("unchecked")
             @Override
             public ParsedValue<T> parse(String name, String value) {
+                if (value == null) {
+                    return ParsedValue.invalid("Cannot make enum " + enumType.getName() +" out of null");
+                }
                 try {
-                    return ParsedValue.valid((T) Enum.valueOf(enumType, value));
+                    return ParsedValue.valid((T) Enum.valueOf(enumType, value.toLowerCase()));
                 } catch (final IllegalArgumentException e) {
                     return ParsedValue.invalid("Unexpected value \"" + value + "\" for enum " + enumType.getName());
                 }
@@ -217,6 +258,10 @@ public class PropertyType<T> {
 
             @Override
             public ParsedValue<Boolean> parse(String name, String value) {
+                if (value == null) {
+                    return ParsedValue.invalid(
+                            "Property '" + name + "' expects a boolean; found: null");
+                }
                 value = value.toLowerCase();
                 if (!"true".equals(value) && !"false".equals(value)) {
                     return ParsedValue.invalid(
