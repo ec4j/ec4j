@@ -22,8 +22,6 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import org.eclipse.ec4j.core.model.propertytype.PropertyException;
-
 /**
  * A type of a {@link Property}. This class also contains the <a href=
  * "https://github.com/editorconfig/editorconfig/wiki/EditorConfig-Properties#widely-supported-by-editors">"widely
@@ -134,7 +132,55 @@ public class PropertyType<T> {
     }
 
     /**
-     * A facility able to validate string values and to parse them into other types.
+     * The result of {@link Property} value parsing. The result may either be valid when it has {@link #value} or
+     * invalid when it has no {@link #value}, but it has an {@link #errorMessage}.
+     *
+     * @param <T>
+     *            the type of the parsed value
+     */
+    public static class ParsedValue<T> {
+        public static <T> ParsedValue<T> invalid(String errorMessage) {
+            return new ParsedValue<T>(null, errorMessage);
+        }
+
+        public static <T> ParsedValue<T> valid(T value) {
+            return new ParsedValue<T>(value, null);
+        }
+
+        private final String errorMessage;
+
+        private final T value;
+
+        ParsedValue(T value, String errorMessage) {
+            super();
+            this.value = value;
+            this.errorMessage = errorMessage;
+        }
+
+        /**
+         * @return the error message describing why the parsing failed or {@code null} if the parsing succeeded
+         */
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+
+        /**
+         * @return the parsed value or {@code null} if the parsing failed.
+         */
+        public T getValue() {
+            return value;
+        }
+
+        /**
+         * @return {@code true} if the parsing succeeded or {@code false} otherwise
+         */
+        public boolean isValid() {
+            return errorMessage == null;
+        }
+    }
+
+    /**
+     * A facility able to parse string values into other types.
      *
      * @param <T>
      *            the type of the parse result
@@ -154,21 +200,13 @@ public class PropertyType<T> {
                 this.enumType = enumType;
             }
 
+            @SuppressWarnings("unchecked")
             @Override
-            public T parse(final String value) {
+            public ParsedValue<T> parse(String name, String value) {
                 try {
-                    return (T) Enum.valueOf(enumType, value.toUpperCase());
+                    return ParsedValue.valid((T) Enum.valueOf(enumType, value));
                 } catch (final IllegalArgumentException e) {
-                    return null;
-                }
-            }
-
-            @Override
-            public void validate(final String name, final String value) throws PropertyException {
-                try {
-                    Enum.valueOf(enumType, value.toUpperCase());
-                } catch (final IllegalArgumentException e) {
-                    throw new PropertyException("enum");
+                    return ParsedValue.invalid("Unexpected value \"" + value + "\" for enum " + enumType.getName());
                 }
             }
 
@@ -178,60 +216,57 @@ public class PropertyType<T> {
         PropertyValueParser<Boolean> BOOLEAN_VALUE_PARSER = new PropertyValueParser<Boolean>() {
 
             @Override
-            public Boolean parse(final String value) {
-                return Boolean.valueOf(value.toLowerCase());
-            }
-
-            @Override
-            public void validate(String name, String value) throws PropertyException {
+            public ParsedValue<Boolean> parse(String name, String value) {
                 value = value.toLowerCase();
                 if (!"true".equals(value) && !"false".equals(value)) {
-                    throw new PropertyException(
+                    return ParsedValue.invalid(
                             "Property '" + name + "' expects a boolean. The value '" + value + "' is not a boolean.");
+                } else {
+                    return ParsedValue.valid(Boolean.valueOf(value.toLowerCase()));
                 }
             }
+
         };
 
         /** A dummy parser that does no parsing at all. */
         PropertyValueParser<String> IDENTITY_VALUE_PARSER = new PropertyValueParser<String>() {
 
             @Override
-            public String parse(final String value) {
-                return value;
+            public ParsedValue<String> parse(String name, String value) {
+                return ParsedValue.valid(value);
             }
 
-            @Override
-            public void validate(String name, String value) throws PropertyException {
-
-            }
         };
 
         /** A parser accepting positive integer numbers. */
         PropertyValueParser<Integer> POSITIVE_INT_VALUE_PARSER = new PropertyValueParser<Integer>() {
             @Override
-            public Integer parse(final String value) {
+            public ParsedValue<Integer> parse(String name, String value) {
                 try {
-                    final Integer integer = Integer.valueOf(value);
-                    return integer <= 0 ? null : integer;
+                    final int val = Integer.parseInt(value);
+                    if (val <= 0) {
+                        return ParsedValue
+                                .invalid("Property '" + name + "' expects a positive integer; found '" + value + "'");
+                    } else {
+                        return ParsedValue.valid(Integer.valueOf(val));
+                    }
                 } catch (final NumberFormatException e) {
-                    return null;
-                }
-            }
-
-            @Override
-            public void validate(String name, String value) throws PropertyException {
-                try {
-                    Integer.valueOf(value);
-                } catch (final NumberFormatException e) {
-                    throw new PropertyException(
+                    return ParsedValue.invalid(
                             "Property '" + name + "' expects an integer. The value '" + value + "' is not an integer.");
                 }
             }
         };
 
-        T parse(String value);
-
-        void validate(String name, String value) throws PropertyException;
+        /**
+         * Parses the given {@code value} into a {@link ParsedValue}
+         *
+         * @param name
+         *            the name of the parsed property
+         * @param value
+         *            the value to parse
+         * @return the {@link PropertyType.ParsedValue}
+         */
+        ParsedValue<T> parse(String name, String value);
 
     }
 
@@ -307,6 +342,10 @@ public class PropertyType<T> {
                         indent_style, insert_final_newline, root, tab_width, trim_trailing_whitespace)));
     }
 
+    /**
+     * @return a {@link Set} of the "widely supported" property types - see
+     *         <a href="http://editorconfig.org/">http://editorconfig.org/</a>
+     */
     public static Set<PropertyType<?>> standardTypes() {
         return STANDARD_TYPES;
     }
@@ -336,14 +375,23 @@ public class PropertyType<T> {
         this(name, description, parser, toSet(possibleValues));
     }
 
+    /**
+     * @return a short description of this {@link PropertyType}
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * @return the name of this {@link PropertyType}
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @return a {@link Set} of values that are valid for this {@link PropertyType}
+     */
     public Set<String> getPossibleValues() {
         return possibleValues;
     }
@@ -361,16 +409,19 @@ public class PropertyType<T> {
         return value;
     }
 
-    public T parse(String value) {
-        return parser.parse(value);
+    /**
+     * Parses the given {@code value} into a {@link ParsedValue}
+     * @param value the value to parse
+     * @return the {@link ParsedValue}
+     */
+    public ParsedValue<T> parse(String value) {
+        return parser.parse(name, value);
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return name;
     }
 
-    public void validate(String value) throws PropertyException {
-        parser.validate(name, value);
-    }
 }

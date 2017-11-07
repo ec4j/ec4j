@@ -127,13 +127,17 @@ public class QueryResult {
      *            the {@link PropertyType} whose {@code name} will be used to get the value fron {@link #properties}
      * @param defaultValue
      *            the value to return if the {@code name} is not available in {@link #properties}
+     * @param throwInvalid
+     *            if {@code true} and the underlying {@link Property} value is invalid, an
+     *            {@link InvalidPropertyValueException} will be thrown. Otherwise, in the same case the invalid value
+     *            will be ignored and {@code defaultValue} will be returned instead
      * @return the value associated with the given {@code type}'s {@code name} or the {@code defaultValue} if the
      *         {@code name} is not available in {@link #properties}
+     * @throws InvalidPropertyValueException
+     *             if {@code throwInvalid} is {@code true} and the underlying {@link Property} value is invalid.
      */
-    @SuppressWarnings("unchecked")
-    public <T> T getValue(PropertyType<T> type, T defaultValue) {
-        Property prop = properties.get(type.getName());
-        return prop == null ? defaultValue : (T) prop.getValueAs();
+    public <T> T getValue(PropertyType<T> type, T defaultValue, boolean throwInvalid) {
+        return getValue(type.getName(), defaultValue, throwInvalid);
     }
 
     /**
@@ -145,12 +149,25 @@ public class QueryResult {
      *            the name to use to get the value fron {@link #properties}
      * @param defaultValue
      *            the value to return if the {@code name} is not available in {@link #properties}
+     * @param throwInvalid
+     *            if {@code true} and the underlying {@link Property} value is invalid, an
+     *            {@link InvalidPropertyValueException} will be thrown. Otherwise, in the same case the invalid value
+     *            will be ignored and {@code defaultValue} will be returned instead
      * @return the value associated with the given {@code name} or the {@code defaultValue} if the {@code name} is not
      *         available in {@link #properties}
+     * @throws InvalidPropertyValueException
+     *             if {@code throwInvalid} is {@code true} and the underlying {@link Property} value is invalid.
      */
     @SuppressWarnings("unchecked")
-    public <T> T getValue(String name, T defaultValue) {
+    public <T> T getValue(String name, T defaultValue, boolean throwInvalid) {
         Property prop = properties.get(name);
-        return prop == null ? defaultValue : (T) prop.getValueAs();
+        if (prop == null) {
+            return defaultValue;
+        } else if (throwInvalid || prop.isValid()) {
+            return (T) prop.getValueAs();
+        } else {
+            /* !throwInvalid && !prop.isValid() */
+            return defaultValue;
+        }
     }
 }
