@@ -176,13 +176,19 @@ public class EditorConfigSession {
     }
 
     /**
-     * Queries {@link Property}s applicable to a {@link Resource}.
+     * Walks up the resource tree from the given {@link Resource}, visits all {@code .editorconfig} files and filters
+     * {@link Property}s applicable to the given {@link Resource}.
+     * <p>
+     * Note that the performance of this method is strongly influenced by the {@link Cache} implementation this
+     * {@link EditorConfigSession} uses. If you do not specify any {@link Cache} via {@link Builder#cache(Cache)}
+     * explicitly, {@link Caches#none()} is used that causes this method to parse each {@code .editorconfig} file every
+     * time it is necessary.
      *
      * @param resource
-     *            the resource to query the {@link Property}s for
+     *            the resource to find the {@link Property}s for
      * @return a {@link ResourceProperties} that contains {@link Property}s applicable to the given {@link Resource}
      * @throws IOException
-     *             on I/O problems during the reading from the given {@link Resource}
+     *             on I/O problems during the reading from the {@code .editorconfig} files.
      */
     public ResourceProperties queryProperties(Resource resource) throws IOException {
         ResourceProperties.Builder result = ResourceProperties.builder();
@@ -190,6 +196,7 @@ public class EditorConfigSession {
         boolean root = false;
         final String path = resource.getPath();
         ResourcePath dir = resource.getParent();
+        /* Walk up the tree storing the .editorconfig models to editorConfigs  */
         while (dir != null && !root) {
             Resource configFile = dir.resolve(configFileName);
             if (configFile.exists()) {
@@ -200,6 +207,7 @@ public class EditorConfigSession {
             root |= rootDirectories.contains(dir);
             dir = dir.getParent();
         }
+        /* Now go back top down so that the duplicate properties defined closer to the given resource win */
         int i = editorConfigs.size() - 1;
         while (i >= 0) {
             final EditorConfig config = editorConfigs.get(i--);
