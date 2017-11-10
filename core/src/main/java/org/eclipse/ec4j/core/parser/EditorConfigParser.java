@@ -298,46 +298,6 @@ public class EditorConfigParser implements ParseContext {
         handler.endProperty(this);
     }
 
-    private void readEscape() throws IOException {
-        read();
-        switch (current) {
-        case '"':
-        case '/':
-        case '\\':
-            captureBuffer.append((char) current);
-            break;
-        case 'b':
-            captureBuffer.append('\b');
-            break;
-        case 'f':
-            captureBuffer.append('\f');
-            break;
-        case 'n':
-            captureBuffer.append('\n');
-            break;
-        case 'r':
-            captureBuffer.append('\r');
-            break;
-        case 't':
-            captureBuffer.append('\t');
-            break;
-        case 'u':
-            char[] hexChars = new char[4];
-            for (int i = 0; i < 4; i++) {
-                read();
-                if (!isHexDigit()) {
-                    throw expected("hexadecimal digit");
-                }
-                hexChars[i] = (char) current;
-            }
-            captureBuffer.append((char) Integer.parseInt(new String(hexChars), 16));
-            break;
-        default:
-            throw expected("valid escape sequence");
-        }
-        read();
-    }
-
     private boolean readChar(char ch) throws IOException {
         if (current != ch) {
             return false;
@@ -378,12 +338,6 @@ public class EditorConfigParser implements ParseContext {
 
     private void startCapture() {
         captureStart = index - 1;
-    }
-
-    private void pauseCapture() {
-        int end = isEndOfText() ? index : index - 1;
-        captureBuffer.append(buffer, captureStart, end - captureStart);
-        captureStart = -1;
     }
 
     private String endCapture() {
@@ -432,10 +386,6 @@ public class EditorConfigParser implements ParseContext {
 
     private boolean isNewLine() {
         return current == '\n' || current == '\r';
-    }
-
-    private boolean isHexDigit() {
-        return current >= '0' && current <= '9' || current >= 'a' && current <= 'f' || current >= 'A' && current <= 'F';
     }
 
     private boolean isEndOfText() {
