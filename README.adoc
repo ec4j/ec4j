@@ -1,9 +1,9 @@
 = ec4j
 
-https://github.com/angelozerr/ec4j/blob/master/LICENSE[image:https://img.shields.io/github/license/angelozerr/ec4j.svg[License]]
+https://github.com/ec4j/ec4j/blob/master/LICENSE[image:https://img.shields.io/github/license/ec4j/ec4j.svg[License]]
 http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22ec4j%22[image:https://img.shields.io/maven-central/v/fr.opensagres.js/ec4j.svg[Maven
 Central]]
-http://travis-ci.org/angelozerr/ec4j[image:https://secure.travis-ci.org/angelozerr/ec4j.png[Build
+http://travis-ci.org/ec4j/ec4j[image:https://secure.travis-ci.org/ec4j/ec4j.png[Build
 Status]]
 
 `ec4j` is an http://editorconfig.org/[EditorConfig] parser for Java.
