@@ -9,6 +9,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.eclipse.ec4j.core,
  org.eclipse.ec4j.core.model,
- org.eclipse.ec4j.core.model.propertytype,
- org.eclipse.ec4j.core.parser,
- org.eclipse.ec4j.core.parser.handlers
+ org.eclipse.ec4j.core.parser
