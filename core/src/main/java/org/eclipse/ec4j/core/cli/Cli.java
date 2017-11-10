@@ -24,8 +24,8 @@ import java.util.List;
 
 import org.eclipse.ec4j.core.EditorConfigConstants;
 import org.eclipse.ec4j.core.EditorConfigLoader;
-import org.eclipse.ec4j.core.EditorConfigSession;
 import org.eclipse.ec4j.core.ResourcePaths;
+import org.eclipse.ec4j.core.ResourcePropertiesService;
 import org.eclipse.ec4j.core.Resources.Resource;
 import org.eclipse.ec4j.core.model.Property;
 import org.eclipse.ec4j.core.model.Version;
@@ -91,7 +91,7 @@ public class Cli {
             System.exit(1);
         }
 
-        EditorConfigSession editorConfigSession = EditorConfigSession.builder() //
+        ResourcePropertiesService resourcePropertiesService = ResourcePropertiesService.builder() //
                 .configFileName(editorconfigFileName) //
                 .rootDirectory(ResourcePaths.ofPath(Paths.get(".").toAbsolutePath().normalize(), StandardCharsets.UTF_8)) //
                 .loader(EditorConfigLoader.of(version)) //
@@ -123,7 +123,7 @@ public class Cli {
                 }
             }
             Resource file = org.eclipse.ec4j.core.Resources.ofPath(p, StandardCharsets.UTF_8);
-            Collection<Property> props = editorConfigSession.queryProperties(file).getProperties().values();
+            Collection<Property> props = resourcePropertiesService.queryProperties(file).getProperties().values();
             for (Property prop : props) {
                 System.out.println(prop.getName() + "=" + prop.getSourceValue());
             }

@@ -115,7 +115,7 @@ public class EditorConfigParserTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
+        Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(1, properties.size());
         Assert.assertEquals("key = value", properties.iterator().next().toString());
     }
@@ -189,7 +189,7 @@ public class EditorConfigParserTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
+        Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(1, properties.size());
         Assert.assertEquals("key = value ", properties.iterator().next().toString());
     }
@@ -223,7 +223,7 @@ public class EditorConfigParserTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
+        Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(2, properties.size());
         Iterator<Property> it = properties.iterator();
         Assert.assertEquals("name1 = value1", it.next().toString());
@@ -238,7 +238,7 @@ public class EditorConfigParserTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
+        Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(1, properties.size());
         Iterator<Property> it = properties.iterator();
         Assert.assertEquals("key3 = value3", it.next().toString());
@@ -252,7 +252,7 @@ public class EditorConfigParserTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
+        Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(0, properties.size());
     }
 }

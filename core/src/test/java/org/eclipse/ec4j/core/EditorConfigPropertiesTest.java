@@ -54,7 +54,7 @@ public class EditorConfigPropertiesTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
+        Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
 
         Assert.assertEquals(2, properties.size());
         Iterator<Property> iter = properties.iterator();

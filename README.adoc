@@ -33,26 +33,18 @@ To query the properties applicable to a file in a source tree:
 
 [source,java]
 ----
-Cache myCache = ...; // e.g. Caches.none()
-EditorConfigLoader myLoader = ...; // e.g. EditorConfigLoader.getDefault()
-EditorConfigSession mySession = EditorConfigSession.builder()
+Cache myCache = ...; // e.g. Caches.permanent()
+EditorConfigLoader myLoader = ...; // e.g. EditorConfigLoader.default_()
+ResourcePropertiesService propService = ResourcePropertiesService.builder()
         .cache(myCache)
         .loader(myLoader)
         .rootDirectory(ResourcePaths.ofPath(Paths.get("/my/dir")))
         .build();
-QueryResult result = mySession.queryProperties(Resources.ofPath(Paths.get("/my/dir1/Class1.java")));
-IndentStyleValue indentStyleValue = result.getValue(PropertyType.indent_style, IndentStyleValue.space);
-switch (indentStyleVal) {
-    case space:
-        // ...
-        break;
-    case tab:
-        //...
-        break;
-    default:
-        throw new IllegalStateException("Huh "+ indentStyleVal +"?");
-    }
-}
+
+ResourceProperties props = propService.queryProperties(Resources.ofPath(Paths.get("/my/dir1/Class1.java")));
+IndentStyleValue indentStyleValue = props.getValue(PropertyType.indent_style, IndentStyleValue.space);
+char indentChar = indentStyleValue.getIndentChar();
+// Now you can e.g. check that /my/dir1/Class1.java is indented using indentChar
 ----
 
 == How to build

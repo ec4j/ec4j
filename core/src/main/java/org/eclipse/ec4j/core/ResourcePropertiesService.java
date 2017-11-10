@@ -32,15 +32,14 @@ import org.eclipse.ec4j.core.model.Property;
 import org.eclipse.ec4j.core.model.Section;
 
 /**
- * A session that keeps a {@link Cache} and {@link EditorConfigLoader} to be able to query {@link Property}s applicable
- * to a {@link Resource}.
+ * A service able to query {@link Property}s applicable to a given {@link Resource}.
  * <p>
  * This is a typical entry point for the users of {@code ec4j.core}.
  * <p>
- * To create a new default {@link EditorConfigSession} use
+ * To create a new default {@link ResourcePropertiesService} use
  *
  * <pre>
- * EditorConfigSession mySession = EditorConfigSession.default_();
+ * ResourcePropertiesService propService = ResourcePropertiesService.default_();
  * </pre>
  *
  * Use {@link #builder()} if you need something special:
@@ -48,32 +47,22 @@ import org.eclipse.ec4j.core.model.Section;
  * <pre>
  * Cache myCache = ...;
  * EditorConfigLoader myLoader = ...;
- * EditorConfigSession mySession = EditorConfigSession.builder()
+ * ResourcePropertiesService propService = ResourcePropertiesService.builder()
  *         .cache(myCache)
  *         .loader(myLoader)
  *         .rootDirectory(ResourcePaths.ofPath(Paths.get("/my/dir")))
  *         .build();
  *
- * ResourceProperties result = mySession.queryProperties(Resources.ofPath(Paths.get("/my/dir1/Class1.java")));
- * IndentStyleValue indentStyleValue = result.getValue(PropertyType.indent_style, IndentStyleValue.space);
- * switch (indentStyleVal) {
- *     case space:
- *         // ...
- *         break;
- *     case tab:
- *         //...
- *         break;
- *     default:
- *         throw new IllegalStateException("Huh "+ indentStyleVal +"?");
- *     }
- * }
- *
+ * ResourceProperties props = propService.queryProperties(Resources.ofPath(Paths.get("/my/dir1/Class1.java")));
+ * IndentStyleValue indentStyleValue = props.getValue(PropertyType.indent_style, IndentStyleValue.space);
+ * char indentChar = indentStyleValue.getIndentChar();
+ * // Now you can e.g. check that /my/dir1/Class1.java is indented using indentChar
  * </pre>
  *
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
-public class EditorConfigSession {
+public class ResourcePropertiesService {
 
     public static class Builder {
         private Cache cache = Caches.none();
@@ -81,8 +70,9 @@ public class EditorConfigSession {
         private EditorConfigLoader loader = EditorConfigLoader.getDefault();
         private Set<ResourcePath> rootDirectories = new LinkedHashSet<>();
 
-        public EditorConfigSession build() {
-            return new EditorConfigSession(configFileName, Collections.unmodifiableSet(rootDirectories), cache, loader);
+        public ResourcePropertiesService build() {
+            return new ResourcePropertiesService(configFileName, Collections.unmodifiableSet(rootDirectories), cache,
+                    loader);
         }
 
         public Builder cache(Cache cache) {
@@ -119,20 +109,21 @@ public class EditorConfigSession {
     }
 
     /**
-     * @return a new {@link EditorConfigSession} {@link Builder}.
+     * @return a new {@link ResourcePropertiesService} {@link Builder}.
      */
     public static Builder builder() {
         return new Builder();
     }
 
     /**
-     * A shorthand for {@code EditorConfigSession.builder().build()}. Returns a new {@link EditorConfigSession} with
-     * {@link Caches#none()} {@link Cache}, {@link EditorConfigConstants#EDITORCONFIG} {@code configFileName},
-     * {@link EditorConfigLoader#getDefault()} {@code loader} and empty {@code rootDirectories}.
+     * A shorthand for {@code ResourcePropertiesService.builder().build()}. Returns a new
+     * {@link ResourcePropertiesService} with {@link Caches#none()} {@link Cache},
+     * {@link EditorConfigConstants#EDITORCONFIG} {@code configFileName}, {@link EditorConfigLoader#getDefault()}
+     * {@code loader} and empty {@code rootDirectories}.
      *
-     * @return a new default {@link EditorConfigSession}
+     * @return a new default {@link ResourcePropertiesService}
      */
-    public static EditorConfigSession default_() {
+    public static ResourcePropertiesService default_() {
         return builder().build();
     }
 
@@ -141,7 +132,7 @@ public class EditorConfigSession {
     private final EditorConfigLoader loader;
     private final Set<ResourcePath> rootDirectories;
 
-    EditorConfigSession(String configFileName, Set<ResourcePath> rootDirectories, Cache cache,
+    ResourcePropertiesService(String configFileName, Set<ResourcePath> rootDirectories, Cache cache,
             EditorConfigLoader loader) {
         super();
         this.rootDirectories = rootDirectories;
@@ -155,21 +146,23 @@ public class EditorConfigSession {
     }
 
     /**
-     * @return the name of the EditorConfig file this session looks for (the default value is {@code .editorconfig})
+     * @return the name of the EditorConfig file this {@link ResourcePropertiesService} looks for (the default value is
+     *         {@code .editorconfig})
      */
     public String getConfigFileName() {
         return configFileName;
     }
 
     /**
-     * @return the {@link EditorConfigLoader} associated with this {@link EditorConfigSession}
+     * @return the {@link EditorConfigLoader} associated with this {@link ResourcePropertiesService}
      */
     public EditorConfigLoader getLoader() {
         return loader;
     }
 
     /**
-     * @return the {@link Set} of root directories associated with this {@link EditorConfigSession}; never {@code null}
+     * @return the {@link Set} of root directories associated with this {@link ResourcePropertiesService}; never
+     *         {@code null}
      */
     public Set<ResourcePath> getRootDirectories() {
         return rootDirectories;
@@ -180,7 +173,7 @@ public class EditorConfigSession {
      * {@link Property}s applicable to the given {@link Resource}.
      * <p>
      * Note that the performance of this method is strongly influenced by the {@link Cache} implementation this
-     * {@link EditorConfigSession} uses. If you do not specify any {@link Cache} via {@link Builder#cache(Cache)}
+     * {@link ResourcePropertiesService} uses. If you do not specify any {@link Cache} via {@link Builder#cache(Cache)}
      * explicitly, {@link Caches#none()} is used that causes this method to parse each {@code .editorconfig} file every
      * time it is necessary.
      *
@@ -196,7 +189,7 @@ public class EditorConfigSession {
         boolean root = false;
         final String path = resource.getPath();
         ResourcePath dir = resource.getParent();
-        /* Walk up the tree storing the .editorconfig models to editorConfigs  */
+        /* Walk up the tree storing the .editorconfig models to editorConfigs */
         while (dir != null && !root) {
             Resource configFile = dir.resolve(configFileName);
             if (configFile.exists()) {

@@ -26,7 +26,7 @@ import org.eclipse.ec4j.core.model.PropertyType;
 
 /**
  * A collection of {@link Property}s applicable to a {@link Resource} as returned by
- * {@link EditorConfigSession#queryProperties(org.eclipse.ec4j.core.Resources.Resource)}.
+ * {@link ResourcePropertiesService#queryProperties(org.eclipse.ec4j.core.Resources.Resource)}.
  * <p>
  * This is basically just a wrapper around a {@link Map} of {@link Property}s that offers utility methods for getting
  * entries from the underlying {@link Map} not only by name but also by {@link PropertyType} in a type safe manner.
