@@ -17,6 +17,8 @@
 package org.eclipse.ec4j.core;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.ec4j.core.Resources.Resource;
 import org.eclipse.ec4j.core.model.EditorConfig;
@@ -40,6 +42,33 @@ public class Caches {
         EditorConfig get(Resource editorConfigFile, EditorConfigLoader loader) throws IOException;
     }
 
+    /**
+     * A simple {@link HashMap} based {@link Cache} whose entries are kept forver unless {@link #clear()} is called.
+     * <p>
+     * Instances of this class cannot be acceseed from concurrent threads safely.
+     */
+    public static class PermanentCache implements Cache {
+        private final Map<Resource, EditorConfig> entries = new HashMap<>();
+
+        /**
+         * Removes all entries from this {@link Cache}.
+         */
+        public void clear() {
+            entries.clear();
+        }
+
+        @Override
+        public EditorConfig get(Resource editorConfigFile, EditorConfigLoader loader) throws IOException {
+            EditorConfig result = entries.get(editorConfigFile);
+            if (result == null) {
+                result = loader.load(editorConfigFile);
+                entries.put(editorConfigFile, result);
+            }
+            return result;
+        }
+
+    }
+
     /** {@link #NO_CACHE} keeps no state, we can thus have a singleton */
     private static final Cache NO_CACHE = new Cache() {
         @Override
@@ -57,6 +86,13 @@ public class Caches {
      */
     public static Cache none() {
         return NO_CACHE;
+    }
+
+    /**
+     * @return a new {@link PermanentCache}
+     */
+    public static Cache permanent() {
+        return new PermanentCache();
     }
 
     private Caches() {
