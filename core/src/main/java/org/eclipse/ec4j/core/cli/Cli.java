@@ -24,9 +24,9 @@ import java.util.List;
 
 import org.eclipse.ec4j.core.EditorConfigConstants;
 import org.eclipse.ec4j.core.EditorConfigLoader;
-import org.eclipse.ec4j.core.ResourcePaths;
+import org.eclipse.ec4j.core.Resource;
+import org.eclipse.ec4j.core.ResourcePath.ResourcePaths;
 import org.eclipse.ec4j.core.ResourcePropertiesService;
-import org.eclipse.ec4j.core.Resources.Resource;
 import org.eclipse.ec4j.core.model.Property;
 import org.eclipse.ec4j.core.model.Version;
 
@@ -122,7 +122,7 @@ public class Cli {
                     p = Paths.get(first, path.split("/")).toAbsolutePath().normalize();
                 }
             }
-            Resource file = org.eclipse.ec4j.core.Resources.ofPath(p, StandardCharsets.UTF_8);
+            Resource file = org.eclipse.ec4j.core.Resource.Resources.ofPath(p, StandardCharsets.UTF_8);
             Collection<Property> props = resourcePropertiesService.queryProperties(file).getProperties().values();
             for (Property prop : props) {
                 System.out.println(prop.getName() + "=" + prop.getSourceValue());

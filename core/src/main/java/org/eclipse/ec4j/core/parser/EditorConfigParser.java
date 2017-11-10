@@ -19,7 +19,7 @@ package org.eclipse.ec4j.core.parser;
 import java.io.IOException;
 import java.io.Reader;
 
-import org.eclipse.ec4j.core.Resources.Resource;
+import org.eclipse.ec4j.core.Resource;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>

@@ -18,8 +18,7 @@ package org.eclipse.ec4j.core;
 
 import java.io.IOException;
 
-import org.eclipse.ec4j.core.Resources.Resource;
-import org.eclipse.ec4j.core.Resources.StringResourceTree;
+import org.eclipse.ec4j.core.Resource.Resources.StringResourceTree;
 import org.eclipse.ec4j.core.model.EditorConfig;
 import org.junit.Assert;
 import org.junit.Test;

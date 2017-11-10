@@ -18,7 +18,6 @@ package org.eclipse.ec4j.core;
 
 import java.io.IOException;
 
-import org.eclipse.ec4j.core.Resources.Resource;
 import org.eclipse.ec4j.core.model.EditorConfig;
 import org.eclipse.ec4j.core.model.Version;
 import org.eclipse.ec4j.core.parser.EditorConfigModelHandler;

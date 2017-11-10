@@ -22,8 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.ec4j.core.PropertyTypeRegistry;
-import org.eclipse.ec4j.core.Resources;
-import org.eclipse.ec4j.core.Resources.Resource;
+import org.eclipse.ec4j.core.Resource;
+import org.eclipse.ec4j.core.Resource.Resources;
 import org.eclipse.ec4j.core.model.Comments.CommentBlocks;
 import org.eclipse.ec4j.core.model.EditorConfig;
 import org.eclipse.ec4j.core.model.Section;

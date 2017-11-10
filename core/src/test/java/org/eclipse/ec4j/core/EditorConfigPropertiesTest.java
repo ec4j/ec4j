@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.ec4j.core.Resources.StringResourceTree;
+import org.eclipse.ec4j.core.Resource.Resources.StringResourceTree;
 import org.eclipse.ec4j.core.model.Property;
 import org.junit.Assert;
 import org.junit.Test;

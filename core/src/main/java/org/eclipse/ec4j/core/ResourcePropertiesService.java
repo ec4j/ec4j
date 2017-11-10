@@ -24,9 +24,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.ec4j.core.Caches.Cache;
-import org.eclipse.ec4j.core.ResourcePaths.ResourcePath;
-import org.eclipse.ec4j.core.Resources.Resource;
+import org.eclipse.ec4j.core.Cache.Caches;
 import org.eclipse.ec4j.core.model.EditorConfig;
 import org.eclipse.ec4j.core.model.Property;
 import org.eclipse.ec4j.core.model.Section;

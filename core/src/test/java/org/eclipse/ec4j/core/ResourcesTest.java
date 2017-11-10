@@ -19,8 +19,7 @@ package org.eclipse.ec4j.core;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 
-import org.eclipse.ec4j.core.ResourcePaths.ResourcePath;
-import org.eclipse.ec4j.core.Resources.Resource;
+import org.eclipse.ec4j.core.Resource.Resources;
 import org.junit.Assert;
 import org.junit.Test;
 

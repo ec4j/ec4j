@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.ec4j.core.ResourcePaths.ResourcePath;
+import org.eclipse.ec4j.core.ResourcePath;
 
 /**
  * A immutable model of an {@code .editorconfig} file.

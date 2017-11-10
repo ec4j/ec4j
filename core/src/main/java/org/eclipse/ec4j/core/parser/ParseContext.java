@@ -16,7 +16,7 @@
  */
 package org.eclipse.ec4j.core.parser;
 
-import org.eclipse.ec4j.core.Resources.Resource;
+import org.eclipse.ec4j.core.Resource;
 
 /**
  * The context of a parse notification sent by {@link EditorConfigParser}.
