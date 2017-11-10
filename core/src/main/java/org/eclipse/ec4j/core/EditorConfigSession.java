@@ -54,7 +54,7 @@ import org.eclipse.ec4j.core.model.Section;
  *         .rootDirectory(ResourcePaths.ofPath(Paths.get("/my/dir")))
  *         .build();
  *
- * QueryResult result = mySession.queryProperties(Resources.ofPath(Paths.get("/my/dir1/Class1.java")));
+ * ResourceProperties result = mySession.queryProperties(Resources.ofPath(Paths.get("/my/dir1/Class1.java")));
  * IndentStyleValue indentStyleValue = result.getValue(PropertyType.indent_style, IndentStyleValue.space);
  * switch (indentStyleVal) {
  *     case space:
@@ -180,12 +180,12 @@ public class EditorConfigSession {
      *
      * @param resource
      *            the resource to query the {@link Property}s for
-     * @return a {@link QueryResult} that contains {@link Property}s applicable to the given {@link Resource}
+     * @return a {@link ResourceProperties} that contains {@link Property}s applicable to the given {@link Resource}
      * @throws IOException
      *             on I/O problems during the reading from the given {@link Resource}
      */
-    public QueryResult queryProperties(Resource resource) throws IOException {
-        QueryResult.Builder result = QueryResult.builder();
+    public ResourceProperties queryProperties(Resource resource) throws IOException {
+        ResourceProperties.Builder result = ResourceProperties.builder();
         List<EditorConfig> editorConfigs = new ArrayList<>();
         boolean root = false;
         final String path = resource.getPath();
