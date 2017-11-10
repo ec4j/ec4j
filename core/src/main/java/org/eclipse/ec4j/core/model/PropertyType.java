@@ -77,9 +77,9 @@ public class PropertyType<T> {
      */
     public enum IndentStyleValue {
 
-        space("Space"),
+        space("Space", ' '),
 
-        tab("Tab");
+        tab("Tab", '\t');
 
         private static final Set<String> VALUE_SET;
 
@@ -97,9 +97,20 @@ public class PropertyType<T> {
 
         private final String displayValue;
 
-        IndentStyleValue(final String displayValue) {
+        private final char indentChar;
+
+        IndentStyleValue(String displayValue, char indentChar) {
             this.displayValue = displayValue;
+            this.indentChar = indentChar;
         }
+
+        /**
+         * @return a space or tab character
+         */
+        public char getIndentChar() {
+            return indentChar;
+        }
+
 
     }
 
