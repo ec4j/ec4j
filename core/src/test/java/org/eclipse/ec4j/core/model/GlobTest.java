@@ -23,7 +23,7 @@ public class GlobTest {
 
     @Test
     public void braces_alpha_range1() {
-        Glob glob = new Glob("/dir1","{aardvark..antelope}" );
+        Glob glob = new Glob("/dir1", "{aardvark..antelope}");
         Assert.assertTrue(glob.match("/dir/{aardvark..antelope}"));
     }
 

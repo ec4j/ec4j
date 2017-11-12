@@ -53,8 +53,8 @@ public class EditorConfigGlobTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile))
-                .getProperties().values();
+        Collection<Property> properties = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(1, properties.size());
         Assert.assertEquals("keyb = valueb", properties.iterator().next().toString());
     }
@@ -76,7 +76,8 @@ public class EditorConfigGlobTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
+        Collection<Property> properties = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(1, properties.size());
         Assert.assertEquals("key = value", properties.iterator().next().toString());
     }
@@ -155,8 +156,8 @@ public class EditorConfigGlobTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile))
-                .getProperties().values();
+        Collection<Property> properties = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(1, properties.size());
         Assert.assertEquals("close_inside = true", properties.iterator().next().toString());
     }
@@ -170,8 +171,8 @@ public class EditorConfigGlobTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile))
-                .getProperties().values();
+        Collection<Property> properties = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(1, properties.size());
         Assert.assertEquals("close_outside = true", properties.iterator().next().toString());
     }
@@ -263,8 +264,8 @@ public class EditorConfigGlobTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile))
-                .getProperties().values();
+        Collection<Property> properties = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(1, properties.size());
         Assert.assertEquals("choice = true", properties.iterator().next().toString());
     }
@@ -297,8 +298,8 @@ public class EditorConfigGlobTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile))
-                .getProperties().values();
+        Collection<Property> properties = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(1, properties.size());
         Assert.assertEquals("key2 = value2", properties.iterator().next().toString());
     }
@@ -312,8 +313,8 @@ public class EditorConfigGlobTest {
                     .touch(testFile) //
                     .build();
 
-            Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile))
-                    .getProperties().values();
+            Collection<Property> properties = ResourcePropertiesService.default_()
+                    .queryProperties(tree.getResource(testFile)).getProperties().values();
             Assert.assertEquals(1, properties.size());
             Assert.assertEquals("backslash = yes", properties.iterator().next().toString());
         }

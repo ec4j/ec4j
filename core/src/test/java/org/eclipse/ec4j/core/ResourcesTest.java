@@ -27,7 +27,8 @@ public class ResourcesTest {
 
     @Test
     public void ofClassPath() {
-        Resource r = Resources.ofClassPath(getClass().getClassLoader(), "/location-aware/.editorconfig", StandardCharsets.UTF_8);
+        Resource r = Resources.ofClassPath(getClass().getClassLoader(), "/location-aware/.editorconfig",
+                StandardCharsets.UTF_8);
         Assert.assertNotNull(r);
         Assert.assertEquals("/location-aware/.editorconfig", r.getPath());
         Assert.assertTrue(r.exists());
@@ -52,7 +53,8 @@ public class ResourcesTest {
 
     @Test
     public void ofPath() {
-        Resource r = Resources.ofPath(Paths.get("src/test/resources/location-aware/.editorconfig"), StandardCharsets.UTF_8);
+        Resource r = Resources.ofPath(Paths.get("src/test/resources/location-aware/.editorconfig"),
+                StandardCharsets.UTF_8);
         Assert.assertNotNull(r);
         Assert.assertEquals("src/test/resources/location-aware/.editorconfig", r.getPath());
         Assert.assertTrue(r.exists());

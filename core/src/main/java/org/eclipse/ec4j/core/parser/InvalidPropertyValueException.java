@@ -14,21 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.ec4j.core;
+package org.eclipse.ec4j.core.parser;
 
+import org.eclipse.ec4j.core.PropertyTypeRegistry;
 import org.eclipse.ec4j.core.model.Property;
+import org.eclipse.ec4j.core.model.PropertyType;
 
 /**
- * Thrown when an invalid {@link Property} value is accessesd.
+ * Thrown when an {@link EditorConfigParser} encounters an invalid {@link Property} value. Validity of property values
+ * is decided by {@link PropertyType} registered for the given property name in {@link PropertyTypeRegistry}.
  *
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
-public class InvalidPropertyValueException extends RuntimeException {
+public class InvalidPropertyValueException extends ParseException {
 
     private static final long serialVersionUID = 111772326725147819L;
 
-    public InvalidPropertyValueException(String message) {
-        super(message);
+    InvalidPropertyValueException(String message, Location location) {
+        super(message, location);
     }
+
 }

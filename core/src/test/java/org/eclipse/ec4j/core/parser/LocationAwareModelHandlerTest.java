@@ -35,7 +35,8 @@ public class LocationAwareModelHandlerTest {
 
     @Test
     public void locations() throws IOException {
-        EditorConfig config = parse(Resources.ofClassPath(getClass().getClassLoader(), "/location-aware/.editorconfig", StandardCharsets.UTF_8));
+        EditorConfig config = parse(Resources.ofClassPath(getClass().getClassLoader(), "/location-aware/.editorconfig",
+                StandardCharsets.UTF_8));
 
         CommentBlocks commentBlocks = config.getAdapter(CommentBlocks.class);
         Assert.assertNotNull(commentBlocks);
@@ -50,9 +51,11 @@ public class LocationAwareModelHandlerTest {
     }
 
     private EditorConfig parse(Resource file) throws IOException {
-        EditorConfigModelHandler handler = new LocationAwareModelHandler(PropertyTypeRegistry.getDefault(), Version.CURRENT);
+        ErrorHandler errorHandler = ErrorHandler.THROWING;
+        EditorConfigModelHandler handler = new LocationAwareModelHandler(PropertyTypeRegistry.getDefault(),
+                Version.CURRENT, errorHandler);
         EditorConfigParser parser = EditorConfigParser.builder().build();
-        parser.parse(file, handler, ErrorHandler.THROWING);
+        parser.parse(file, handler, errorHandler);
         return handler.getEditorConfig();
     }
 

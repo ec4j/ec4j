@@ -22,6 +22,7 @@ import org.eclipse.ec4j.core.PropertyTypeRegistry;
 import org.eclipse.ec4j.core.model.EditorConfig;
 import org.eclipse.ec4j.core.model.Property;
 import org.eclipse.ec4j.core.model.PropertyType;
+import org.eclipse.ec4j.core.model.PropertyType.PropertyValue;
 import org.eclipse.ec4j.core.model.Section;
 import org.eclipse.ec4j.core.model.Version;
 
@@ -39,10 +40,13 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
     protected Property.Builder propertyBuilder;
     protected final PropertyTypeRegistry registry;
     protected final Version version;
+    private PropertyType<?> type;
+    private final ErrorHandler errorHandler;
 
-    public EditorConfigModelHandler(PropertyTypeRegistry registry, Version version) {
+    public EditorConfigModelHandler(PropertyTypeRegistry registry, Version version, ErrorHandler errorHandler) {
         this.registry = registry;
         this.version = version;
+        this.errorHandler = errorHandler;
     }
 
     /** {@inheritDoc} */
@@ -112,8 +116,8 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
     @Override
     public void endPropertyName(ParseContext context, String name) {
         name = normalizePropertyName(name);
-        PropertyType<?> type = registry.getType(name);
-        if (type != null) {
+        this.type = registry.getType(name);
+        if (this.type != null) {
             /* propertyBuilder.type(type) sets also the (lowercased) name */
             propertyBuilder.type(type);
         } else {
@@ -124,7 +128,8 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
     /**
      * Lower-cases the given property {@code name}.
      *
-     * @param name the property name to normalize
+     * @param name
+     *            the property name to normalize
      * @return the normalized property name
      */
     protected String normalizePropertyName(String name) {
@@ -139,7 +144,13 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
     /** {@inheritDoc} */
     @Override
     public void endPropertyValue(ParseContext context, String value) {
-        propertyBuilder.value(value);
+        final PropertyValue<?> propValue = type == null ? PropertyValue.valid(value, value) : type.parse(value);
+        if (!propValue.isValid()) {
+            this.errorHandler.error(context,
+                    new InvalidPropertyValueException(propValue.getErrorMessage(), context.getLocation()));
+        }
+        propertyBuilder.value(propValue);
+        this.type = null;
     }
 
     /** {@inheritDoc} */

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 package org.eclipse.ec4j.core.cli;
+
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,12 +29,12 @@ import org.eclipse.ec4j.core.Resource;
 import org.eclipse.ec4j.core.ResourcePath.ResourcePaths;
 import org.eclipse.ec4j.core.ResourcePropertiesService;
 import org.eclipse.ec4j.core.model.Property;
+import org.eclipse.ec4j.core.model.PropertyType;
 import org.eclipse.ec4j.core.model.Version;
 
 /**
- * A simple command line wrapper over {@link EditorConfigManager} so that it can
- * be tested against <a href=
- * "https://github.com/editorconfig/editorconfig-core-test">editorconfig-core-test</a>
+ * A simple command line wrapper over {@link EditorConfigManager} so that it can be tested against
+ * <a href= "https://github.com/editorconfig/editorconfig-core-test">editorconfig-core-test</a>
  * <p>
  * The current class is based on <a href=
  * "https://github.com/editorconfig/editorconfig-core-java/blob/8f9cf27964a6be1f385594d85c2f1eb587290561/src/main/java/org/editorconfig/EditorConfigCLI.java">EditorConfigCLI</a>
@@ -87,13 +88,15 @@ public class Cli {
         }
 
         if (version.compareTo(Version.CURRENT) > 0) {
-            System.err.println("Required version "+ version +" is greater than the current version "+ Version.CURRENT +".");
+            System.err.println(
+                    "Required version " + version + " is greater than the current version " + Version.CURRENT + ".");
             System.exit(1);
         }
 
         ResourcePropertiesService resourcePropertiesService = ResourcePropertiesService.builder() //
                 .configFileName(editorconfigFileName) //
-                .rootDirectory(ResourcePaths.ofPath(Paths.get(".").toAbsolutePath().normalize(), StandardCharsets.UTF_8)) //
+                .rootDirectory(
+                        ResourcePaths.ofPath(Paths.get(".").toAbsolutePath().normalize(), StandardCharsets.UTF_8)) //
                 .loader(EditorConfigLoader.of(version)) //
                 .build();
 
@@ -103,9 +106,10 @@ public class Cli {
             }
 
             /*
-             * Citing from https://github.com/editorconfig/editorconfig-core-test/blob/efc9b441f7aa54c17850e75607012cafc3438752/filetree/CMakeLists.txt#L55 :
-             * Windows style path separator in the command line should work on Windows, but should not work on other
-             * systems
+             * Citing from
+             * https://github.com/editorconfig/editorconfig-core-test/blob/efc9b441f7aa54c17850e75607012cafc3438752/
+             * filetree/CMakeLists.txt#L55 : Windows style path separator in the command line should work on Windows,
+             * but should not work on other systems
              */
             final Path p;
             if (isWindows) {
@@ -116,8 +120,10 @@ public class Cli {
                     /* No backslash - the single arg Path.get() will work properly */
                     p = Paths.get(path).toAbsolutePath().normalize();
                 } else {
-                    /* Otherwise, we have to use the multiarg Path.get(first, more...) so that the backslashes are not
-                     * interpreted as separators. "" segments are ignored by Paths.get() */
+                    /*
+                     * Otherwise, we have to use the multiarg Path.get(first, more...) so that the backslashes are not
+                     * interpreted as separators. "" segments are ignored by Paths.get()
+                     */
                     final String first = path.startsWith("/") ? "/" : "";
                     p = Paths.get(first, path.split("/")).toAbsolutePath().normalize();
                 }
@@ -125,7 +131,12 @@ public class Cli {
             Resource file = org.eclipse.ec4j.core.Resource.Resources.ofPath(p, StandardCharsets.UTF_8);
             Collection<Property> props = resourcePropertiesService.queryProperties(file).getProperties().values();
             for (Property prop : props) {
-                System.out.println(prop.getName() + "=" + prop.getSourceValue());
+                String val = prop.getSourceValue();
+                PropertyType<?> type = prop.getType();
+                if (type != null) {
+                    val = type.normalizeIfNeeded(val);
+                }
+                System.out.println(prop.getName() + "=" + val);
             }
         }
     }

@@ -26,8 +26,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Some glob test of
- * https://github.com/editorconfig/editorconfig-core-test/tree/master/properties
+ * Some glob test of https://github.com/editorconfig/editorconfig-core-test/tree/master/properties
  *
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
@@ -54,7 +53,8 @@ public class EditorConfigPropertiesTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
+        Collection<Property> properties = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile)).getProperties().values();
 
         Assert.assertEquals(2, properties.size());
         Iterator<Property> iter = properties.iterator();
@@ -63,4 +63,3 @@ public class EditorConfigPropertiesTest {
     }
 
 }
-

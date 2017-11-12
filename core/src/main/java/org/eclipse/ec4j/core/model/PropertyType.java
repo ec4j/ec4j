@@ -30,7 +30,7 @@ import java.util.Set;
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  *
  * @param <T>
- *            the type of the {@link Property} value
+ *            the type of the parsed {@link Property} value
  */
 public class PropertyType<T> {
 
@@ -111,7 +111,6 @@ public class PropertyType<T> {
             return indentChar;
         }
 
-
     }
 
     /**
@@ -121,7 +120,7 @@ public class PropertyType<T> {
      * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
      *
      * @param <T>
-     *            the type of the {@link Property} value
+     *            the type of the {@link Property} parsed
      */
     public static class LowerCasingPropertyType<T> extends PropertyType<T> {
 
@@ -143,32 +142,33 @@ public class PropertyType<T> {
     }
 
     /**
-     * The result of {@link Property} value parsing. The result may either be valid when it has {@link #value} or
-     * invalid when it has no {@link #value}, but it has an {@link #errorMessage}.
+     * The result of {@link Property} parsed parsing. The result may either be valid when it has {@link #parsed} or
+     * invalid when it has no {@link #parsed}, but it has an {@link #errorMessage}.
      *
      * @param <T>
-     *            the type of the parsed value
+     *            the type of the parsed parsed
      */
-    public static class ParsedValue<T> {
-        public static <T> ParsedValue<T> invalid(String errorMessage) {
-            return new ParsedValue<T>(null, errorMessage);
+    public static class PropertyValue<T> {
+        public static <T> PropertyValue<T> invalid(String source, String errorMessage) {
+            return new PropertyValue<T>(source, null, errorMessage);
         }
 
-        public static <T> ParsedValue<T> valid(T value) {
-            return new ParsedValue<T>(value, null);
+        public static <T> PropertyValue<T> valid(String source, T value) {
+            return new PropertyValue<T>(source, value, null);
         }
 
         private final String errorMessage;
 
-        private final T value;
+        private final T parsed;
+        private final String source;
 
-        ParsedValue(T value, String errorMessage) {
+        PropertyValue(String source, T value, String errorMessage) {
             super();
-            this.value = value;
+            this.source = source;
+            this.parsed = value;
             this.errorMessage = errorMessage;
         }
 
-        /** {@inheritDoc} */
         @Override
         public boolean equals(Object obj) {
             if (this == obj)
@@ -177,16 +177,21 @@ public class PropertyType<T> {
                 return false;
             if (getClass() != obj.getClass())
                 return false;
-            ParsedValue other = (ParsedValue) obj;
+            PropertyValue other = (PropertyValue) obj;
             if (errorMessage == null) {
                 if (other.errorMessage != null)
                     return false;
             } else if (!errorMessage.equals(other.errorMessage))
                 return false;
-            if (value == null) {
-                if (other.value != null)
+            if (parsed == null) {
+                if (other.parsed != null)
                     return false;
-            } else if (!value.equals(other.value))
+            } else if (!parsed.equals(other.parsed))
+                return false;
+            if (source == null) {
+                if (other.source != null)
+                    return false;
+            } else if (!source.equals(other.source))
                 return false;
             return true;
         }
@@ -199,19 +204,26 @@ public class PropertyType<T> {
         }
 
         /**
-         * @return the parsed value or {@code null} if the parsing failed.
+         * @return the parsed parsed or {@code null} if the parsing failed.
          */
-        public T getValue() {
-            return value;
+        public T getParsed() {
+            return parsed;
         }
 
-        /** {@inheritDoc} */
+        /**
+         * @return the string from which this {@link PropertyValue} was created
+         */
+        public String getSource() {
+            return source;
+        }
+
         @Override
         public int hashCode() {
             final int prime = 31;
             int result = 1;
             result = prime * result + ((errorMessage == null) ? 0 : errorMessage.hashCode());
-            result = prime * result + ((value == null) ? 0 : value.hashCode());
+            result = prime * result + ((parsed == null) ? 0 : parsed.hashCode());
+            result = prime * result + ((source == null) ? 0 : source.hashCode());
             return result;
         }
 
@@ -224,8 +236,9 @@ public class PropertyType<T> {
 
         @Override
         public String toString() {
-            return "ParsedValue [value=" + value + ", errorMessage=" + errorMessage + "]";
+            return "PropertyValue [errorMessage=" + errorMessage + ", parsed=" + parsed + ", source=" + source + "]";
         }
+
     }
 
     /**
@@ -251,14 +264,15 @@ public class PropertyType<T> {
 
             @SuppressWarnings("unchecked")
             @Override
-            public ParsedValue<T> parse(String name, String value) {
+            public PropertyValue<T> parse(String name, String value) {
                 if (value == null) {
-                    return ParsedValue.invalid("Cannot make enum " + enumType.getName() +" out of null");
+                    return PropertyValue.invalid(value, "Cannot make enum " + enumType.getName() + " out of null");
                 }
                 try {
-                    return ParsedValue.valid((T) Enum.valueOf(enumType, value.toLowerCase()));
+                    return PropertyValue.valid(value, (T) Enum.valueOf(enumType, value.toLowerCase()));
                 } catch (final IllegalArgumentException e) {
-                    return ParsedValue.invalid("Unexpected value \"" + value + "\" for enum " + enumType.getName());
+                    return PropertyValue.invalid(value,
+                            "Unexpected parsed \"" + value + "\" for enum " + enumType.getName());
                 }
             }
 
@@ -268,17 +282,16 @@ public class PropertyType<T> {
         PropertyValueParser<Boolean> BOOLEAN_VALUE_PARSER = new PropertyValueParser<Boolean>() {
 
             @Override
-            public ParsedValue<Boolean> parse(String name, String value) {
+            public PropertyValue<Boolean> parse(String name, String value) {
                 if (value == null) {
-                    return ParsedValue.invalid(
-                            "Property '" + name + "' expects a boolean; found: null");
-                }
-                value = value.toLowerCase();
-                if (!"true".equals(value) && !"false".equals(value)) {
-                    return ParsedValue.invalid(
-                            "Property '" + name + "' expects a boolean. The value '" + value + "' is not a boolean.");
+                    return PropertyValue.invalid(null, "Property '" + name + "' expects a boolean; found: null");
+                } else if ("true".equalsIgnoreCase(value)) {
+                    return PropertyValue.valid(value, Boolean.TRUE);
+                } else if ("false".equalsIgnoreCase(value)) {
+                    return PropertyValue.valid(value, Boolean.FALSE);
                 } else {
-                    return ParsedValue.valid(Boolean.valueOf(value.toLowerCase()));
+                    return PropertyValue.invalid(value,
+                            "Property '" + name + "' expects a boolean. The parsed '" + value + "' is not a boolean.");
                 }
             }
 
@@ -288,8 +301,8 @@ public class PropertyType<T> {
         PropertyValueParser<String> IDENTITY_VALUE_PARSER = new PropertyValueParser<String>() {
 
             @Override
-            public ParsedValue<String> parse(String name, String value) {
-                return ParsedValue.valid(value);
+            public PropertyValue<String> parse(String name, String value) {
+                return PropertyValue.valid(value, value);
             }
 
         };
@@ -297,32 +310,43 @@ public class PropertyType<T> {
         /** A parser accepting positive integer numbers. */
         PropertyValueParser<Integer> POSITIVE_INT_VALUE_PARSER = new PropertyValueParser<Integer>() {
             @Override
-            public ParsedValue<Integer> parse(String name, String value) {
+            public PropertyValue<Integer> parse(String name, String value) {
                 try {
                     final int val = Integer.parseInt(value);
                     if (val <= 0) {
-                        return ParsedValue
-                                .invalid("Property '" + name + "' expects a positive integer; found '" + value + "'");
+                        return PropertyValue.invalid(value,
+                                "Property '" + name + "' expects a positive integer; found '" + value + "'");
                     } else {
-                        return ParsedValue.valid(Integer.valueOf(val));
+                        return PropertyValue.valid(value, Integer.valueOf(val));
                     }
                 } catch (final NumberFormatException e) {
-                    return ParsedValue.invalid(
-                            "Property '" + name + "' expects an integer. The value '" + value + "' is not an integer.");
+                    return PropertyValue.invalid(value, "Property '" + name + "' expects an integer. The parsed '"
+                            + value + "' is not an integer.");
+                }
+            }
+        };
+
+        PropertyValueParser<Integer> INDENT_SIZE_VALUE_PARSER = new PropertyValueParser<Integer>() {
+            @Override
+            public PropertyValue<Integer> parse(String name, String value) {
+                if ("tab".equalsIgnoreCase(value)) {
+                    return PropertyValue.valid(value, null);
+                } else {
+                    return POSITIVE_INT_VALUE_PARSER.parse(name, value);
                 }
             }
         };
 
         /**
-         * Parses the given {@code value} into a {@link ParsedValue}
+         * Parses the given {@code parsed} into a {@link PropertyValue}
          *
          * @param name
          *            the name of the parsed property
-         * @param value
-         *            the value to parse
-         * @return the {@link PropertyType.ParsedValue}
+         * @param parsed
+         *            the parsed to parse
+         * @return the {@link PropertyType.PropertyValue}
          */
-        ParsedValue<T> parse(String name, String value);
+        PropertyValue<T> parse(String name, String value);
 
     }
 
@@ -344,14 +368,17 @@ public class PropertyType<T> {
     );
 
     /**
-     * Indeed, {@code tab} is a legal value - see
+     * Note that {@code tab} is a legal value of {@code indent_size} - see
      * https://github.com/editorconfig/editorconfig/wiki/EditorConfig-Properties#indent_size and
      * https://github.com/editorconfig/editorconfig/issues/54
+     * <p>
+     * If {@code indent_size} {@link Property} is constructed out of {@code tab}, the resulting instance's
+     * {@link Property#getValueAs()} returns {@code null}.
      */
     public static final PropertyType<Integer> indent_size = new LowerCasingPropertyType<>( //
             "indent_size", //
-            "a whole number defining the number of columns used for each indentation level and the width of soft tabs (when supported). When set to tab, the value of tab_width (if specified) will be used.", //
-            PropertyValueParser.POSITIVE_INT_VALUE_PARSER, //
+            "a whole number defining the number of columns used for each indentation level and the width of soft tabs (when supported). When set to tab, the parsed of tab_width (if specified) will be used.", //
+            PropertyValueParser.INDENT_SIZE_VALUE_PARSER, //
             "1", "2", "3", "4", "5", "6", "7", "8", "tab" //
     );
 
@@ -380,7 +407,7 @@ public class PropertyType<T> {
 
     public static final PropertyType<Integer> tab_width = new PropertyType<>( //
             "tab_width", //
-            "a whole number defining the number of columns used to represent a tab character. This defaults to the value of indent_size and doesn't usually need to be specified.", //
+            "a whole number defining the number of columns used to represent a tab character. This defaults to the parsed of indent_size and doesn't usually need to be specified.", //
             PropertyValueParser.POSITIVE_INT_VALUE_PARSER, //
             "1", "2", "3", "4", "5", "6", "7", "8" //
     );
@@ -457,20 +484,22 @@ public class PropertyType<T> {
      * is supposed to perform such transformations. This particular implementation performs no transformation. See also
      * {@link LowerCasingPropertyType}.
      *
-     * @param value
-     *            the value to normalize
-     * @return the normalized value or the passed-in {@code value} if no transformation is necessary
+     * @param parsed
+     *            the parsed to normalize
+     * @return the normalized parsed or the passed-in {@code parsed} if no transformation is necessary
      */
     public String normalizeIfNeeded(String value) {
         return value;
     }
 
     /**
-     * Parses the given {@code value} into a {@link ParsedValue}
-     * @param value the value to parse
-     * @return the {@link ParsedValue}
+     * Parses the given {@code parsed} into a {@link PropertyValue}
+     *
+     * @param parsed
+     *            the parsed to parse
+     * @return the {@link PropertyValue}
      */
-    public ParsedValue<T> parse(String value) {
+    public PropertyValue<T> parse(String value) {
         return parser.parse(name, value);
     }
 

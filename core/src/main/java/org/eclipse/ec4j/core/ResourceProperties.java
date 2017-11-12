@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.eclipse.ec4j.core.model.Property;
 import org.eclipse.ec4j.core.model.PropertyType;
+import org.eclipse.ec4j.core.parser.InvalidPropertyValueException;
 
 /**
  * A collection of {@link Property}s applicable to a {@link Resource} as returned by

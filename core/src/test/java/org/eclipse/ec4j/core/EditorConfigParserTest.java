@@ -27,8 +27,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Some glob test of
- * https://github.com/editorconfig/editorconfig-core-test/tree/master/parser
+ * Some glob test of https://github.com/editorconfig/editorconfig-core-test/tree/master/parser
  *
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
@@ -115,12 +114,13 @@ public class EditorConfigParserTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
+        Collection<Property> properties = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(1, properties.size());
         Assert.assertEquals("key = value", properties.iterator().next().toString());
     }
 
-    private static final String COMMENTS_DOT_IN = "; test comments\r\n" +  //
+    private static final String COMMENTS_DOT_IN = "; test comments\r\n" + //
             "\r\n" + //
             "root = true\r\n" + //
             "\r\n" + //
@@ -189,11 +189,11 @@ public class EditorConfigParserTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
+        Collection<Property> properties = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(1, properties.size());
         Assert.assertEquals("key = value ", properties.iterator().next().toString());
     }
-
 
     private static final String BASIC_DOT_IN = "[*.a]\n" + //
             "name1=value1\n" + //
@@ -212,8 +212,6 @@ public class EditorConfigParserTest {
             "[*.b]\n" + //
             "name1 = c\n";
 
-
-
     @Test
     public void repeat_sections() throws IOException {
 
@@ -223,7 +221,8 @@ public class EditorConfigParserTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
+        Collection<Property> properties = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(2, properties.size());
         Iterator<Property> it = properties.iterator();
         Assert.assertEquals("name1 = value1", it.next().toString());
@@ -238,7 +237,8 @@ public class EditorConfigParserTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
+        Collection<Property> properties = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(1, properties.size());
         Iterator<Property> it = properties.iterator();
         Assert.assertEquals("key3 = value3", it.next().toString());
@@ -252,8 +252,8 @@ public class EditorConfigParserTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile)).getProperties().values();
+        Collection<Property> properties = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(0, properties.size());
     }
 }
-

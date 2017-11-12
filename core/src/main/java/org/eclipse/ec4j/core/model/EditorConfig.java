@@ -52,7 +52,8 @@ public class EditorConfig extends Adaptable {
         public EditorConfig build() {
             List<Section> useSections = sections;
             sections = null;
-            return new EditorConfig(sealAdapters(), root, version, resourcePath, Collections.unmodifiableList(useSections));
+            return new EditorConfig(sealAdapters(), root, version, resourcePath,
+                    Collections.unmodifiableList(useSections));
         }
 
         /**
@@ -173,7 +174,8 @@ public class EditorConfig extends Adaptable {
      * @param resourcePath
      * @param sections
      */
-    EditorConfig(List<Object> adapters, Boolean root, Version version, ResourcePath resourcePath, List<Section> sections) {
+    EditorConfig(List<Object> adapters, Boolean root, Version version, ResourcePath resourcePath,
+            List<Section> sections) {
         super(adapters);
         this.root = root;
         this.version = version;

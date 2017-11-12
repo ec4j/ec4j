@@ -74,16 +74,16 @@ public class EditorConfigFileTreeTest {
         if (isWindows) {
             final Resource testFile = Resources.ofPath(testProjectDir.resolve("path\\separator"),
                     StandardCharsets.UTF_8);
-            Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(testFile).getProperties()
-                    .values();
+            Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(testFile)
+                    .getProperties().values();
             Assert.assertEquals(1, properties.size());
             Iterator<Property> it = properties.iterator();
             Assert.assertEquals("key = value", it.next().toString());
         } else {
             final Resource testFile = Resources.ofPath(testProjectDir.resolve(Paths.get("", "path\\separator")),
                     StandardCharsets.UTF_8);
-            Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(testFile).getProperties()
-                    .values();
+            Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(testFile)
+                    .getProperties().values();
             Assert.assertEquals(0, properties.size());
         }
 
@@ -100,8 +100,8 @@ public class EditorConfigFileTreeTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile))
-                .getProperties().values();
+        Collection<Property> properties = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(1, properties.size());
         Assert.assertEquals("key = value", properties.iterator().next().toString());
     }
