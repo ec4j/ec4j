@@ -16,7 +16,6 @@
  */
 package org.eclipse.ec4j.core.model;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -64,7 +63,7 @@ public class Glob {
                     "Glob length exceeds the maximal allowed length of " + MAX_GLOB_LENGTH + " characters", pattern,
                     MAX_GLOB_LENGTH);
         } else {
-            pattern = pattern.replace(File.separatorChar, '/');
+            //pattern = pattern.replace(File.separatorChar, '/');
             pattern = ESCAPED_COMMENT_SIGNS.matcher(pattern).replaceAll("$1");
             int slashPos = pattern.indexOf('/');
             if (slashPos >= 0) {
