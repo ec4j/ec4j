@@ -53,12 +53,11 @@ public class Glob {
     private final List<int[]> ranges;
     private final Pattern regex;
     private final String source;
-    static final Pattern OPENING_BRACES = Pattern.compile("(?:^|[^\\\\])\\{");
-    static final Pattern CLOSING_BRACES = Pattern.compile("(?:^|[^\\\\])}");
+    static final Pattern ESCAPED_COMMENT_SIGNS = Pattern.compile("\\\\([#;])");
 
     public Glob(String configDirname, String pattern) {
         this.source = pattern;
-        ranges = new ArrayList<int[]>();
+        this.ranges = new ArrayList<int[]>();
         if (pattern.length() > MAX_GLOB_LENGTH) {
             this.regex = null;
             this.error = new PatternSyntaxException(
@@ -66,19 +65,19 @@ public class Glob {
                     MAX_GLOB_LENGTH);
         } else {
             pattern = pattern.replace(File.separatorChar, '/');
-            pattern = pattern.replaceAll("\\\\#", "#");
-            pattern = pattern.replaceAll("\\\\;", ";");
+            pattern = ESCAPED_COMMENT_SIGNS.matcher(pattern).replaceAll("$1");
             int slashPos = pattern.indexOf('/');
             if (slashPos >= 0) {
                 pattern = configDirname + "/" + (slashPos == 0 ? pattern.substring(1) : pattern);
             } else {
                 pattern = "**/" + pattern;
             }
-            final String regex = Glob.convertGlobToRegEx(pattern, ranges);
+            final StringBuilder regex = new StringBuilder(pattern.length());
+            convertGlobToRegEx(pattern, ranges, regex);
             PatternSyntaxException err = null;
             Pattern pat = null;
             try {
-                pat = Pattern.compile(regex);
+                pat = Pattern.compile(regex.toString());
             } catch (PatternSyntaxException e) {
                 err = e;
             }
@@ -132,7 +131,7 @@ public class Glob {
     }
 
     public boolean isValid() {
-        return getError() == null;
+        return error == null;
     }
 
     /**
@@ -181,12 +180,11 @@ public class Glob {
      * "https://github.com/editorconfig/editorconfig-core-java/blob/e3e090545f44d20f5f228ef1068af4c9d7323a51/src/main/java/org/editorconfig/core/EditorConfig.java#L256">EditorConfig</a>
      * by Dennis Ushakov.
      */
-    static String convertGlobToRegEx(String globString, List<int[]> ranges) {
+    static void convertGlobToRegEx(final String globString, List<int[]> ranges, final StringBuilder result) {
         int length = globString.length();
-        StringBuilder result = new StringBuilder(length);
         int i = 0;
         int braceLevel = 0;
-        boolean matchingBraces = countAll(OPENING_BRACES, globString) == countAll(CLOSING_BRACES, globString);
+        boolean matchingBraces = matchingBraces(globString);
         boolean escaped = false;
         boolean inBrackets = false;
         while (i < length) {
@@ -227,9 +225,8 @@ public class Glob {
                         result.append("(\\d+)");
                         ranges.add(range);
                     } else {
-                        result = new StringBuilder(result);
                         result.append("\\{");
-                        result.append(convertGlobToRegEx(choice, ranges));
+                        convertGlobToRegEx(choice, ranges, result);
                         result.append("\\}");
                     }
                     i = -j + 1;
@@ -261,7 +258,7 @@ public class Glob {
                     result.append("}");
                 }
             } else if ('\\' != current) {
-                result.append(escapeToRegex(String.valueOf(current)));
+                escapeToRegex(current, result);
             }
             if ('\\' == current) {
                 if (escaped)
@@ -271,7 +268,33 @@ public class Glob {
                 escaped = false;
             }
         }
-        return result.toString();
+    }
+
+    /**
+     * @param globString the glob string to check
+     * @return {@code true} if the count of opening braces is equal to the count of the closing braces; {@code false}
+     *         otherwise
+     */
+    static boolean matchingBraces(String globString) {
+        int i = 0;
+        final int len = globString.length();
+        int openedCount = 0;
+        while (i < len) {
+            switch (globString.charAt(i++)) {
+            case '\\':
+                i++;
+                break;
+            case '{':
+                openedCount++;
+                break;
+            case '}':
+                openedCount--;
+                break;
+            default:
+                break;
+            }
+        }
+        return openedCount == 0;
     }
 
     /**
@@ -279,7 +302,7 @@ public class Glob {
      * "https://github.com/editorconfig/editorconfig-core-java/blob/e3e090545f44d20f5f228ef1068af4c9d7323a51/src/main/java/org/editorconfig/core/EditorConfig.java#L349">EditorConfig</a>
      * by Dennis Ushakov.
      */
-    private static int[] getNumericRange(String choice) {
+    static int[] getNumericRange(String choice) {
         final int separator = choice.indexOf("..");
         if (separator < 0)
             return null;
@@ -315,30 +338,13 @@ public class Glob {
      * "https://github.com/editorconfig/editorconfig-core-java/blob/e3e090545f44d20f5f228ef1068af4c9d7323a51/src/main/java/org/editorconfig/core/EditorConfig.java#L373">EditorConfig</a>
      * by Dennis Ushakov.
      */
-    static String escapeToRegex(String group) {
-        final StringBuilder builder = new StringBuilder(group.length());
-        for (char c : group.toCharArray()) {
-            if (c == ' ' || Character.isLetter(c) || Character.isDigit(c) || c == '_' || c == '-') {
-                builder.append(c);
-            } else if (c == '\n') {
-                builder.append("\\n");
-            } else {
-                builder.append("\\").append(c);
-            }
+    static void escapeToRegex(char c, StringBuilder result) {
+        if (c == ' ' || Character.isLetter(c) || Character.isDigit(c) || c == '_' || c == '-') {
+            result.append(c);
+        } else if (c == '\n') {
+            result.append("\\n");
+        } else {
+            result.append('\\').append(c);
         }
-        return builder.toString();
-    }
-
-    /**
-     * Copied from <a href=
-     * "https://github.com/editorconfig/editorconfig-core-java/blob/e3e090545f44d20f5f228ef1068af4c9d7323a51/src/main/java/org/editorconfig/core/EditorConfig.java#L387">EditorConfig</a>
-     * by Dennis Ushakov.
-     */
-    private static int countAll(Pattern regex, String pattern) {
-        final Matcher matcher = regex.matcher(pattern);
-        int count = 0;
-        while (matcher.find())
-            count++;
-        return count;
     }
 }
