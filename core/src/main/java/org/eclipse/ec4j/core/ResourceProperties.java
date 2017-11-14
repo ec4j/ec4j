@@ -22,26 +22,27 @@ import java.util.Map;
 
 import org.eclipse.ec4j.core.model.Property;
 import org.eclipse.ec4j.core.model.PropertyType;
+import org.eclipse.ec4j.core.parser.InvalidPropertyValueException;
 
 /**
- * A wrapper around a {@link Map} of {@link Property}s that offers utility methods for getting entries from the
- * underlying {@link Map} not only by name but also by {@link PropertyType} in a type safe manner.
+ * A collection of {@link Property}s applicable to a {@link Resource} as returned by
+ * {@link ResourcePropertiesService#queryProperties(org.eclipse.ec4j.core.Resource.Resources.Resource)}.
  * <p>
- * {@link QueryResult}s are returned from
- * {@link EditorConfigSession#queryProperties(org.eclipse.ec4j.core.Resources.Resource)}.
+ * This is basically just a wrapper around a {@link Map} of {@link Property}s that offers utility methods for getting
+ * entries from the underlying {@link Map} not only by name but also by {@link PropertyType} in a type safe manner.
  *
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
-public class QueryResult {
+public class ResourceProperties {
 
     /**
-     * A {@link QueryResult} builder.
+     * A {@link ResourceProperties} builder.
      */
     public static class Builder {
         private final Map<String, Property> properties = new LinkedHashMap<>();
 
-        public QueryResult build() {
-            return new QueryResult(properties);
+        public ResourceProperties build() {
+            return new ResourceProperties(properties);
         }
 
         /**
@@ -106,13 +107,13 @@ public class QueryResult {
 
     private final Map<String, Property> properties;
 
-    QueryResult(Map<String, Property> properties) {
+    ResourceProperties(Map<String, Property> properties) {
         super();
         this.properties = properties;
     }
 
     /**
-     * @return an unmodifiable {@link Map} of {@link Property}s
+     * @return the underlying {@link Map} of {@link Property}s
      */
     public Map<String, Property> getProperties() {
         return properties;

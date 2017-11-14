@@ -66,7 +66,9 @@ public class Span {
 
         /**
          * Sets the end of the {@link Span}.
-         * @param end the end {@link Location}
+         *
+         * @param end
+         *            the end {@link Location}
          * @return this {@link Builder}
          */
         public Builder end(Location end) {
@@ -76,7 +78,9 @@ public class Span {
 
         /**
          * Sets the start of the {@link Span}.
-         * @param start the start {@link Location}
+         *
+         * @param start
+         *            the start {@link Location}
          * @return this {@link Builder}
          */
         public Builder start(Location start) {

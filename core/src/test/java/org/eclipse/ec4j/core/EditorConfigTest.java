@@ -18,8 +18,7 @@ package org.eclipse.ec4j.core;
 
 import java.io.IOException;
 
-import org.eclipse.ec4j.core.Resources.Resource;
-import org.eclipse.ec4j.core.Resources.StringResourceTree;
+import org.eclipse.ec4j.core.Resource.Resources.StringResourceTree;
 import org.eclipse.ec4j.core.model.EditorConfig;
 import org.junit.Assert;
 import org.junit.Test;
@@ -48,8 +47,7 @@ public class EditorConfigTest {
         Resource r = StringResourceTree.builder().resource(".editorconfig", s).build().getResource(".editorconfig");
 
         EditorConfig config = EditorConfigLoader.getDefault().load(r);
-        Assert.assertEquals("root = true\n" + "\n" + "[*]\n" + "end_of_line = lf\n" + "insert_final_newline = true\n" + "\n"
-                + "[*.{js,py}]\n" + "charset = utf-8", config.toString());
+        Assert.assertEquals("root = true\n" + "\n" + "[*]\n" + "end_of_line = lf\n" + "insert_final_newline = true\n"
+                + "\n" + "[*.{js,py}]\n" + "charset = utf-8", config.toString());
     }
 }
-

@@ -22,7 +22,7 @@ import java.util.regex.PatternSyntaxException;
 import org.eclipse.ec4j.core.PropertyTypeRegistry;
 import org.eclipse.ec4j.core.model.Glob;
 import org.eclipse.ec4j.core.model.PropertyType;
-import org.eclipse.ec4j.core.model.PropertyType.ParsedValue;
+import org.eclipse.ec4j.core.model.PropertyType.PropertyValue;
 import org.eclipse.ec4j.core.parser.EditorConfigHandler;
 import org.eclipse.ec4j.core.parser.ErrorHandler;
 import org.eclipse.ec4j.core.parser.ErrorType;
@@ -113,7 +113,7 @@ public class ValidationEditorConfigHandler implements EditorConfigHandler, Error
     public void endPropertyValue(ParseContext context, String value) {
         // Validate value of the property name
         if (type != null) {
-            ParsedValue<?> parsedValue = type.parse(value);
+            PropertyValue<?> parsedValue = type.parse(value);
             if (!parsedValue.isValid()) {
                 Location end = context.getLocation();
                 ErrorType errorType = ErrorType.PropertyValueType;

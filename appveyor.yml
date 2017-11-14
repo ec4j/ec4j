@@ -31,6 +31,6 @@ build_script:
   - ctest .
 on_failure:
   - echo "failed"
-  - type core\Testing\Temporary\LastTest.log
+  - type Testing\Temporary\LastTest.log
 cache:
   - C:\Users\appveyor\.m2\wrapper

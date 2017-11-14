@@ -23,8 +23,8 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.eclipse.ec4j.core.Resources.Resource;
-import org.eclipse.ec4j.core.Resources.StringResourceTree;
+import org.eclipse.ec4j.core.Resource.Resources;
+import org.eclipse.ec4j.core.Resource.Resources.StringResourceTree;
 import org.eclipse.ec4j.core.model.Property;
 import org.junit.Assert;
 import org.junit.Test;
@@ -74,16 +74,16 @@ public class EditorConfigFileTreeTest {
         if (isWindows) {
             final Resource testFile = Resources.ofPath(testProjectDir.resolve("path\\separator"),
                     StandardCharsets.UTF_8);
-            Collection<Property> properties = EditorConfigSession.default_().queryProperties(testFile).getProperties()
-                    .values();
+            Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(testFile)
+                    .getProperties().values();
             Assert.assertEquals(1, properties.size());
             Iterator<Property> it = properties.iterator();
             Assert.assertEquals("key = value", it.next().toString());
         } else {
             final Resource testFile = Resources.ofPath(testProjectDir.resolve(Paths.get("", "path\\separator")),
                     StandardCharsets.UTF_8);
-            Collection<Property> properties = EditorConfigSession.default_().queryProperties(testFile).getProperties()
-                    .values();
+            Collection<Property> properties = ResourcePropertiesService.default_().queryProperties(testFile)
+                    .getProperties().values();
             Assert.assertEquals(0, properties.size());
         }
 
@@ -100,8 +100,8 @@ public class EditorConfigFileTreeTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = EditorConfigSession.default_().queryProperties(tree.getResource(testFile))
-                .getProperties().values();
+        Collection<Property> properties = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(1, properties.size());
         Assert.assertEquals("key = value", properties.iterator().next().toString());
     }
@@ -131,7 +131,7 @@ public class EditorConfigFileTreeTest {
                 .touch(testFile) //
                 .build();
 
-        EditorConfigSession.default_().queryProperties(tree.getResource(testFile));
+        ResourcePropertiesService.default_().queryProperties(tree.getResource(testFile));
     }
 
 }

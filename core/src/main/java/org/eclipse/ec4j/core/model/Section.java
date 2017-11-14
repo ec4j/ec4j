@@ -113,11 +113,11 @@ public class Section extends Adaptable {
 
             // Set indent_size to "tab" if indent_size is unspecified and
             // indent_style is set to "tab".
-            if (indentStyle != null && IndentStyleValue.tab.name().equals(indentStyle.getSourceValue()) && indentSize == null
-                    && version.compareTo(Version._0_10_0) >= 0) {
+            if (indentStyle != null && IndentStyleValue.tab.name().equals(indentStyle.getSourceValue())
+                    && indentSize == null && version.compareTo(Version._0_10_0) >= 0) {
                 final PropertyType<?> type = PropertyType.indent_size;
                 final String value = "tab";
-                indentSize = new Property(Collections.emptyList(), type, type.getName(), value, type.parse(value));
+                indentSize = new Property(Collections.emptyList(), type, type.getName(), type.parse(value));
                 this.property(indentSize);
             }
 
@@ -126,7 +126,7 @@ public class Section extends Adaptable {
             if (indentSize != null && !"tab".equals(indentSize.getSourceValue()) && tabWidth == null) {
                 final PropertyType<?> type = PropertyType.tab_width;
                 final String value = indentSize.getSourceValue();
-                tabWidth = new Property(Collections.emptyList(), type, type.getName(), value, type.parse(value));
+                tabWidth = new Property(Collections.emptyList(), type, type.getName(), type.parse(value));
                 this.property(tabWidth);
             }
 
@@ -134,7 +134,7 @@ public class Section extends Adaptable {
             if (indentSize != null && "tab".equals(indentSize.getSourceValue()) && tabWidth != null) {
                 final PropertyType<?> type = PropertyType.indent_size;
                 final String value = tabWidth.getSourceValue();
-                indentSize = new Property(Collections.emptyList(), type, type.getName(), value, type.parse(value));
+                indentSize = new Property(Collections.emptyList(), type, type.getName(), type.parse(value));
                 this.property(indentSize);
             }
             return this;

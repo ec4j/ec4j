@@ -17,8 +17,7 @@
 package org.eclipse.ec4j.core.parser;
 
 /**
- * An unchecked exception to indicate that an input does not qualify as valid
- * .editorconfig.
+ * An unchecked exception to indicate that an input does not qualify as valid .editorconfig.
  *
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */

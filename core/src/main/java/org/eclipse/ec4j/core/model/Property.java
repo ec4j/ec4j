@@ -18,8 +18,8 @@ package org.eclipse.ec4j.core.model;
 
 import java.util.List;
 
-import org.eclipse.ec4j.core.InvalidPropertyValueException;
-import org.eclipse.ec4j.core.model.PropertyType.ParsedValue;
+import org.eclipse.ec4j.core.model.PropertyType.PropertyValue;
+import org.eclipse.ec4j.core.parser.InvalidPropertyValueException;
 
 /**
  * A key value pair in a {@link Section}.
@@ -36,9 +36,8 @@ public class Property extends Adaptable {
 
         private String name;
         private final Section.Builder parentBuilder;
-        private ParsedValue<?> parsedValue;
         private PropertyType<?> type;
-        private String value;
+        private PropertyValue<?> value;
 
         public Builder(org.eclipse.ec4j.core.model.Section.Builder parentBuilder) {
             super();
@@ -49,14 +48,14 @@ public class Property extends Adaptable {
          * @return a new {@link Property}
          */
         public Property build() {
-            return new Property(sealAdapters(), type, name, value, parsedValue);
+            return new Property(sealAdapters(), type, name, value);
         }
 
         boolean checkMax() {
             if (name != null && name.length() > 50) {
                 return false;
             }
-            if (value != null && value.length() > 255) {
+            if (value != null && value.getSource().length() > 255) {
                 return false;
             }
             return true;
@@ -105,27 +104,36 @@ public class Property extends Adaptable {
         /**
          * Sets the {@link #value}.
          *
+         * @param value
+         *            the value of this key value pair
+         * @return this {@link Builder}
+         */
+        public Builder value(PropertyValue<?> value) {
+            this.value = value;
+            return this;
+        }
+
+        /**
+         * Sets the {@link #value}.
+         *
          * @param name
          *            the value of this key value pair
          * @return this {@link Builder}
          */
         public Builder value(String value) {
-            if (type == null) {
-                this.value = value;
-                this.parsedValue = ParsedValue.valid(value);
+            if (this.type == null) {
+                value(PropertyValue.valid(value, value));
             } else {
-                this.value = type.normalizeIfNeeded(value);
-                this.parsedValue = type.parse(value);
+                value(type.parse(value));
             }
             return this;
         }
+
     }
 
     private final String name;
 
-    private final ParsedValue<?> parsedValue;
-
-    private final String sourceValue;
+    private final PropertyValue<?> value;
 
     private final PropertyType<?> type;
 
@@ -135,15 +143,13 @@ public class Property extends Adaptable {
      * @param adapters
      * @param type
      * @param name
-     * @param sourceValue
-     * @param parsedValue
+     * @param value
      */
-    Property(List<Object> adapters, PropertyType<?> type, String name, String sourceValue, ParsedValue<?> parsedValue) {
+    Property(List<Object> adapters, PropertyType<?> type, String name, PropertyValue<?> value) {
         super(adapters);
         this.type = type;
         this.name = name;
-        this.sourceValue = sourceValue;
-        this.parsedValue = parsedValue;
+        this.value = value;
     }
 
     @Override
@@ -160,10 +166,10 @@ public class Property extends Adaptable {
                 return false;
         } else if (!name.equals(other.name))
             return false;
-        if (sourceValue == null) {
-            if (other.sourceValue != null)
+        if (value == null) {
+            if (other.value != null)
                 return false;
-        } else if (!sourceValue.equals(other.sourceValue))
+        } else if (!value.equals(other.value))
             return false;
         return true;
     }
@@ -179,7 +185,7 @@ public class Property extends Adaptable {
      * @return the string value of this key value pair
      */
     public String getSourceValue() {
-        return sourceValue;
+        return value.getSource();
     }
 
     /**
@@ -197,10 +203,10 @@ public class Property extends Adaptable {
      */
     @SuppressWarnings("unchecked")
     public <T> T getValueAs() {
-        if (parsedValue.isValid()) {
-            return (T) parsedValue.getValue();
+        if (value.isValid()) {
+            return (T) value.getParsed();
         } else {
-            throw new InvalidPropertyValueException(parsedValue.getErrorMessage());
+            throw new RuntimeException(value.getErrorMessage());
         }
     }
 
@@ -209,21 +215,21 @@ public class Property extends Adaptable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((sourceValue == null) ? 0 : sourceValue.hashCode());
+        result = prime * result + ((value == null) ? 0 : value.hashCode());
         return result;
     }
 
     /**
-     * @return {@code true} if {@link #type} is {@code null} or {@link #sourceValue} is a valid value for the associated {@link PropertyType};
-     *         {@code false} otherwise
+     * @return {@code true} if {@link #type} is {@code null} or {@link #sourceValue} is a valid value for the associated
+     *         {@link PropertyType}; {@code false} otherwise
      */
     public boolean isValid() {
-        return parsedValue.isValid();
+        return value.isValid();
     }
 
     @Override
     public String toString() {
-        return new StringBuilder(name).append(" = ").append(sourceValue).toString();
+        return new StringBuilder(name).append(" = ").append(value.getSource()).toString();
     }
 
 }

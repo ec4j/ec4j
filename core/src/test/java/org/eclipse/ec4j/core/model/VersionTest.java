@@ -26,7 +26,7 @@ public class VersionTest {
     @Test
     public void ofQ() {
         Version actual = Version.of("1.2.3-q");
-        Assert.assertEquals(new Version((byte)1, (byte)2, (byte)3, "q"), actual);
+        Assert.assertEquals(new Version((byte) 1, (byte) 2, (byte) 3, "q"), actual);
         Assert.assertEquals(1, actual.getMajor());
         Assert.assertEquals(2, actual.getMinor());
         Assert.assertEquals(3, actual.getMicro());
@@ -36,7 +36,7 @@ public class VersionTest {
     @Test
     public void of() {
         Version actual = Version.of("1.2.3");
-        Assert.assertEquals(new Version((byte)1, (byte)2, (byte)3, null), actual);
+        Assert.assertEquals(new Version((byte) 1, (byte) 2, (byte) 3, null), actual);
         Assert.assertEquals(1, actual.getMajor());
         Assert.assertEquals(2, actual.getMinor());
         Assert.assertEquals(3, actual.getMicro());
@@ -45,30 +45,14 @@ public class VersionTest {
 
     @Test
     public void compareTo() {
-        Version[] versions = new Version[] {
-                Version.of("4.2.3-q"),
-                Version.of("2.2.3-q"),
-                Version.of("2.2.2-q"),
-                Version.of("2.2.2-q"),
-                Version.of("2.1.2-q"),
-                Version.of("2.1.1-q"),
-                Version.of("0.0.0-b"),
-                Version.of("0.0.0-a"),
-                Version.of("0.0.0")
-        };
+        Version[] versions = new Version[] { Version.of("4.2.3-q"), Version.of("2.2.3-q"), Version.of("2.2.2-q"),
+                Version.of("2.2.2-q"), Version.of("2.1.2-q"), Version.of("2.1.1-q"), Version.of("0.0.0-b"),
+                Version.of("0.0.0-a"), Version.of("0.0.0") };
         Arrays.sort(versions);
 
-        Assert.assertArrayEquals(new Version[] {
-                Version.of("0.0.0"),
-                Version.of("0.0.0-a"),
-                Version.of("0.0.0-b"),
-                Version.of("2.1.1-q"),
-                Version.of("2.1.2-q"),
-                Version.of("2.2.2-q"),
-                Version.of("2.2.2-q"),
-                Version.of("2.2.3-q"),
-                Version.of("4.2.3-q")
-        }, versions);
+        Assert.assertArrayEquals(new Version[] { Version.of("0.0.0"), Version.of("0.0.0-a"), Version.of("0.0.0-b"),
+                Version.of("2.1.1-q"), Version.of("2.1.2-q"), Version.of("2.2.2-q"), Version.of("2.2.2-q"),
+                Version.of("2.2.3-q"), Version.of("4.2.3-q") }, versions);
     }
 
 }

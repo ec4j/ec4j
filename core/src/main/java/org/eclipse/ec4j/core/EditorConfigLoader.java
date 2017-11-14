@@ -18,7 +18,6 @@ package org.eclipse.ec4j.core;
 
 import java.io.IOException;
 
-import org.eclipse.ec4j.core.Resources.Resource;
 import org.eclipse.ec4j.core.model.EditorConfig;
 import org.eclipse.ec4j.core.model.Version;
 import org.eclipse.ec4j.core.parser.EditorConfigModelHandler;
@@ -33,7 +32,8 @@ import org.eclipse.ec4j.core.parser.ErrorHandler;
 public class EditorConfigLoader {
 
     private static final EditorConfigLoader DEFAULT = new EditorConfigLoader(
-            new EditorConfigModelHandler(PropertyTypeRegistry.getDefault(), Version.CURRENT), ErrorHandler.THROWING);
+            new EditorConfigModelHandler(PropertyTypeRegistry.getDefault(), Version.CURRENT, ErrorHandler.THROWING),
+            ErrorHandler.THROWING);
 
     public static EditorConfigLoader getDefault() {
         return DEFAULT;
@@ -48,7 +48,7 @@ public class EditorConfigLoader {
     }
 
     public static EditorConfigLoader of(Version version, PropertyTypeRegistry registry, ErrorHandler errorHandler) {
-        return new EditorConfigLoader(new EditorConfigModelHandler(registry, version), errorHandler);
+        return new EditorConfigLoader(new EditorConfigModelHandler(registry, version, errorHandler), errorHandler);
     }
 
     private final ErrorHandler errorHandler;

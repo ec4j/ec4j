@@ -14,23 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.eclipse.ec4j.core.parser;
+package org.eclipse.ec4j.core.model;
 
-/**
- * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
- */
-public enum ErrorType {
+import org.junit.Assert;
+import org.junit.Test;
 
-    ParsingError(true), SectionNotClosed(true), PropertyAssignementMissing(true), PropertyValueMissing(
-            true), PropertyNameNotExists(false), PropertyValueType(false), PatternSyntaxType(true);
+public class GlobTest {
 
-    private final boolean syntaxError;
-
-    ErrorType(boolean syntaxError) {
-        this.syntaxError = syntaxError;
+    @Test
+    public void braces_alpha_range1() {
+        Glob glob = new Glob("/dir1", "{aardvark..antelope}");
+        Assert.assertTrue(glob.match("/dir/{aardvark..antelope}"));
     }
 
-    public boolean isSyntaxError() {
-        return syntaxError;
-    }
 }

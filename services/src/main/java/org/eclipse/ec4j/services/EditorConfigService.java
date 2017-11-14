@@ -24,8 +24,8 @@ import java.util.Set;
 
 import org.eclipse.ec4j.core.EditorConfigConstants;
 import org.eclipse.ec4j.core.PropertyTypeRegistry;
-import org.eclipse.ec4j.core.Resources;
-import org.eclipse.ec4j.core.Resources.RandomReader;
+import org.eclipse.ec4j.core.Resource.RandomReader;
+import org.eclipse.ec4j.core.Resource.Resources;
 import org.eclipse.ec4j.core.model.PropertyType;
 import org.eclipse.ec4j.core.parser.EditorConfigParser;
 import org.eclipse.ec4j.services.completion.CompletionContextType;

@@ -16,7 +16,6 @@
  */
 package org.eclipse.ec4j.core.model;
 
-import org.eclipse.ec4j.core.InvalidPropertyValueException;
 import org.eclipse.ec4j.core.model.PropertyType.EndOfLineValue;
 import org.junit.Assert;
 import org.junit.Test;
@@ -29,8 +28,8 @@ public class PropertyTest {
         Assert.assertFalse(prop.isValid());
         try {
             prop.getValueAs();
-            Assert.fail(InvalidPropertyValueException.class.getName() + " expected");
-        } catch (InvalidPropertyValueException expected) {
+            Assert.fail(RuntimeException.class.getName() + " expected");
+        } catch (RuntimeException expected) {
         }
     }
 
