@@ -7,7 +7,7 @@ Bundle-SymbolicName: org.eclipse.ec4j.services
 Bundle-Version: 0.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
-Export-Package: org.eclipse.ec4j.services,
- org.eclipse.ec4j.services.validation,
- org.eclipse.ec4j.services.completion
+Export-Package: org.ec4j.core.services,
+ org.ec4j.core.services.completion,
+ org.ec4j.core.services.validation
 Require-Bundle: org.eclipse.ec4j.core
