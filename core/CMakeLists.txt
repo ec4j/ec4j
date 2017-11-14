@@ -6,7 +6,7 @@
 cmake_minimum_required(VERSION 2.6)
 
 # Do not check any compiler
-project(org.eclipse.ec4j NONE)
+project(org.ec4j.core NONE)
 
 find_package(Java 1.6)
 
@@ -17,5 +17,5 @@ if(NOT JAVA_FOUND)
 endif()
 
 enable_testing()
-set(EDITORCONFIG_CMD ${Java_JAVA_EXECUTABLE} -cp ${PROJECT_SOURCE_DIR}/target/org.ec4j.core.jar org.ec4j.core.cli.Cli)
+set(EDITORCONFIG_CMD ${Java_JAVA_EXECUTABLE} -cp ${PROJECT_SOURCE_DIR}/target/ec4j-core.jar org.ec4j.core.cli.Cli)
 add_subdirectory(editorconfig-core-test)

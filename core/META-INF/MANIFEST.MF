@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: %pluginName
-Bundle-Vendor: %providerName
+Bundle-Name: ec4j-core
+Bundle-Vendor: ec4j
 Bundle-Localization: plugin
 Bundle-SymbolicName: org.ec4j.core
 Bundle-Version: 0.1.0.qualifier
