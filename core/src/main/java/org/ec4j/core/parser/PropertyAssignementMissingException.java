@@ -21,8 +21,10 @@ package org.ec4j.core.parser;
  */
 public class PropertyAssignementMissingException extends ParseException {
 
+    /**  */
+    private static final long serialVersionUID = -6264448742599807531L;
+
     public PropertyAssignementMissingException(String name, Location location) {
-        super("Assignement misses for the property '" + name + "'. Expected '='", location,
-                ErrorType.PropertyAssignementMissing);
+        super("Equals sign '==' missing after property name '" + name + "'", true, location);
     }
 }

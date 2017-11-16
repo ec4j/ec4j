@@ -17,9 +17,11 @@
 package org.ec4j.core.parser;
 
 import java.util.Locale;
+import java.util.regex.PatternSyntaxException;
 
 import org.ec4j.core.PropertyTypeRegistry;
 import org.ec4j.core.model.EditorConfig;
+import org.ec4j.core.model.Glob;
 import org.ec4j.core.model.Property;
 import org.ec4j.core.model.PropertyType;
 import org.ec4j.core.model.PropertyType.PropertyValue;
@@ -40,8 +42,9 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
     protected Property.Builder propertyBuilder;
     protected final PropertyTypeRegistry registry;
     protected final Version version;
-    private PropertyType<?> type;
-    private final ErrorHandler errorHandler;
+    protected PropertyType<?> type;
+    protected final ErrorHandler errorHandler;
+    protected Location patternStart;
 
     public EditorConfigModelHandler(PropertyTypeRegistry registry, Version version, ErrorHandler errorHandler) {
         this.registry = registry;
@@ -53,7 +56,6 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
     @Override
     public void startDocument(ParseContext context) {
         editorConfigBuilder = EditorConfig.builder().version(version);
-        editorConfigBuilder.resourcePath(context.getResource().getParent());
     }
 
     /** {@inheritDoc} */
@@ -99,12 +101,20 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
     /** {@inheritDoc} */
     @Override
     public void startPattern(ParseContext context) {
+        this.patternStart = context.getLocation();
     }
 
     /** {@inheritDoc} */
     @Override
     public void endPattern(ParseContext context, String pattern) {
-        sectionBuilder.pattern(pattern);
+        final Glob glob = new Glob(context.getResource().getParent().getPath(), pattern);
+        final PatternSyntaxException e = glob.getError();
+        if (e != null) {
+            final String msg = String.format("The pattern '%s' is not valid: %s", pattern, e.getMessage());
+            errorHandler.error(context, new ParseException(msg, false, context.getLocation()));
+        }
+        sectionBuilder.glob(glob);
+        patternStart = null;
     }
 
     /** {@inheritDoc} */

@@ -32,7 +32,7 @@ public class InvalidPropertyValueException extends ParseException {
     private static final long serialVersionUID = 111772326725147819L;
 
     InvalidPropertyValueException(String message, Location location) {
-        super(message, location);
+        super(message, false, location);
     }
 
 }

@@ -16,7 +16,6 @@
  */
 package org.ec4j.core.services.validation;
 
-import org.ec4j.core.parser.ErrorType;
 import org.ec4j.core.parser.Location;
 import org.ec4j.core.services.EditorConfigService;
 import org.junit.Test;
@@ -31,7 +30,7 @@ public class EditorConfigServiceValidateTest {
         EditorConfigService.validate("[*]", new IReporter() {
 
             @Override
-            public void addError(String message, Location start, Location end, ErrorType type, Severity severity) {
+            public void addError(String message, Location start, Location end, Severity severity) {
 
             }
         });

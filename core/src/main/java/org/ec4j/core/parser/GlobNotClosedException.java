@@ -19,9 +19,12 @@ package org.ec4j.core.parser;
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-public class SectionNotClosedException extends ParseException {
+public class GlobNotClosedException extends ParseException {
 
-    public SectionNotClosedException(Location location) {
-        super("Section not closed. Expected ']'", location, ErrorType.SectionNotClosed);
+    /**  */
+    private static final long serialVersionUID = -198284142684306522L;
+
+    public GlobNotClosedException(Location location) {
+        super("Glob pattern not closed. Expected ']'", true, location);
     }
 }

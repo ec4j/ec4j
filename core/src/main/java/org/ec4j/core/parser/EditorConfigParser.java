@@ -109,7 +109,8 @@ public class EditorConfigParser implements ParseContext {
             this.reader = reader;
             readLines();
             if (!isEndOfText()) {
-                throw error("Unexpected character");
+                ParseException e = new ParseException("Found unexpected character; expected end of input", true, getLocation());
+                errorHandler.error(this, e);
             }
         }
     }
@@ -183,7 +184,7 @@ public class EditorConfigParser implements ParseContext {
         inSection = true;
         read();
         if (isEndOfText()) {
-            throw new SectionNotClosedException(getLocation());
+            throw new GlobNotClosedException(getLocation());
         }
         if (readChar(']')) {
             return;
@@ -206,14 +207,14 @@ public class EditorConfigParser implements ParseContext {
                 int oldIndex = index;
                 index -= i;
                 try {
-                    throw new SectionNotClosedException(getLocation());
+                    throw new GlobNotClosedException(getLocation());
                 } finally {
                     index = oldIndex;
                 }
             }
         }
         if (i == -1) {
-            throw new SectionNotClosedException(getLocation());
+            throw new GlobNotClosedException(getLocation());
         }
         int oldIndex = index;
         index -= i + 1;
@@ -237,7 +238,8 @@ public class EditorConfigParser implements ParseContext {
              * if (current == '\\') { pauseCapture(); readEscape(); startCapture(); } else
              */
             if (current < 0x20) {
-                throw expected("valid string character");
+                ParseException e = expected("valid string character");
+                errorHandler.error(this, e);
             } else {
                 read();
             }
@@ -367,13 +369,9 @@ public class EditorConfigParser implements ParseContext {
 
     private ParseException expected(String expected) {
         if (isEndOfText()) {
-            return error("Unexpected end of input");
+            return new ParseException("Unexpected end of input", true, getLocation());
         }
-        return error("Expected " + expected);
-    }
-
-    private ParseException error(String message) {
-        return new ParseException(message, getLocation());
+        return new ParseException("Expected " + expected, true, getLocation());
     }
 
     private boolean isWhiteSpace() {

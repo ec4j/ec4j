@@ -43,6 +43,19 @@ public interface ErrorHandler {
     };
 
     /**
+     * An {@link ErrorHandler} that throws only those {@link ParseException}s whose
+     * {@link ParseException#isSyntaxError()} returns {@code true}
+     */
+    ErrorHandler THROW_SYNTAX_ERRORS_IGNORE_OTHERS = new ErrorHandler() {
+        @Override
+        public void error(ParseContext context, ParseException e) throws ParseException {
+            if (e.isSyntaxError()) {
+                throw e;
+            }
+        }
+    };
+
+    /**
      * A {@link ParseException} occured
      *
      * @param context
