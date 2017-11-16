@@ -3,11 +3,11 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Bundle-SymbolicName: org.eclipse.ec4j.services
+Bundle-SymbolicName: org.ec4j.core.services
 Bundle-Version: 0.1.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
-Export-Package: org.eclipse.ec4j.services,
- org.eclipse.ec4j.services.validation,
- org.eclipse.ec4j.services.completion
-Require-Bundle: org.eclipse.ec4j.core
+Export-Package: org.ec4j.core.services,
+ org.ec4j.core.services.completion,
+ org.ec4j.core.services.validation
+Require-Bundle: org.ec4j.core
