@@ -21,8 +21,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.ec4j.core.ResourcePath;
-
 /**
  * A immutable model of an {@code .editorconfig} file.
  *
@@ -36,7 +34,6 @@ public class EditorConfig extends Adaptable {
      */
     public static class Builder extends Adaptable.Builder<Builder> {
 
-        ResourcePath resourcePath;
         Boolean root;
         List<Section> sections;
         Version version = Version.CURRENT;
@@ -52,8 +49,7 @@ public class EditorConfig extends Adaptable {
         public EditorConfig build() {
             List<Section> useSections = sections;
             sections = null;
-            return new EditorConfig(sealAdapters(), root, version, resourcePath,
-                    Collections.unmodifiableList(useSections));
+            return new EditorConfig(sealAdapters(), root, version, Collections.unmodifiableList(useSections));
         }
 
         /**
@@ -61,18 +57,6 @@ public class EditorConfig extends Adaptable {
          */
         public Section.Builder openSection() {
             return new Section.Builder(this);
-        }
-
-        /**
-         * Sets the {@link #resourcePath}.
-         *
-         * @param resourcePath
-         *            the directory where the underlying {@code .editorconfig} file resides
-         * @return this {@link Builder}
-         */
-        public Builder resourcePath(ResourcePath resourcePath) {
-            this.resourcePath = resourcePath;
-            return this;
         }
 
         /**
@@ -150,8 +134,6 @@ public class EditorConfig extends Adaptable {
         return new Builder();
     }
 
-    private final ResourcePath resourcePath;
-
     /**
      * Citing from <a href="http://editorconfig.org/">http://editorconfig.org/</a> : "A search for .editorconfig files
      * will stop if the root filepath is reached or an EditorConfig file with root=true is found."
@@ -171,15 +153,12 @@ public class EditorConfig extends Adaptable {
      * @param adapters
      * @param root
      * @param version
-     * @param resourcePath
      * @param sections
      */
-    EditorConfig(List<Object> adapters, Boolean root, Version version, ResourcePath resourcePath,
-            List<Section> sections) {
+    EditorConfig(List<Object> adapters, Boolean root, Version version, List<Section> sections) {
         super(adapters);
         this.root = root;
         this.version = version;
-        this.resourcePath = resourcePath;
         this.sections = sections;
     }
 
@@ -192,11 +171,6 @@ public class EditorConfig extends Adaptable {
         if (getClass() != obj.getClass())
             return false;
         EditorConfig other = (EditorConfig) obj;
-        if (resourcePath == null) {
-            if (other.resourcePath != null)
-                return false;
-        } else if (!resourcePath.equals(other.resourcePath))
-            return false;
         if (root == null) {
             if (other.root != null)
                 return false;
@@ -213,13 +187,6 @@ public class EditorConfig extends Adaptable {
         } else if (!version.equals(other.version))
             return false;
         return true;
-    }
-
-    /**
-     * @return The directory where the underlying {@code .editorconfig} file resides
-     */
-    public ResourcePath getResourcePath() {
-        return resourcePath;
     }
 
     /**
@@ -240,7 +207,6 @@ public class EditorConfig extends Adaptable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((resourcePath == null) ? 0 : resourcePath.hashCode());
         result = prime * result + ((root == null) ? 0 : root.hashCode());
         result = prime * result + ((sections == null) ? 0 : sections.hashCode());
         result = prime * result + ((version == null) ? 0 : version.hashCode());

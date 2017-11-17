@@ -55,52 +55,6 @@ public class Section extends Adaptable {
         }
 
         /**
-         * @return a new {@link Section}
-         */
-        public Section build() {
-            Map<String, Property> useProps = Collections.unmodifiableMap(properties);
-            this.properties = null;
-            return new Section(sealAdapters(), glob, useProps);
-        }
-
-        /**
-         * Creates a new instance of {@link Section} using {@link #build()}, adds the instance to {@link #parentBuilder}
-         * using {@link EditorConfig.Builder#section(Section)} and returns the parent {@link EditorConfig.Builder}.
-         *
-         * @return the parent {@link EditorConfig.Builder}
-         */
-        public EditorConfig.Builder closeSection() {
-            if (glob == null) {
-                /* this is the first glob-less section */
-                Property rootProp = properties.remove(PropertyType.root.getName());
-                if (rootProp != null) {
-                    parentBuilder.root(rootProp.getSourceValue().equalsIgnoreCase(Boolean.TRUE.toString()));
-                }
-            } else {
-                parentBuilder.section(build());
-            }
-            return parentBuilder;
-        }
-
-        /**
-         * @return a new {@link Property.Builder}
-         */
-        public Property.Builder openProperty() {
-            return new Property.Builder(this);
-        }
-
-        /**
-         * Creates a new {@link Glob} using the given {@code pattern} and assigns it to #
-         *
-         * @param pattern
-         * @return
-         */
-        public Builder pattern(String pattern) {
-            this.glob = new Glob(parentBuilder.resourcePath.getPath(), pattern);
-            return this;
-        }
-
-        /**
          * Applies the defaults required by the core-tests, if necessary.
          *
          * @return this {@link Builder}
@@ -138,6 +92,53 @@ public class Section extends Adaptable {
                 this.property(indentSize);
             }
             return this;
+        }
+
+        /**
+         * @return a new {@link Section}
+         */
+        public Section build() {
+            Map<String, Property> useProps = Collections.unmodifiableMap(properties);
+            this.properties = null;
+            return new Section(sealAdapters(), glob, useProps);
+        }
+
+        /**
+         * Creates a new instance of {@link Section} using {@link #build()}, adds the instance to {@link #parentBuilder}
+         * using {@link EditorConfig.Builder#section(Section)} and returns the parent {@link EditorConfig.Builder}.
+         *
+         * @return the parent {@link EditorConfig.Builder}
+         */
+        public EditorConfig.Builder closeSection() {
+            if (glob == null) {
+                /* this is the first glob-less section */
+                Property rootProp = properties.remove(PropertyType.root.getName());
+                if (rootProp != null) {
+                    parentBuilder.root(rootProp.getSourceValue().equalsIgnoreCase(Boolean.TRUE.toString()));
+                }
+            } else {
+                parentBuilder.section(build());
+            }
+            return parentBuilder;
+        }
+
+        /**
+         * Sets the {@link Glob}
+         *
+         * @param glob
+         *            the {@link Glob} to set
+         * @return this {@link Builder}
+         */
+        public Builder glob(Glob glob) {
+            this.glob = glob;
+            return this;
+        }
+
+        /**
+         * @return a new {@link Property.Builder}
+         */
+        public Property.Builder openProperty() {
+            return new Property.Builder(this);
         }
 
         /**

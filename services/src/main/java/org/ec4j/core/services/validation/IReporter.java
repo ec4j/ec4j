@@ -16,7 +16,6 @@
  */
 package org.ec4j.core.services.validation;
 
-import org.ec4j.core.parser.ErrorType;
 import org.ec4j.core.parser.Location;
 
 /**
@@ -35,11 +34,9 @@ public interface IReporter {
      *            the start location of the error.
      * @param end
      *            the end location of the error (can be null).
-     * @param type
-     *            the type of the error.
      * @param severity
      *            the severity of the error.
      */
-    void addError(String message, Location start, Location end, ErrorType type, Severity severity);
+    void addError(String message, Location start, Location end, Severity severity);
 
 }

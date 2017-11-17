@@ -16,7 +16,7 @@
  */
 package org.ec4j.core.services.validation;
 
-import org.ec4j.core.parser.ErrorType;
+import org.ec4j.core.parser.ParseException;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
@@ -26,10 +26,10 @@ public interface ISeverityProvider {
     ISeverityProvider DEFAULT = new ISeverityProvider() {
 
         @Override
-        public Severity getSeverity(ErrorType errorType) {
-            return errorType.isSyntaxError() ? Severity.error : Severity.warning;
+        public Severity getSeverity(ParseException e) {
+            return e.isSyntaxError() ? Severity.error : Severity.warning;
         }
     };
 
-    Severity getSeverity(ErrorType errorType);
+    Severity getSeverity(ParseException e);
 }

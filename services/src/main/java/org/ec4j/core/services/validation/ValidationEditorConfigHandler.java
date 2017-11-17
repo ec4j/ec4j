@@ -25,7 +25,6 @@ import org.ec4j.core.model.PropertyType;
 import org.ec4j.core.model.PropertyType.PropertyValue;
 import org.ec4j.core.parser.EditorConfigHandler;
 import org.ec4j.core.parser.ErrorHandler;
-import org.ec4j.core.parser.ErrorType;
 import org.ec4j.core.parser.Location;
 import org.ec4j.core.parser.ParseContext;
 import org.ec4j.core.parser.ParseException;
@@ -35,7 +34,6 @@ import org.ec4j.core.parser.ParseException;
  */
 public class ValidationEditorConfigHandler implements EditorConfigHandler, ErrorHandler {
 
-    private static final String PATTERN_SYNTAX_MESSAGE = "The pattern ''{0}'' is not valid ''{1}''";
     private static final String PROPERTY_NAME_NOT_EXISTS_MESSAGE = "The property ''{0}'' is not supported by .editorconfig";
 
     // private static final String PROPERTY_VALUE_TYPE_MESSAGE = "The property ''{0}''
@@ -75,13 +73,11 @@ public class ValidationEditorConfigHandler implements EditorConfigHandler, Error
 
     @Override
     public void endPattern(ParseContext context, String pattern) {
-        Glob g = new Glob(context.getResource().getParent().getPath(), pattern);
-        PatternSyntaxException e = g.getError();
+        final Glob glob = new Glob(context.getResource().getParent().getPath(), pattern);
+        final PatternSyntaxException e = glob.getError();
         if (e != null) {
-            Location end = context.getLocation();
-            ErrorType errorType = ErrorType.PatternSyntaxType;
-            reporter.addError(MessageFormat.format(PATTERN_SYNTAX_MESSAGE, pattern, e.getMessage()), patternStart, end,
-                    errorType, provider.getSeverity(errorType));
+            final String msg = String.format("The pattern '%s' is not valid: %s", pattern, e.getMessage());
+            this.error(context, new ParseException(msg, false, patternStart));
         }
         patternStart = null;
     }
@@ -97,9 +93,8 @@ public class ValidationEditorConfigHandler implements EditorConfigHandler, Error
         this.type = registry.getType(name);
         if (type == null) {
             Location end = context.getLocation();
-            ErrorType errorType = ErrorType.PropertyNameNotExists;
             reporter.addError(MessageFormat.format(PROPERTY_NAME_NOT_EXISTS_MESSAGE, name), propertyNameStart, end,
-                    errorType, provider.getSeverity(errorType));
+                    Severity.warning);
         }
         propertyNameStart = null;
     }
@@ -116,8 +111,7 @@ public class ValidationEditorConfigHandler implements EditorConfigHandler, Error
             PropertyValue<?> parsedValue = type.parse(value);
             if (!parsedValue.isValid()) {
                 Location end = context.getLocation();
-                ErrorType errorType = ErrorType.PropertyValueType;
-                reporter.addError(parsedValue.getErrorMessage(), propertyValueStart, end, errorType, provider.getSeverity(errorType));
+                reporter.addError(parsedValue.getErrorMessage(), propertyValueStart, end, Severity.warning);
             }
         }
         type = null;
@@ -126,11 +120,11 @@ public class ValidationEditorConfigHandler implements EditorConfigHandler, Error
 
     @Override
     public void error(ParseContext context, ParseException e) throws ParseException {
-        reporter.addError(e.getMessage(), e.getLocation(), null, e.getErrorType(), getSeverity(e));
+        reporter.addError(e.getMessage(), e.getLocation(), null, getSeverity(e));
     }
 
     protected Severity getSeverity(ParseException e) {
-        return provider.getSeverity(e.getErrorType());
+        return provider.getSeverity(e);
     }
 
     @Override

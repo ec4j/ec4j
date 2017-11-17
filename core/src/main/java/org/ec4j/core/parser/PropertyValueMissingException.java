@@ -21,8 +21,10 @@ package org.ec4j.core.parser;
  */
 public class PropertyValueMissingException extends ParseException {
 
+    /**  */
+    private static final long serialVersionUID = 1072212049460842854L;
+
     public PropertyValueMissingException(String name, Location location) {
-        super("None value defined for the property '" + name + "'. Expected a value", location,
-                ErrorType.PropertyValueMissing);
+        super("Property '" + name + "' has no value", true, location);
     }
 }
