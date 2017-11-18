@@ -54,6 +54,23 @@ public class PropertyType<T> {
             VALUE_SET = Collections.unmodifiableSet(s);
         }
 
+        /**
+         * @param endOfLineString
+         * @return an {@link EndOfLineValue} that corresponds to the given {@code endOfLineString}
+         */
+        public static EndOfLineValue ofEndOfLineString(String endOfLineString) {
+            switch (endOfLineString) {
+            case "\r":
+                return EndOfLineValue.cr;
+            case "\r\n":
+                return EndOfLineValue.crlf;
+            case "\n":
+                return EndOfLineValue.lf;
+            default:
+                return null;
+            }
+        }
+
         public static Set<String> valueSet() {
             return VALUE_SET;
         }
@@ -307,6 +324,17 @@ public class PropertyType<T> {
 
         };
 
+        PropertyValueParser<Integer> INDENT_SIZE_VALUE_PARSER = new PropertyValueParser<Integer>() {
+            @Override
+            public PropertyValue<Integer> parse(String name, String value) {
+                if ("tab".equalsIgnoreCase(value)) {
+                    return PropertyValue.valid(value, null);
+                } else {
+                    return POSITIVE_INT_VALUE_PARSER.parse(name, value);
+                }
+            }
+        };
+
         /** A parser accepting positive integer numbers. */
         PropertyValueParser<Integer> POSITIVE_INT_VALUE_PARSER = new PropertyValueParser<Integer>() {
             @Override
@@ -322,17 +350,6 @@ public class PropertyType<T> {
                 } catch (final NumberFormatException e) {
                     return PropertyValue.invalid(value, "Property '" + name + "' expects an integer. The parsed '"
                             + value + "' is not an integer.");
-                }
-            }
-        };
-
-        PropertyValueParser<Integer> INDENT_SIZE_VALUE_PARSER = new PropertyValueParser<Integer>() {
-            @Override
-            public PropertyValue<Integer> parse(String name, String value) {
-                if ("tab".equalsIgnoreCase(value)) {
-                    return PropertyValue.valid(value, null);
-                } else {
-                    return POSITIVE_INT_VALUE_PARSER.parse(name, value);
                 }
             }
         };

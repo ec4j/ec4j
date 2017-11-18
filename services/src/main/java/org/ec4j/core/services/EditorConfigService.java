@@ -267,14 +267,4 @@ public class EditorConfigService {
         return new TokenContext(prefix.toString(), name != null ? name.toString() : null, type);
     }
 
-    public static String getEndOfLine(String lineDelimiter) {
-        if ("\n".equals(lineDelimiter)) {
-            return "lf";
-        } else if ("\r".equals(lineDelimiter)) {
-            return "cr";
-        } else if ("\r\n".equals(lineDelimiter)) {
-            return "crlf";
-        }
-        return null;
-    }
 }
