@@ -413,4 +413,10 @@ public class EditorConfigParser implements ParseContext {
     public Resource getResource() {
         return resource;
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public ErrorHandler getErrorHandler() {
+        return errorHandler;
+    }
 }

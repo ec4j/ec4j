@@ -39,7 +39,7 @@ public class LocationAwareModelHandler extends EditorConfigModelHandler {
     private Span.Builder sectionSpan;
 
     public LocationAwareModelHandler(PropertyTypeRegistry registry, Version version, ErrorHandler errorHandler) {
-        super(registry, version, errorHandler);
+        super(registry, version);
     }
 
     @Override

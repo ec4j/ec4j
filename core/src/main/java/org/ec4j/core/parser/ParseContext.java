@@ -34,4 +34,9 @@ public interface ParseContext {
      * @return the resource being parsed
      */
     Resource getResource();
+
+    /**
+     * @return the {@link ErrorHandler} to notify on parse errors and semantic errors
+     */
+    ErrorHandler getErrorHandler();
 }

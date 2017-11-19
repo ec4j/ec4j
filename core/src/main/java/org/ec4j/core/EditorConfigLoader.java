@@ -32,8 +32,7 @@ import org.ec4j.core.parser.ErrorHandler;
 public class EditorConfigLoader {
 
     private static final EditorConfigLoader DEFAULT = new EditorConfigLoader(
-            new EditorConfigModelHandler(PropertyTypeRegistry.getDefault(), Version.CURRENT,
-                    ErrorHandler.THROW_SYNTAX_ERRORS_IGNORE_OTHERS),
+            new EditorConfigModelHandler(PropertyTypeRegistry.getDefault(), Version.CURRENT),
             ErrorHandler.THROW_SYNTAX_ERRORS_IGNORE_OTHERS);
 
     public static EditorConfigLoader getDefault() {
@@ -49,7 +48,7 @@ public class EditorConfigLoader {
     }
 
     public static EditorConfigLoader of(Version version, PropertyTypeRegistry registry, ErrorHandler errorHandler) {
-        return new EditorConfigLoader(new EditorConfigModelHandler(registry, version, errorHandler), errorHandler);
+        return new EditorConfigLoader(new EditorConfigModelHandler(registry, version), errorHandler);
     }
 
     private final ErrorHandler errorHandler;

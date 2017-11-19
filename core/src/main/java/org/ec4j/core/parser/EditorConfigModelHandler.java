@@ -43,13 +43,11 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
     protected final PropertyTypeRegistry registry;
     protected final Version version;
     protected PropertyType<?> type;
-    protected final ErrorHandler errorHandler;
     protected Location patternStart;
 
-    public EditorConfigModelHandler(PropertyTypeRegistry registry, Version version, ErrorHandler errorHandler) {
+    public EditorConfigModelHandler(PropertyTypeRegistry registry, Version version) {
         this.registry = registry;
         this.version = version;
-        this.errorHandler = errorHandler;
     }
 
     /** {@inheritDoc} */
@@ -111,7 +109,7 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
         final PatternSyntaxException e = glob.getError();
         if (e != null) {
             final String msg = String.format("The pattern '%s' is not valid: %s", pattern, e.getMessage());
-            errorHandler.error(context, new ParseException(msg, false, context.getLocation()));
+            context.getErrorHandler().error(context, new ParseException(msg, false, context.getLocation()));
         }
         sectionBuilder.glob(glob);
         patternStart = null;
@@ -156,7 +154,7 @@ public class EditorConfigModelHandler implements EditorConfigHandler {
     public void endPropertyValue(ParseContext context, String value) {
         final PropertyValue<?> propValue = type == null ? PropertyValue.valid(value, value) : type.parse(value);
         if (!propValue.isValid()) {
-            this.errorHandler.error(context,
+            context.getErrorHandler().error(context,
                     new InvalidPropertyValueException(propValue.getErrorMessage(), context.getLocation()));
         }
         propertyBuilder.value(propValue);
