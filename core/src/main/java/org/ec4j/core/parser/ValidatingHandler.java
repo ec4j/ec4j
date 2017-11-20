@@ -17,31 +17,20 @@
 package org.ec4j.core.parser;
 
 import org.ec4j.core.PropertyTypeRegistry;
-import org.ec4j.core.model.EditorConfig;
 import org.ec4j.core.model.Glob;
-import org.ec4j.core.model.Property;
 import org.ec4j.core.model.PropertyType;
 import org.ec4j.core.model.PropertyType.PropertyValue;
-import org.ec4j.core.model.Section;
-import org.ec4j.core.model.Version;
 
 /**
- * A {@link EditorConfigHandler} implementation that assemles {@link EditorConfig} instances out of the parse
- * notifications.
+ * An {@link EditorConfigHandler} that inherits from {@link AbstractValidatingHandler} and adds nothing new to it except
+ * that {@link ValidatingHandler} is not abstract.
  *
- * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
-public class EditorConfigModelHandler extends AbstractValidatingHandler {
+public class ValidatingHandler extends AbstractValidatingHandler {
 
-    protected EditorConfig.Builder editorConfigBuilder;
-    protected Property.Builder propertyBuilder;
-    protected Section.Builder sectionBuilder;
-    protected final Version version;
-
-    public EditorConfigModelHandler(PropertyTypeRegistry registry, Version version) {
+    public ValidatingHandler(PropertyTypeRegistry registry) {
         super(registry);
-        this.version = version;
     }
 
     /** {@inheritDoc} */
@@ -62,34 +51,26 @@ public class EditorConfigModelHandler extends AbstractValidatingHandler {
     /** {@inheritDoc} */
     @Override
     public void endProperty(ParseContext context) {
-        propertyBuilder.closeProperty();
-        propertyBuilder = null;
     }
 
     /** {@inheritDoc} */
     @Override
     public void endSection(ParseContext context) {
-        sectionBuilder.applyDefaults().closeSection();
-        sectionBuilder = null;
     }
 
-    /**
-     * @return the {@link EditorConfig} instance parsed out of the event stream
-     */
-    public EditorConfig getEditorConfig() {
-        EditorConfig result = editorConfigBuilder.build();
-        editorConfigBuilder = null;
-        return result;
-    }
-
+    /** {@inheritDoc} */
     @Override
     protected void glob(ParseContext context, Glob glob) {
-        sectionBuilder.glob(glob);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    protected void name(ParseContext context, String name) {
+    }
+
+    /** {@inheritDoc} */
     @Override
     protected void propertyValue(ParseContext context, PropertyValue<?> propValue) {
-        propertyBuilder.value(propValue);
     }
 
     /** {@inheritDoc} */
@@ -100,29 +81,21 @@ public class EditorConfigModelHandler extends AbstractValidatingHandler {
     /** {@inheritDoc} */
     @Override
     public void startDocument(ParseContext context) {
-        editorConfigBuilder = EditorConfig.builder().version(version);
     }
 
     /** {@inheritDoc} */
     @Override
     public void startProperty(ParseContext context) {
-        propertyBuilder = sectionBuilder.openProperty();
     }
 
     /** {@inheritDoc} */
     @Override
     public void startSection(ParseContext context) {
-        sectionBuilder = editorConfigBuilder.openSection();
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void type(ParseContext context, PropertyType<?> type) {
-        propertyBuilder.type(type);
-    }
-
-    @Override
-    protected void name(ParseContext context, String name) {
-        propertyBuilder.name(name);
     }
 
 }
