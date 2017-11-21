@@ -41,16 +41,7 @@ import org.ec4j.core.services.completion.CompletionEntryMatcher;
 public class EditorConfigService {
 
     public static List<CompletionEntry> getCompletionEntries(int offset, RandomReader reader,
-            CompletionEntryMatcher matcher)
-            throws Exception {
-        return getCompletionEntries(offset, reader, matcher, null);
-    }
-
-    public static List<CompletionEntry> getCompletionEntries(int offset, RandomReader reader,
             CompletionEntryMatcher matcher, PropertyTypeRegistry registry) throws Exception {
-        if (registry == null) {
-            registry = PropertyTypeRegistry.default_();
-        }
         TokenContext context = getTokenContext(offset, reader, false);
         switch (context.getType()) {
         case PROPERTY_NAME: {
@@ -86,17 +77,8 @@ public class EditorConfigService {
         return Collections.emptyList();
     }
 
-    // ------------- Hover service
-
-    public static <T> String getHover(int offset, RandomReader reader) throws Exception {
-        return getHover(offset, reader, null);
-    }
-
     public static <T> String getHover(int offset, RandomReader reader, PropertyTypeRegistry registry)
             throws Exception {
-        if (registry == null) {
-            registry = PropertyTypeRegistry.default_();
-        }
         TokenContext context = getTokenContext(offset, reader, true);
         switch (context.getType()) {
         case PROPERTY_NAME: {
