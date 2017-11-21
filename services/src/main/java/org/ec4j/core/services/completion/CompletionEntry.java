@@ -28,7 +28,7 @@ public class CompletionEntry {
     private static final int SUBWORDS_RANGE_START = -9000;
     private static final int minPrefixLengthForTypes = 1;
 
-    private final ICompletionEntryMatcher matcher;
+    private final CompletionEntryMatcher matcher;
     private int relevance;
 
     private final String name;
@@ -37,7 +37,7 @@ public class CompletionEntry {
     private final CompletionContextType contextType;
     private final PropertyType<?> propertyType;
 
-    public CompletionEntry(String name, ICompletionEntryMatcher matcher, PropertyType<?> propertyType,
+    public CompletionEntry(String name, CompletionEntryMatcher matcher, PropertyType<?> propertyType,
             CompletionContextType contextType, int initialOffset) {
         this.name = name;
         this.matcher = matcher;
@@ -50,7 +50,7 @@ public class CompletionEntry {
         return name;
     }
 
-    public ICompletionEntryMatcher getMatcher() {
+    public CompletionEntryMatcher getMatcher() {
         return matcher;
     }
 

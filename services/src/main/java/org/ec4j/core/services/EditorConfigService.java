@@ -26,7 +26,7 @@ import org.ec4j.core.Resource.RandomReader;
 import org.ec4j.core.model.PropertyType;
 import org.ec4j.core.services.completion.CompletionContextType;
 import org.ec4j.core.services.completion.CompletionEntry;
-import org.ec4j.core.services.completion.ICompletionEntryMatcher;
+import org.ec4j.core.services.completion.CompletionEntryMatcher;
 
 /**
  * EditorConfig service helpful for IDE:
@@ -41,13 +41,13 @@ import org.ec4j.core.services.completion.ICompletionEntryMatcher;
 public class EditorConfigService {
 
     public static List<CompletionEntry> getCompletionEntries(int offset, RandomReader reader,
-            ICompletionEntryMatcher matcher)
+            CompletionEntryMatcher matcher)
             throws Exception {
         return getCompletionEntries(offset, reader, matcher, null);
     }
 
     public static List<CompletionEntry> getCompletionEntries(int offset, RandomReader reader,
-            ICompletionEntryMatcher matcher, PropertyTypeRegistry registry) throws Exception {
+            CompletionEntryMatcher matcher, PropertyTypeRegistry registry) throws Exception {
         if (registry == null) {
             registry = PropertyTypeRegistry.default_();
         }

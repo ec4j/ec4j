@@ -21,9 +21,9 @@ package org.ec4j.core.services.completion;
  *
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-public interface ICompletionEntryMatcher {
+public interface CompletionEntryMatcher {
 
-    ICompletionEntryMatcher LCS = new ICompletionEntryMatcher() {
+    CompletionEntryMatcher LCS = new CompletionEntryMatcher() {
 
         @Override
         public int[] bestSubsequence(String completion, String token) {
@@ -32,7 +32,7 @@ public interface ICompletionEntryMatcher {
 
     };
 
-    ICompletionEntryMatcher START_WITH_MATCHER = new ICompletionEntryMatcher() {
+    CompletionEntryMatcher START_WITH_MATCHER = new CompletionEntryMatcher() {
 
         @Override
         public int[] bestSubsequence(String completion, String token) {
