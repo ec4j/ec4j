@@ -26,7 +26,6 @@ import org.ec4j.core.Resource.RandomReader;
 import org.ec4j.core.model.PropertyType;
 import org.ec4j.core.services.completion.CompletionContextType;
 import org.ec4j.core.services.completion.CompletionEntry;
-import org.ec4j.core.services.completion.ICompletionEntry;
 import org.ec4j.core.services.completion.ICompletionEntryMatcher;
 
 /**
@@ -41,47 +40,23 @@ import org.ec4j.core.services.completion.ICompletionEntryMatcher;
  */
 public class EditorConfigService {
 
-    public interface CompletionEntryFactory {
-        ICompletionEntry newEntry(String name);
-    }
-
-    // ------------- Completion service
-
-    public static final CompletionEntryFactory COMPLETION_ENTRY_FACTORY = new CompletionEntryFactory() {
-        @Override
-        public CompletionEntry newEntry(String name) {
-            return new CompletionEntry(name);
-        }
-    };
-
-    public static List<ICompletionEntry> getCompletionEntries(int offset, RandomReader reader,
-            ICompletionEntryMatcher matcher) throws Exception {
-        return getCompletionEntries(offset, reader, matcher, COMPLETION_ENTRY_FACTORY);
-    }
-
-    public static List<ICompletionEntry> getCompletionEntries(int offset, RandomReader reader,
-            ICompletionEntryMatcher matcher, final CompletionEntryFactory factory)
+    public static List<CompletionEntry> getCompletionEntries(int offset, RandomReader reader,
+            ICompletionEntryMatcher matcher)
             throws Exception {
-        return getCompletionEntries(offset, reader, matcher, factory, null);
+        return getCompletionEntries(offset, reader, matcher, null);
     }
 
-    public static List<ICompletionEntry> getCompletionEntries(int offset, RandomReader reader,
-            ICompletionEntryMatcher matcher, final CompletionEntryFactory factory,
-            PropertyTypeRegistry registry) throws Exception {
+    public static List<CompletionEntry> getCompletionEntries(int offset, RandomReader reader,
+            ICompletionEntryMatcher matcher, PropertyTypeRegistry registry) throws Exception {
         if (registry == null) {
             registry = PropertyTypeRegistry.default_();
         }
         TokenContext context = getTokenContext(offset, reader, false);
         switch (context.type) {
         case PROPERTY_NAME: {
-            ICompletionEntry entry = null;
-            List<ICompletionEntry> entries = new ArrayList<>();
+            List<CompletionEntry> entries = new ArrayList<>();
             for (PropertyType<?> type : registry.getTypes()) {
-                entry = factory.newEntry(type.getName());
-                entry.setMatcher(matcher);
-                entry.setPropertyType(type);
-                entry.setContextType(context.type);
-                entry.setInitialOffset(offset);
+                final CompletionEntry entry = new CompletionEntry(type.getName(), matcher, type, context.type, offset);
                 if (entry.updatePrefix(context.prefix)) {
                     entries.add(entry);
                 }
@@ -93,14 +68,9 @@ public class EditorConfigService {
             if (propertyType != null) {
                 Set<String> values = propertyType.getPossibleValues();
                 if (values != null) {
-                    ICompletionEntry entry = null;
-                    List<ICompletionEntry> entries = new ArrayList<>();
+                    List<CompletionEntry> entries = new ArrayList<>();
                     for (String value : values) {
-                        entry = factory.newEntry(value);
-                        entry.setMatcher(matcher);
-                        entry.setPropertyType(propertyType);
-                        entry.setContextType(context.type);
-                        entry.setInitialOffset(offset);
+                        final CompletionEntry entry = new CompletionEntry(value, matcher, propertyType, context.type, offset);
                         if (entry.updatePrefix(context.prefix)) {
                             entries.add(entry);
                         }

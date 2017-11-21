@@ -21,27 +21,31 @@ import org.ec4j.core.model.PropertyType;
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-public class CompletionEntry implements ICompletionEntry {
+public class CompletionEntry {
 
     // Negative value ensures subsequence matches have a lower relevance than
     // standard JDT or template proposals
     private static final int SUBWORDS_RANGE_START = -9000;
     private static final int minPrefixLengthForTypes = 1;
 
-    private ICompletionEntryMatcher matcher;
+    private final ICompletionEntryMatcher matcher;
     private int relevance;
 
     private final String name;
     private String prefix;
-    private int initialOffset;
-    private CompletionContextType contextType;
-    private PropertyType<?> propertyType;
+    private final int initialOffset;
+    private final CompletionContextType contextType;
+    private final PropertyType<?> propertyType;
 
-    public CompletionEntry(String name) {
+    public CompletionEntry(String name, ICompletionEntryMatcher matcher, PropertyType<?> propertyType,
+            CompletionContextType contextType, int initialOffset) {
         this.name = name;
+        this.matcher = matcher;
+        this.propertyType = propertyType;
+        this.contextType = contextType;
+        this.initialOffset = initialOffset;
     }
 
-    @Override
     public String getName() {
         return name;
     }
@@ -50,39 +54,18 @@ public class CompletionEntry implements ICompletionEntry {
         return matcher;
     }
 
-    @Override
-    public void setMatcher(ICompletionEntryMatcher matcher) {
-        this.matcher = matcher;
-    }
-
-    @Override
-    public void setContextType(CompletionContextType contextType) {
-        this.contextType = contextType;
-    }
-
     public CompletionContextType getContextType() {
         return contextType;
-    }
-
-    @Override
-    public void setPropertyType(PropertyType<?> propertyType) {
-        this.propertyType = propertyType;
     }
 
     public PropertyType<?> getPropertyType() {
         return propertyType;
     }
 
-    @Override
-    public void setInitialOffset(int initialOffset) {
-        this.initialOffset = initialOffset;
-    }
-
     public int getInitialOffset() {
         return initialOffset;
     }
 
-    @Override
     public boolean updatePrefix(String prefix) {
         this.prefix = prefix;
         Integer relevanceBoost = null;
