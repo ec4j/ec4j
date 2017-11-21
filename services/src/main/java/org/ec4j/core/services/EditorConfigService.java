@@ -16,25 +16,18 @@
  */
 package org.ec4j.core.services;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.ec4j.core.EditorConfigConstants;
 import org.ec4j.core.PropertyTypeRegistry;
 import org.ec4j.core.Resource.RandomReader;
-import org.ec4j.core.Resource.Resources;
 import org.ec4j.core.model.PropertyType;
-import org.ec4j.core.parser.EditorConfigParser;
 import org.ec4j.core.services.completion.CompletionContextType;
 import org.ec4j.core.services.completion.CompletionEntry;
 import org.ec4j.core.services.completion.ICompletionEntry;
 import org.ec4j.core.services.completion.ICompletionEntryMatcher;
-import org.ec4j.core.services.validation.IReporter;
-import org.ec4j.core.services.validation.ISeverityProvider;
-import org.ec4j.core.services.validation.ValidationEditorConfigHandler;
 
 /**
  * EditorConfig service helpful for IDE:
@@ -50,47 +43,6 @@ public class EditorConfigService {
 
     public interface CompletionEntryFactory {
         ICompletionEntry newEntry(String name);
-    }
-
-    // ------------- Validation service
-
-    public static void validate(String content, IReporter reporter) {
-        validate(content, reporter, null, null);
-    }
-
-    /**
-     * Validate the given content of an .editorconfig and report errors in the given
-     * reporter. This validator is able to validate:
-     *
-     * <ul>
-     * <li>Syntax error like section which are not closed.</li>
-     * <li>Semantic error like :
-     * <ul>
-     * <li>check property name is an EditorConfig properties
-     * {@link https://github.com/editorconfig/editorconfig/wiki/EditorConfig-Properties}
-     * </li>
-     * <li>check property value according the property name.</li>
-     * </ul>
-     * </li>
-     * </ul>
-     *
-     * @param content
-     *            of the .editorconfig to validate
-     * @param reporter
-     *            used to report errors.
-     */
-    public static void validate(String content, IReporter reporter, ISeverityProvider provider,
-            PropertyTypeRegistry registry) {
-        ValidationEditorConfigHandler handler = new ValidationEditorConfigHandler(reporter, provider, registry);
-        // Set parser as tolerant to collect the full errors of each line of the
-        // editorconfig.
-        EditorConfigParser parser = EditorConfigParser.builder().build();
-        try {
-            parser.parse(Resources.ofString(EditorConfigConstants.EDITORCONFIG, content), handler, handler);
-        } catch (IOException e) {
-            /* should not happen with Resources.ofString(content) */
-            throw new RuntimeException(e);
-        }
     }
 
     // ------------- Completion service
