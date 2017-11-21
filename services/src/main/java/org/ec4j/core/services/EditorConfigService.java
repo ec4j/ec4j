@@ -24,9 +24,9 @@ import java.util.Set;
 import org.ec4j.core.PropertyTypeRegistry;
 import org.ec4j.core.Resource.RandomReader;
 import org.ec4j.core.model.PropertyType;
-import org.ec4j.core.services.completion.CompletionContextType;
 import org.ec4j.core.services.completion.CompletionEntry;
 import org.ec4j.core.services.completion.CompletionEntryMatcher;
+import org.ec4j.core.services.completion.TokenContextType;
 
 /**
  * EditorConfig service helpful for IDE:
@@ -52,25 +52,25 @@ public class EditorConfigService {
             registry = PropertyTypeRegistry.default_();
         }
         TokenContext context = getTokenContext(offset, reader, false);
-        switch (context.type) {
+        switch (context.getType()) {
         case PROPERTY_NAME: {
             List<CompletionEntry> entries = new ArrayList<>();
             for (PropertyType<?> type : registry.getTypes()) {
-                final CompletionEntry entry = new CompletionEntry(type.getName(), matcher, type, context.type, offset);
-                if (entry.updatePrefix(context.prefix)) {
+                final CompletionEntry entry = new CompletionEntry(type.getName(), matcher, type, context.getType(), offset);
+                if (entry.updatePrefix(context.getPrefix())) {
                     entries.add(entry);
                 }
             }
             return entries;
         }
         case PROPERTY_VALUE: {
-            PropertyType<?> propertyType = registry.getType(context.name);
+            PropertyType<?> propertyType = registry.getType(context.getName());
             if (propertyType != null) {
                 Set<String> values = propertyType.getPossibleValues();
                 if (values != null) {
                     List<CompletionEntry> entries = new ArrayList<>();
                     for (String value : values) {
-                        final CompletionEntry entry = new CompletionEntry(value, matcher, propertyType, context.type, offset);
+                        final CompletionEntry entry = new CompletionEntry(value, matcher, propertyType, context.getType(), offset);
                         if (entry.updatePrefix(context.prefix)) {
                             entries.add(entry);
                         }
@@ -98,13 +98,13 @@ public class EditorConfigService {
             registry = PropertyTypeRegistry.default_();
         }
         TokenContext context = getTokenContext(offset, reader, true);
-        switch (context.type) {
+        switch (context.getType()) {
         case PROPERTY_NAME: {
-            PropertyType<?> type = registry.getType(context.prefix);
+            PropertyType<?> type = registry.getType(context.getPrefix());
             return type != null ? type.getDescription() : null;
         }
         case PROPERTY_VALUE: {
-            PropertyType<?> type = registry.getType(context.name);
+            PropertyType<?> type = registry.getType(context.getName());
             return type != null ? type.getDescription() : null;
         }
         default:
@@ -112,23 +112,11 @@ public class EditorConfigService {
         }
     }
 
-    private static class TokenContext {
-        public final String prefix;
-        public final String name; // property name, only available when context type is an property value
-        public final CompletionContextType type;
-
-        private TokenContext(String prefix, String name, CompletionContextType type) {
-            this.prefix = prefix;
-            this.name = name;
-            this.type = type;
-        }
-    }
-
-    private static TokenContext getTokenContext(int offset, RandomReader reader, boolean collectWord) throws Exception {
+    public static TokenContext getTokenContext(int offset, RandomReader reader, boolean collectWord) throws Exception {
 
         final long length = reader.getLength();
         char c;
-        CompletionContextType type = CompletionContextType.PROPERTY_NAME;
+        TokenContextType type = TokenContextType.PROPERTY_NAME;
         StringBuilder prefix = new StringBuilder();
         StringBuilder name = null;
         long i = offset - 1;
@@ -162,11 +150,11 @@ public class EditorConfigService {
             c = reader.read(i--);
             switch (c) {
             case '[':
-                type = CompletionContextType.SECTION;
+                type = TokenContextType.SECTION;
                 stop = true;
                 break;
             case '#':
-                type = CompletionContextType.COMMENTS;
+                type = TokenContextType.COMMENTS;
                 stop = true;
                 break;
             case ' ':
@@ -178,7 +166,7 @@ public class EditorConfigService {
                 break;
             case '=':
                 name = new StringBuilder();
-                type = CompletionContextType.PROPERTY_VALUE;
+                type = TokenContextType.PROPERTY_VALUE;
                 break;
             default:
                 if (name != null && Character.isJavaIdentifierPart(c)) {

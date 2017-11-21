@@ -19,6 +19,6 @@ package org.ec4j.core.services.completion;
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-public enum CompletionContextType {
+public enum TokenContextType {
     SECTION, COMMENTS, PROPERTY_NAME, PROPERTY_VALUE
 }

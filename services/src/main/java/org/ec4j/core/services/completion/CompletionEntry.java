@@ -36,10 +36,10 @@ public class CompletionEntry {
     private final String name;
     private String prefix;
     private final int initialOffset;
-    private final CompletionContextType contextType;
+    private final TokenContextType contextType;
     private final PropertyType<?> propertyType;
     public CompletionEntry(String name, CompletionEntryMatcher matcher, PropertyType<?> propertyType,
-            CompletionContextType contextType, int initialOffset) {
+            TokenContextType contextType, int initialOffset) {
         this.name = name;
         this.matcher = matcher;
         this.propertyType = propertyType;
@@ -55,7 +55,7 @@ public class CompletionEntry {
         return matcher;
     }
 
-    public CompletionContextType getContextType() {
+    public TokenContextType getContextType() {
         return contextType;
     }
 
