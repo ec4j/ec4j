@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ec4j.core.services;
+package org.ec4j.core.ide;
 
 public class TokenContext {
     public enum TokenContextType {

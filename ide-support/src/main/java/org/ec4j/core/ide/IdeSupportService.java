@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ec4j.core.services;
+package org.ec4j.core.ide;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,10 +23,10 @@ import java.util.Set;
 
 import org.ec4j.core.PropertyTypeRegistry;
 import org.ec4j.core.Resource.RandomReader;
+import org.ec4j.core.ide.TokenContext.TokenContextType;
+import org.ec4j.core.ide.completion.CompletionEntry;
+import org.ec4j.core.ide.completion.CompletionEntryMatcher;
 import org.ec4j.core.model.PropertyType;
-import org.ec4j.core.services.TokenContext.TokenContextType;
-import org.ec4j.core.services.completion.CompletionEntry;
-import org.ec4j.core.services.completion.CompletionEntryMatcher;
 
 /**
  * EditorConfig service helpful for IDE:
@@ -38,11 +38,11 @@ import org.ec4j.core.services.completion.CompletionEntryMatcher;
  *
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-public class EditorConfigService {
+public class IdeSupportService {
 
     private final PropertyTypeRegistry registry;
 
-    public EditorConfigService(PropertyTypeRegistry registry) {
+    public IdeSupportService(PropertyTypeRegistry registry) {
         super();
         this.registry = registry;
     }

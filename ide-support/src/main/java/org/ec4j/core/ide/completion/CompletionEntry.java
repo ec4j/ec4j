@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ec4j.core.services.completion;
+package org.ec4j.core.ide.completion;
 
+import org.ec4j.core.ide.TokenContext.TokenContextType;
 import org.ec4j.core.model.PropertyType;
-import org.ec4j.core.services.TokenContext.TokenContextType;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
