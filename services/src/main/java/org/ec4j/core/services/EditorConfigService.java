@@ -40,8 +40,15 @@ import org.ec4j.core.services.completion.CompletionEntryMatcher;
  */
 public class EditorConfigService {
 
-    public static List<CompletionEntry> getCompletionEntries(int offset, RandomReader reader,
-            CompletionEntryMatcher matcher, PropertyTypeRegistry registry) throws Exception {
+    private final PropertyTypeRegistry registry;
+
+    public EditorConfigService(PropertyTypeRegistry registry) {
+        super();
+        this.registry = registry;
+    }
+
+    public List<CompletionEntry> getCompletionEntries(int offset, RandomReader reader,
+            CompletionEntryMatcher matcher) throws Exception {
         TokenContext context = getTokenContext(offset, reader, false);
         switch (context.getType()) {
         case PROPERTY_NAME: {
@@ -77,7 +84,7 @@ public class EditorConfigService {
         return Collections.emptyList();
     }
 
-    public static <T> String getHover(int offset, RandomReader reader, PropertyTypeRegistry registry)
+    public <T> String getHover(int offset, RandomReader reader)
             throws Exception {
         TokenContext context = getTokenContext(offset, reader, true);
         switch (context.getType()) {
