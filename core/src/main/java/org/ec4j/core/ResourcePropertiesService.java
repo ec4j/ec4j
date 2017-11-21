@@ -65,7 +65,7 @@ public class ResourcePropertiesService {
     public static class Builder {
         private Cache cache = Caches.none();
         private String configFileName = EditorConfigConstants.EDITORCONFIG;
-        private EditorConfigLoader loader = EditorConfigLoader.getDefault();
+        private EditorConfigLoader loader = EditorConfigLoader.default_();
         private Set<ResourcePath> rootDirectories = new LinkedHashSet<>();
 
         public ResourcePropertiesService build() {
@@ -116,7 +116,7 @@ public class ResourcePropertiesService {
     /**
      * A shorthand for {@code ResourcePropertiesService.builder().build()}. Returns a new
      * {@link ResourcePropertiesService} with {@link Caches#none()} {@link Cache},
-     * {@link EditorConfigConstants#EDITORCONFIG} {@code configFileName}, {@link EditorConfigLoader#getDefault()}
+     * {@link EditorConfigConstants#EDITORCONFIG} {@code configFileName}, {@link EditorConfigLoader#default_()}
      * {@code loader} and empty {@code rootDirectories}.
      *
      * @return a new default {@link ResourcePropertiesService}

@@ -21,9 +21,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.ec4j.core.model.Comments.CommentBlock;
-import org.ec4j.core.model.Comments.CommentLine;
-
 /**
  * Aggregates {@link CommentBlocks}, {@link CommentBlock} and {@link CommentLine}.
  *

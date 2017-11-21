@@ -69,7 +69,7 @@ public class EditorConfigService {
             ICompletionEntryMatcher matcher, final CompletionEntryFactory factory,
             PropertyTypeRegistry registry) throws Exception {
         if (registry == null) {
-            registry = PropertyTypeRegistry.getDefault();
+            registry = PropertyTypeRegistry.default_();
         }
         TokenContext context = getTokenContext(offset, reader, false);
         switch (context.type) {
@@ -125,7 +125,7 @@ public class EditorConfigService {
     public static <T> String getHover(int offset, RandomReader reader, PropertyTypeRegistry registry)
             throws Exception {
         if (registry == null) {
-            registry = PropertyTypeRegistry.getDefault();
+            registry = PropertyTypeRegistry.default_();
         }
         TokenContext context = getTokenContext(offset, reader, true);
         switch (context.type) {

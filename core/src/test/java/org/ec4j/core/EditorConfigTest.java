@@ -46,7 +46,7 @@ public class EditorConfigTest {
 
         Resource r = StringResourceTree.builder().resource(".editorconfig", s).build().getResource(".editorconfig");
 
-        EditorConfig config = EditorConfigLoader.getDefault().load(r);
+        EditorConfig config = EditorConfigLoader.default_().load(r);
         Assert.assertEquals("root = true\n" + "\n" + "[*]\n" + "end_of_line = lf\n" + "insert_final_newline = true\n"
                 + "\n" + "[*.{js,py}]\n" + "charset = utf-8", config.toString());
     }

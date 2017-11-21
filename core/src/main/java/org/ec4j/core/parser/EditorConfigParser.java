@@ -27,9 +27,19 @@ import org.ec4j.core.parser.ErrorEvent.ErrorType;
  */
 public class EditorConfigParser implements ParseContext {
 
+    /**
+     * A {@link EditorConfigParser} builder.
+     */
     public static class Builder {
+
         private int bufferSize = DEFAULT_BUFFER_SIZE;
 
+        /**
+         * Sets the buffer size
+         *
+         * @param bufferSize the buffer size in bytes
+         * @return this {@link Builder}
+         */
         public Builder bufferSize(int bufferSize) {
             this.bufferSize = bufferSize;
             return this;
@@ -40,8 +50,18 @@ public class EditorConfigParser implements ParseContext {
         }
     }
 
+    /**
+     * @return a new {@link Builder}
+     */
     public static Builder builder() {
         return new Builder();
+    }
+
+    /**
+     * @return a new {@link EditorConfigParser} with {@link #DEFAULT_BUFFER_SIZE}
+     */
+    public static EditorConfigParser default_() {
+        return new EditorConfigParser(DEFAULT_BUFFER_SIZE);
     }
 
     private static final int DEFAULT_BUFFER_SIZE = 1024;
@@ -64,7 +84,7 @@ public class EditorConfigParser implements ParseContext {
     private Resource resource;
 
     /**
-     * Use the {@link #builder()} to create new instances.
+     * Use the {@link #builder()} or {@link #default_()} to create new instances.
      *
      * @param bufferSize
      * @param tolerant
