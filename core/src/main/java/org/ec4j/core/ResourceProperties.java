@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.ec4j.core.model.Property;
 import org.ec4j.core.model.PropertyType;
-import org.ec4j.core.parser.InvalidPropertyValueException;
 
 /**
  * A collection of {@link Property}s applicable to a {@link Resource} as returned by
@@ -130,11 +129,11 @@ public class ResourceProperties {
      *            the value to return if the {@code name} is not available in {@link #properties}
      * @param throwInvalid
      *            if {@code true} and the underlying {@link Property} value is invalid, an
-     *            {@link InvalidPropertyValueException} will be thrown. Otherwise, in the same case the invalid value
+     *            {@link RuntimeException} will be thrown. Otherwise, in the same case the invalid value
      *            will be ignored and {@code defaultValue} will be returned instead
      * @return the value associated with the given {@code type}'s {@code name} or the {@code defaultValue} if the
      *         {@code name} is not available in {@link #properties}
-     * @throws InvalidPropertyValueException
+     * @throws RuntimeException
      *             if {@code throwInvalid} is {@code true} and the underlying {@link Property} value is invalid.
      */
     public <T> T getValue(PropertyType<T> type, T defaultValue, boolean throwInvalid) {
@@ -152,11 +151,11 @@ public class ResourceProperties {
      *            the value to return if the {@code name} is not available in {@link #properties}
      * @param throwInvalid
      *            if {@code true} and the underlying {@link Property} value is invalid, an
-     *            {@link InvalidPropertyValueException} will be thrown. Otherwise, in the same case the invalid value
+     *            {@link RuntimeException} will be thrown. Otherwise, in the same case the invalid value
      *            will be ignored and {@code defaultValue} will be returned instead
      * @return the value associated with the given {@code name} or the {@code defaultValue} if the {@code name} is not
      *         available in {@link #properties}
-     * @throws InvalidPropertyValueException
+     * @throws RuntimeException
      *             if {@code throwInvalid} is {@code true} and the underlying {@link Property} value is invalid.
      */
     @SuppressWarnings("unchecked")

@@ -19,7 +19,6 @@ package org.ec4j.core.model;
 import java.util.List;
 
 import org.ec4j.core.model.PropertyType.PropertyValue;
-import org.ec4j.core.parser.InvalidPropertyValueException;
 
 /**
  * A key value pair in a {@link Section}.
@@ -198,7 +197,7 @@ public class Property extends Adaptable {
 
     /**
      * @return the parsed value
-     * @throws InvalidPropertyValueException
+     * @throws RuntimeException
      *             if the {@link #sourceValue} is not a valid value for the associated {@link PropertyType}
      */
     @SuppressWarnings("unchecked")

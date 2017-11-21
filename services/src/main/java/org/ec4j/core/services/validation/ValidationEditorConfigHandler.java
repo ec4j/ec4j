@@ -24,6 +24,8 @@ import org.ec4j.core.model.Glob;
 import org.ec4j.core.model.PropertyType;
 import org.ec4j.core.model.PropertyType.PropertyValue;
 import org.ec4j.core.parser.EditorConfigHandler;
+import org.ec4j.core.parser.ErrorEvent;
+import org.ec4j.core.parser.ErrorEvent.ErrorType;
 import org.ec4j.core.parser.ErrorHandler;
 import org.ec4j.core.parser.Location;
 import org.ec4j.core.parser.ParseContext;
@@ -77,7 +79,7 @@ public class ValidationEditorConfigHandler implements EditorConfigHandler, Error
         final PatternSyntaxException e = glob.getError();
         if (e != null) {
             final String msg = String.format("The pattern '%s' is not valid: %s", pattern, e.getMessage());
-            this.error(context, new ParseException(msg, false, patternStart));
+            this.error(context, new ErrorEvent(patternStart, context.getLocation(), msg, ErrorType.INVALID_GLOB));
         }
         patternStart = null;
     }
@@ -119,11 +121,11 @@ public class ValidationEditorConfigHandler implements EditorConfigHandler, Error
     }
 
     @Override
-    public void error(ParseContext context, ParseException e) throws ParseException {
-        reporter.addError(e.getMessage(), e.getLocation(), null, getSeverity(e));
+    public void error(ParseContext context, ErrorEvent e) throws ParseException {
+        reporter.addError(e.getMessage(), e.getStart(), e.getEnd(), getSeverity(e));
     }
 
-    protected Severity getSeverity(ParseException e) {
+    protected Severity getSeverity(ErrorEvent e) {
         return provider.getSeverity(e);
     }
 

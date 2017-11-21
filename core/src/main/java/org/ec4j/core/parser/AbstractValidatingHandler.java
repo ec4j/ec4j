@@ -23,6 +23,7 @@ import org.ec4j.core.PropertyTypeRegistry;
 import org.ec4j.core.model.Glob;
 import org.ec4j.core.model.PropertyType;
 import org.ec4j.core.model.PropertyType.PropertyValue;
+import org.ec4j.core.parser.ErrorEvent.ErrorType;
 
 /**
  * A base class for {@link EditorConfigHandler}s which require value and glob related errors to be passed to
@@ -48,7 +49,7 @@ public abstract class AbstractValidatingHandler implements EditorConfigHandler {
         final PatternSyntaxException e = glob.getError();
         if (e != null) {
             final String msg = String.format("The pattern '%s' is not valid: %s", pattern, e.getMessage());
-            context.getErrorHandler().error(context, new ParseException(msg, false, patternStart));
+            context.getErrorHandler().error(context, new ErrorEvent(patternStart, context.getLocation(), msg, ErrorType.INVALID_GLOB));
         }
         glob(context, glob);
         patternStart = null;
@@ -72,8 +73,8 @@ public abstract class AbstractValidatingHandler implements EditorConfigHandler {
     public void endPropertyValue(ParseContext context, String value) {
         final PropertyValue<?> propValue = type == null ? PropertyValue.valid(value, value) : type.parse(value);
         if (!propValue.isValid()) {
-            context.getErrorHandler().error(context,
-                    new InvalidPropertyValueException(propValue.getErrorMessage(), context.getLocation()));
+            context.getErrorHandler().error(context, new ErrorEvent(propertyValueStart, context.getLocation(),
+                    propValue.getErrorMessage(), ErrorType.INVALID_PROPERTY_VALUE));
         }
         propertyValue(context, propValue);
         this.type = null;
