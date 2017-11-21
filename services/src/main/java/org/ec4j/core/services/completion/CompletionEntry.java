@@ -26,6 +26,8 @@ public class CompletionEntry {
     // Negative value ensures subsequence matches have a lower relevance than
     // standard JDT or template proposals
     private static final int SUBWORDS_RANGE_START = -9000;
+    private static final int R_EXACT_NAME = 4;
+    private static final int R_CASE = 10;
     private static final int minPrefixLengthForTypes = 1;
 
     private final CompletionEntryMatcher matcher;
@@ -36,7 +38,6 @@ public class CompletionEntry {
     private final int initialOffset;
     private final CompletionContextType contextType;
     private final PropertyType<?> propertyType;
-
     public CompletionEntry(String name, CompletionEntryMatcher matcher, PropertyType<?> propertyType,
             CompletionContextType contextType, int initialOffset) {
         this.name = name;
@@ -79,11 +80,11 @@ public class CompletionEntry {
                 relevanceBoost = 0;
                 if (name.equals(prefix)) {
                     if (minPrefixLengthForTypes < prefix.length()) {
-                        relevanceBoost = 16 * (RelevanceConstants.R_EXACT_NAME + RelevanceConstants.R_CASE);
+                        relevanceBoost = 16 * (CompletionEntry.R_EXACT_NAME + CompletionEntry.R_CASE);
                     }
                 } else if (name.equalsIgnoreCase(prefix)) {
                     if (minPrefixLengthForTypes < prefix.length()) {
-                        relevanceBoost = 16 * RelevanceConstants.R_EXACT_NAME;
+                        relevanceBoost = 16 * CompletionEntry.R_EXACT_NAME;
                     }
                 } else if (startsWithIgnoreCase(prefix, name)) {
                     // Don't adjust score
