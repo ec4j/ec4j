@@ -17,6 +17,7 @@
 package org.ec4j.core.services.completion;
 
 import org.ec4j.core.model.PropertyType;
+import org.ec4j.core.services.TokenContext.TokenContextType;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>

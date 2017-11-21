@@ -16,9 +16,10 @@
  */
 package org.ec4j.core.services;
 
-import org.ec4j.core.services.completion.TokenContextType;
-
 public class TokenContext {
+    public enum TokenContextType {
+        SECTION, COMMENTS, PROPERTY_NAME, PROPERTY_VALUE
+    }
     final String prefix;
     private final String name; // property name, only available when context type is an property value
     private final TokenContextType type;

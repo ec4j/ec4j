@@ -24,9 +24,9 @@ import java.util.Set;
 import org.ec4j.core.PropertyTypeRegistry;
 import org.ec4j.core.Resource.RandomReader;
 import org.ec4j.core.model.PropertyType;
+import org.ec4j.core.services.TokenContext.TokenContextType;
 import org.ec4j.core.services.completion.CompletionEntry;
 import org.ec4j.core.services.completion.CompletionEntryMatcher;
-import org.ec4j.core.services.completion.TokenContextType;
 
 /**
  * EditorConfig service helpful for IDE:
