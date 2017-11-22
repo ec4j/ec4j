@@ -166,12 +166,26 @@ public class PropertyType<T> {
      *            the type of the parsed parsed
      */
     public static class PropertyValue<T> {
+        /** A singleton with the special {@code unset} source value */
+        @SuppressWarnings("rawtypes")
+        private static final PropertyValue UNSET = new PropertyValue<>(unset, null, null);
+
+        @SuppressWarnings("unchecked")
         public static <T> PropertyValue<T> invalid(String source, String errorMessage) {
-            return new PropertyValue<T>(source, null, errorMessage);
+            if (unset.equalsIgnoreCase(source)) {
+                return UNSET;
+            } else {
+                return new PropertyValue<T>(source, null, errorMessage);
+            }
         }
 
+        @SuppressWarnings("unchecked")
         public static <T> PropertyValue<T> valid(String source, T value) {
-            return new PropertyValue<T>(source, value, null);
+            if (unset.equalsIgnoreCase(source)) {
+                return UNSET;
+            } else {
+                return new PropertyValue<T>(source, value, null);
+            }
         }
 
         private final String errorMessage;
@@ -194,6 +208,7 @@ public class PropertyType<T> {
                 return false;
             if (getClass() != obj.getClass())
                 return false;
+            @SuppressWarnings("rawtypes")
             PropertyValue other = (PropertyValue) obj;
             if (errorMessage == null) {
                 if (other.errorMessage != null)
@@ -242,6 +257,13 @@ public class PropertyType<T> {
             result = prime * result + ((parsed == null) ? 0 : parsed.hashCode());
             result = prime * result + ((source == null) ? 0 : source.hashCode());
             return result;
+        }
+
+        /**
+         * @return {@code true} if the {@link #source} value is {@code "unset"}; otherwise {@code false}
+         */
+        public boolean isUnset() {
+            return unset.equals(source);
         }
 
         /**
@@ -298,6 +320,7 @@ public class PropertyType<T> {
         /** A parser for boolean values {@code true} and {@code false} */
         PropertyValueParser<Boolean> BOOLEAN_VALUE_PARSER = new PropertyValueParser<Boolean>() {
 
+            @SuppressWarnings("unchecked")
             @Override
             public PropertyValue<Boolean> parse(String name, String value) {
                 if (value == null) {
@@ -306,6 +329,8 @@ public class PropertyType<T> {
                     return PropertyValue.valid(value, Boolean.TRUE);
                 } else if ("false".equalsIgnoreCase(value)) {
                     return PropertyValue.valid(value, Boolean.FALSE);
+                } else if (unset.equalsIgnoreCase(value)) {
+                    return PropertyValue.UNSET;
                 } else {
                     return PropertyValue.invalid(value,
                             "Property '" + name + "' expects a boolean. The parsed '" + value + "' is not a boolean.");
@@ -435,6 +460,8 @@ public class PropertyType<T> {
             PropertyValueParser.BOOLEAN_VALUE_PARSER, //
             BOOLEAN_POSSIBLE_VALUES //
     );
+
+    public static final String unset = "unset";
 
     static {
         STANDARD_TYPES = Collections

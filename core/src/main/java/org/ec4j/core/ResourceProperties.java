@@ -95,6 +95,17 @@ public class ResourceProperties {
             this.properties.put(property.getName(), property);
             return this;
         }
+
+        /**
+         * Removes the given {@link Property} from {@link #properties}.
+         *
+         * @param property the property to remove
+         * @return this {@link Builder}
+         */
+        public Builder removeProperty(Property property) {
+            this.properties.remove(property.getName());
+            return this;
+        }
     }
 
     /**

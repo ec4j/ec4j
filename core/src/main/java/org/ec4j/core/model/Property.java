@@ -130,11 +130,18 @@ public class Property extends Adaptable {
 
     }
 
+    /**
+     * @return a new {@link Builder} with no parent bulder set
+     */
+    public static Builder builder() {
+        return new Builder(null);
+    }
+
     private final String name;
 
-    private final PropertyValue<?> value;
-
     private final PropertyType<?> type;
+
+    private final PropertyValue<?> value;
 
     /**
      * Use the {@link Builder} if you cannot access this constructor
@@ -216,6 +223,13 @@ public class Property extends Adaptable {
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((value == null) ? 0 : value.hashCode());
         return result;
+    }
+
+    /**
+     * @return {@code true} if the source value is {@code "unset"}; otherwise {@code false}
+     */
+    public boolean isUnset() {
+        return value.isUnset();
     }
 
     /**

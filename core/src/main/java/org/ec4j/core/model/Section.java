@@ -183,6 +183,13 @@ public class Section extends Adaptable {
 
     }
 
+    /**
+     * @return a new {@link Builder} with no parent builder set
+     */
+    public static Builder builder() {
+        return new Builder(null);
+    }
+
     private final Glob glob;
 
     private final Map<String, Property> properties;

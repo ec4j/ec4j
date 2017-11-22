@@ -65,34 +65,81 @@ public class ResourcePropertiesService {
     public static class Builder {
         private Cache cache = Caches.none();
         private String configFileName = EditorConfigConstants.EDITORCONFIG;
+        private boolean keepUnset = false;
         private EditorConfigLoader loader = EditorConfigLoader.default_();
         private Set<ResourcePath> rootDirectories = new LinkedHashSet<>();
 
         public ResourcePropertiesService build() {
             return new ResourcePropertiesService(configFileName, Collections.unmodifiableSet(rootDirectories), cache,
-                    loader);
+                    loader, keepUnset);
         }
 
+        /**
+         * Sets the cache implementation
+         *
+         * @param cache
+         *            the Cache to set
+         * @return this {@link Builder}
+         */
         public Builder cache(Cache cache) {
             this.cache = cache;
             return this;
         }
 
+        /**
+         * Sets the file name to consider as an {@code .editorconfig} file.
+         *
+         * @param configFileName
+         * @return this {@link Builder}
+         */
         public Builder configFileName(String configFileName) {
             this.configFileName = configFileName;
             return this;
         }
 
+        /**
+         * When set to {@code true} the {@link Property}s with the {@code unset} value will be kept in the
+         * {@link ResourceProperties} returned by {@link ResourcePropertiesService#queryProperties(Resource)}; otherwise
+         * the {@link Property}s with the {@code unset} value will be removed from the {@link ResourceProperties}
+         * returned by {@link ResourcePropertiesService#queryProperties(Resource)}.
+         *
+         * @param keepUnset
+         * @return this {@link Builder}
+         */
+        public Builder keepUnset(boolean keepUnset) {
+            this.keepUnset = keepUnset;
+            return this;
+        }
+
+        /**
+         * Sets the {@link EditorConfigLoader}
+         *
+         * @param loader
+         *            the {@link EditorConfigLoader} to set
+         * @return this {@link Builder}
+         */
         public Builder loader(EditorConfigLoader loader) {
             this.loader = loader;
             return this;
         }
 
+        /**
+         * Adds multiple root directories
+         *
+         * @param rootDirectories
+         * @return this {@link Builder}
+         */
         public Builder rootDirectories(Collection<ResourcePath> rootDirectories) {
             this.rootDirectories.addAll(rootDirectories);
             return this;
         }
 
+        /**
+         * Adds multiple root directories
+         *
+         * @param rootDirectories
+         * @return this {@link Builder}
+         */
         public Builder rootDirectories(ResourcePath... rootDirectories) {
             for (ResourcePath rootDirectory : rootDirectories) {
                 this.rootDirectories.add(rootDirectory);
@@ -100,6 +147,12 @@ public class ResourcePropertiesService {
             return this;
         }
 
+        /**
+         * Adds a single root directory
+         *
+         * @param rootDirectory
+         * @return this {@link Builder}
+         */
         public Builder rootDirectory(ResourcePath rootDirectory) {
             this.rootDirectories.add(rootDirectory);
             return this;
@@ -117,7 +170,7 @@ public class ResourcePropertiesService {
      * A shorthand for {@code ResourcePropertiesService.builder().build()}. Returns a new
      * {@link ResourcePropertiesService} with {@link Caches#none()} {@link Cache},
      * {@link EditorConfigConstants#EDITORCONFIG} {@code configFileName}, {@link EditorConfigLoader#default_()}
-     * {@code loader} and empty {@code rootDirectories}.
+     * {@code loader}, empty {@code rootDirectories} and {@code keepUnset = false}.
      *
      * @return a new default {@link ResourcePropertiesService}
      */
@@ -127,16 +180,18 @@ public class ResourcePropertiesService {
 
     private final Cache cache;
     private final String configFileName;
+    private final boolean keepUnset;
     private final EditorConfigLoader loader;
     private final Set<ResourcePath> rootDirectories;
 
     ResourcePropertiesService(String configFileName, Set<ResourcePath> rootDirectories, Cache cache,
-            EditorConfigLoader loader) {
+            EditorConfigLoader loader, boolean keepUnset) {
         super();
         this.rootDirectories = rootDirectories;
         this.loader = loader;
         this.configFileName = configFileName;
         this.cache = cache;
+        this.keepUnset = keepUnset;
     }
 
     public Cache getCache() {
@@ -206,7 +261,17 @@ public class ResourcePropertiesService {
             for (Section section : sections) {
                 if (section.match(path)) {
                     // Section matches the editor file, collect options of the section
-                    result.properties(section.getProperties());
+                    if (keepUnset) {
+                        result.properties(section.getProperties());
+                    } else {
+                        for (Property prop : section.getProperties().values()) {
+                            if (prop.isUnset()) {
+                                result.removeProperty(prop);
+                            } else {
+                                result.property(prop);
+                            }
+                        }
+                    }
                 }
             }
         }
