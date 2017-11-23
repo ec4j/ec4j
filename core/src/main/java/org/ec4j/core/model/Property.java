@@ -19,7 +19,6 @@ package org.ec4j.core.model;
 import java.util.List;
 
 import org.ec4j.core.model.PropertyType.PropertyValue;
-import org.ec4j.core.parser.InvalidPropertyValueException;
 
 /**
  * A key value pair in a {@link Section}.
@@ -131,11 +130,18 @@ public class Property extends Adaptable {
 
     }
 
+    /**
+     * @return a new {@link Builder} with no parent bulder set
+     */
+    public static Builder builder() {
+        return new Builder(null);
+    }
+
     private final String name;
 
-    private final PropertyValue<?> value;
-
     private final PropertyType<?> type;
+
+    private final PropertyValue<?> value;
 
     /**
      * Use the {@link Builder} if you cannot access this constructor
@@ -198,7 +204,7 @@ public class Property extends Adaptable {
 
     /**
      * @return the parsed value
-     * @throws InvalidPropertyValueException
+     * @throws RuntimeException
      *             if the {@link #sourceValue} is not a valid value for the associated {@link PropertyType}
      */
     @SuppressWarnings("unchecked")
@@ -217,6 +223,13 @@ public class Property extends Adaptable {
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((value == null) ? 0 : value.hashCode());
         return result;
+    }
+
+    /**
+     * @return {@code true} if the source value is {@code "unset"}; otherwise {@code false}
+     */
+    public boolean isUnset() {
+        return value.isUnset();
     }
 
     /**

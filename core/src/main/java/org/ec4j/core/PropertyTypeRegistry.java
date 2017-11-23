@@ -74,8 +74,6 @@ public class PropertyTypeRegistry {
         }
     }
 
-    private static final PropertyTypeRegistry DEFAULT = builder().defaults().build();
-
     /**
      * @return a new {@link Builder}
      */
@@ -86,8 +84,8 @@ public class PropertyTypeRegistry {
     /**
      * @return a registry containing default mappings. See {@link Builder#defaults()}
      */
-    public static final PropertyTypeRegistry getDefault() {
-        return DEFAULT;
+    public static final PropertyTypeRegistry default_() {
+        return builder().defaults().build();
     }
 
     private final Map<String, PropertyType<?>> types;

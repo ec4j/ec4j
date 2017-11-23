@@ -17,52 +17,54 @@
 package org.ec4j.core.parser;
 
 /**
- * A handler that gets notified on {@link ParseException}s by {@link EditorConfigParser}. Note that the basic
- * {@link #THROWING} and {@link #IGNORING} implementations are available in this class.
+ * A handler that gets notified on {@link ErrorEvent}s by {@link EditorConfigParser}. Note that the basic
+ * {@link #THROWING}, {@value #THROW_SYNTAX_ERRORS_IGNORE_OTHERS} and {@link #IGNORING} implementations are available in
+ * this class.
  *
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
 public interface ErrorHandler {
 
-    /** An {@link ErrorHandler} that does nothing in {@link #error(ParseContext, ParseException)} */
+    /** An {@link ErrorHandler} that does nothing in {@link #error(ParseContext, ErrorEvent)} */
     ErrorHandler IGNORING = new ErrorHandler() {
         @Override
-        public void error(ParseContext context, ParseException e) throws ParseException {
+        public void error(ParseContext context, ErrorEvent errorEvent) {
         }
     };
 
     /**
-     * An {@link ErrorHandler} that throws every {@link ParseException} it gets via
-     * {@link #error(ParseContext, ParseException)}
+     * An {@link ErrorHandler} that throws a {@link ParseException} for every {@link ErrorEvent} it gets via
+     * {@link #error(ParseContext, ErrorEvent)}
      */
     ErrorHandler THROWING = new ErrorHandler() {
         @Override
-        public void error(ParseContext context, ParseException e) throws ParseException {
-            throw e;
+        public void error(ParseContext context, ErrorEvent errorEvent) throws ParseException {
+            throw new ParseException(errorEvent);
         }
     };
 
     /**
-     * An {@link ErrorHandler} that throws only those {@link ParseException}s whose
-     * {@link ParseException#isSyntaxError()} returns {@code true}
+     * An {@link ErrorHandler} that throws a {@link ParseException} only for those {@link ParseException}s whose
+     * {@link errorEvent.getErrorType().isSyntaxError()} returns {@code true}
      */
     ErrorHandler THROW_SYNTAX_ERRORS_IGNORE_OTHERS = new ErrorHandler() {
         @Override
-        public void error(ParseContext context, ParseException e) throws ParseException {
-            if (e.isSyntaxError()) {
-                throw e;
+        public void error(ParseContext context, ErrorEvent errorEvent) throws ParseException {
+            if (errorEvent.getErrorType().isSyntaxError()) {
+                throw new ParseException(errorEvent);
             }
         }
     };
 
     /**
-     * A {@link ParseException} occured
+     * A {@link ErrorEvent} occured. Implementations may choose to throw a {@link ParseException} in reaction to an
+     * {@link ErrorEvent}.
      *
      * @param context
      *            the {@link ParseContext}
-     * @param e
-     *            the error
+     * @param errorEvent
+     *            the error to handle
      */
-    void error(ParseContext context, ParseException e) throws ParseException;
+    void error(ParseContext context, ErrorEvent errorEvent) throws ParseException;
 
 }

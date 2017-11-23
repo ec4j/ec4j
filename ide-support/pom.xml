@@ -26,9 +26,9 @@
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ec4j-core-services</artifactId>
+    <artifactId>ec4j-ide-support</artifactId>
 
-    <name>ec4j-core-services</name>
+    <name>ec4j-ide-support</name>
     <description>EditorConfig validation and completion</description>
 
     <properties>

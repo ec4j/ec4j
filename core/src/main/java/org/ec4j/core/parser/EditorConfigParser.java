@@ -20,15 +20,26 @@ import java.io.IOException;
 import java.io.Reader;
 
 import org.ec4j.core.Resource;
+import org.ec4j.core.parser.ErrorEvent.ErrorType;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
 public class EditorConfigParser implements ParseContext {
 
+    /**
+     * A {@link EditorConfigParser} builder.
+     */
     public static class Builder {
+
         private int bufferSize = DEFAULT_BUFFER_SIZE;
 
+        /**
+         * Sets the buffer size
+         *
+         * @param bufferSize the buffer size in bytes
+         * @return this {@link Builder}
+         */
         public Builder bufferSize(int bufferSize) {
             this.bufferSize = bufferSize;
             return this;
@@ -39,8 +50,18 @@ public class EditorConfigParser implements ParseContext {
         }
     }
 
+    /**
+     * @return a new {@link Builder}
+     */
     public static Builder builder() {
         return new Builder();
+    }
+
+    /**
+     * @return a new {@link EditorConfigParser} with {@link #DEFAULT_BUFFER_SIZE}
+     */
+    public static EditorConfigParser default_() {
+        return new EditorConfigParser(DEFAULT_BUFFER_SIZE);
     }
 
     private static final int DEFAULT_BUFFER_SIZE = 1024;
@@ -63,7 +84,7 @@ public class EditorConfigParser implements ParseContext {
     private Resource resource;
 
     /**
-     * Use the {@link #builder()} to create new instances.
+     * Use the {@link #builder()} or {@link #default_()} to create new instances.
      *
      * @param bufferSize
      * @param tolerant
@@ -89,8 +110,8 @@ public class EditorConfigParser implements ParseContext {
      * @throws IOException
      *             on I/O problems when reading out of the given {@link Resource}
      * @throws ParseException
-     *             only if {@link #tolerant} is {@code false}; otherwise the exceptions are passed to the
-     *             {@link EditorConfigHandler}
+     *             only if the supplied {@link ErrorHandler} chooses to react on some {@link ErrorEvent} by throwing
+     *             {@code ParseException}s for them
      */
     public void parse(Resource resource, EditorConfigHandler handler, ErrorHandler errorHandler) throws IOException {
         this.resource = resource;
@@ -109,7 +130,9 @@ public class EditorConfigParser implements ParseContext {
             this.reader = reader;
             readLines();
             if (!isEndOfText()) {
-                ParseException e = new ParseException("Found unexpected character; expected end of input", true, getLocation());
+                Location location = getLocation();
+                ErrorEvent e = new ErrorEvent(location, location, "Found unexpected character; expected end of input",
+                        ErrorType.EXPECTED_END_OF_INPUT);
                 errorHandler.error(this, e);
             }
         }
@@ -133,14 +156,6 @@ public class EditorConfigParser implements ParseContext {
     }
 
     private void readLine() throws IOException {
-        try {
-            readLineAndThrowExceptionIfError();
-        } catch (ParseException e) {
-            errorHandler.error(this, e);
-        }
-    }
-
-    private void readLineAndThrowExceptionIfError() throws IOException {
         skipWhiteSpace();
         if (isNewLine()) {
             // blank line
@@ -184,13 +199,20 @@ public class EditorConfigParser implements ParseContext {
         inSection = true;
         read();
         if (isEndOfText()) {
-            throw new GlobNotClosedException(getLocation());
+            globNotClosed();
         }
         if (readChar(']')) {
             return;
         }
         // read pattern of the given section
         readPatternAndCloseSection();
+    }
+
+    private void globNotClosed() {
+        final Location location = getLocation();
+        ErrorEvent e = new ErrorEvent(location, location, "Glob pattern not closed. Expected ']'",
+                ErrorType.GLOB_NOT_CLOSED);
+        errorHandler.error(this, e);
     }
 
     private void readPatternAndCloseSection() throws IOException {
@@ -207,14 +229,14 @@ public class EditorConfigParser implements ParseContext {
                 int oldIndex = index;
                 index -= i;
                 try {
-                    throw new GlobNotClosedException(getLocation());
+                    globNotClosed();
                 } finally {
                     index = oldIndex;
                 }
             }
         }
         if (i == -1) {
-            throw new GlobNotClosedException(getLocation());
+            globNotClosed();
         }
         int oldIndex = index;
         index -= i + 1;
@@ -237,8 +259,15 @@ public class EditorConfigParser implements ParseContext {
             /*
              * if (current == '\\') { pauseCapture(); readEscape(); startCapture(); } else
              */
-            if (current < 0x20) {
-                ParseException e = expected("valid string character");
+            if (isEndOfText()) {
+                final Location location = getLocation();
+                ErrorEvent e = new ErrorEvent(location, location, "Unexpected end of input",
+                        ErrorType.UNEXPECTED_END_OF_INPUT);
+                errorHandler.error(this, e);
+            } else if (current < 0x20) {
+                final Location location = getLocation();
+                ErrorEvent e = new ErrorEvent(location, location, "Expected a valid string character",
+                        ErrorType.EXPECTED_STRING_CHARACTER);
                 errorHandler.error(this, e);
             } else {
                 read();
@@ -287,14 +316,21 @@ public class EditorConfigParser implements ParseContext {
         handler.endPropertyName(this, name);
         skipWhiteSpace();
         if (!readChar('=') && !readChar(':')) {
-            throw new PropertyAssignementMissingException(name, getLocation());
+            final Location location = getLocation();
+            ErrorEvent e = new ErrorEvent(location, location,
+                    "Equals sign '==' missing after property name '" + name + "'",
+                    ErrorType.PROPERTY_ASSIGNMENT_MISSING);
+            errorHandler.error(this, e);
         }
         // property value
         skipWhiteSpace();
         handler.startPropertyValue(this);
         String value = readString(StopReading.PropertyValue);
         if (value.length() < 1) {
-            throw new PropertyValueMissingException(name, getLocation());
+            final Location location = getLocation();
+            ErrorEvent e = new ErrorEvent(location, location, "Property '" + name + "' has no value",
+                    ErrorType.PROPERTY_VALUE_MISSING);
+            errorHandler.error(this, e);
         }
         handler.endPropertyValue(this, value);
         handler.endProperty(this);
@@ -367,13 +403,6 @@ public class EditorConfigParser implements ParseContext {
         return new Location(offset, line, column);
     }
 
-    private ParseException expected(String expected) {
-        if (isEndOfText()) {
-            return new ParseException("Unexpected end of input", true, getLocation());
-        }
-        return new ParseException("Expected " + expected, true, getLocation());
-    }
-
     private boolean isWhiteSpace() {
         return isWhiteSpace(current);
     }
@@ -412,5 +441,11 @@ public class EditorConfigParser implements ParseContext {
     @Override
     public Resource getResource() {
         return resource;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ErrorHandler getErrorHandler() {
+        return errorHandler;
     }
 }

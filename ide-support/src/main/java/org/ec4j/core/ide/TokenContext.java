@@ -14,17 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ec4j.core.parser;
+package org.ec4j.core.ide;
 
-/**
- * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
- */
-public class PropertyAssignementMissingException extends ParseException {
+public class TokenContext {
+    public enum TokenContextType {
+        SECTION, COMMENTS, PROPERTY_NAME, PROPERTY_VALUE
+    }
+    final String prefix;
+    private final String name; // property name, only available when context type is an property value
+    private final TokenContextType type;
 
-    /**  */
-    private static final long serialVersionUID = -6264448742599807531L;
+    TokenContext(String prefix, String name, TokenContextType type) {
+        this.prefix = prefix;
+        this.name = name;
+        this.type = type;
+    }
 
-    public PropertyAssignementMissingException(String name, Location location) {
-        super("Equals sign '==' missing after property name '" + name + "'", true, location);
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public TokenContextType getType() {
+        return type;
     }
 }

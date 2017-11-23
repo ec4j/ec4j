@@ -14,25 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ec4j.core.services.validation;
-
-import org.ec4j.core.parser.Location;
-import org.ec4j.core.services.EditorConfigService;
-import org.junit.Test;
+package org.ec4j.core.ide.completion;
 
 /**
+ * Matcher for completion entry.
+ *
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-public class EditorConfigServiceValidateTest {
+public interface CompletionEntryMatcher {
 
-    @Test
-    public void validate() {
-        EditorConfigService.validate("[*]", new IReporter() {
+    CompletionEntryMatcher LCS = new CompletionEntryMatcher() {
 
-            @Override
-            public void addError(String message, Location start, Location end, Severity severity) {
+        @Override
+        public int[] bestSubsequence(String completion, String token) {
+            return LCSS.bestSubsequence(completion, token);
+        }
 
+    };
+
+    CompletionEntryMatcher START_WITH_MATCHER = new CompletionEntryMatcher() {
+
+        @Override
+        public int[] bestSubsequence(String completion, String token) {
+            if (!completion.startsWith(token)) {
+                return null;
             }
-        });
-    }
+            return new int[] { 0, token.length() - 1 };
+        }
+    };
+
+    int[] bestSubsequence(String completion, String token);
+
 }

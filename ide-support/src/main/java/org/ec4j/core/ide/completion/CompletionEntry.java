@@ -14,75 +14,60 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ec4j.core.services.completion;
+package org.ec4j.core.ide.completion;
 
+import org.ec4j.core.ide.TokenContext.TokenContextType;
 import org.ec4j.core.model.PropertyType;
 
 /**
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  */
-public class CompletionEntry implements ICompletionEntry {
+public class CompletionEntry {
 
     // Negative value ensures subsequence matches have a lower relevance than
     // standard JDT or template proposals
     private static final int SUBWORDS_RANGE_START = -9000;
+    private static final int R_EXACT_NAME = 4;
+    private static final int R_CASE = 10;
     private static final int minPrefixLengthForTypes = 1;
 
-    private ICompletionEntryMatcher matcher;
+    private final CompletionEntryMatcher matcher;
     private int relevance;
 
     private final String name;
     private String prefix;
-    private int initialOffset;
-    private CompletionContextType contextType;
-    private PropertyType<?> propertyType;
-
-    public CompletionEntry(String name) {
+    private final int initialOffset;
+    private final TokenContextType contextType;
+    private final PropertyType<?> propertyType;
+    public CompletionEntry(String name, CompletionEntryMatcher matcher, PropertyType<?> propertyType,
+            TokenContextType contextType, int initialOffset) {
         this.name = name;
+        this.matcher = matcher;
+        this.propertyType = propertyType;
+        this.contextType = contextType;
+        this.initialOffset = initialOffset;
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    public ICompletionEntryMatcher getMatcher() {
+    public CompletionEntryMatcher getMatcher() {
         return matcher;
     }
 
-    @Override
-    public void setMatcher(ICompletionEntryMatcher matcher) {
-        this.matcher = matcher;
-    }
-
-    @Override
-    public void setContextType(CompletionContextType contextType) {
-        this.contextType = contextType;
-    }
-
-    public CompletionContextType getContextType() {
+    public TokenContextType getContextType() {
         return contextType;
-    }
-
-    @Override
-    public void setPropertyType(PropertyType<?> propertyType) {
-        this.propertyType = propertyType;
     }
 
     public PropertyType<?> getPropertyType() {
         return propertyType;
     }
 
-    @Override
-    public void setInitialOffset(int initialOffset) {
-        this.initialOffset = initialOffset;
-    }
-
     public int getInitialOffset() {
         return initialOffset;
     }
 
-    @Override
     public boolean updatePrefix(String prefix) {
         this.prefix = prefix;
         Integer relevanceBoost = null;
@@ -96,11 +81,11 @@ public class CompletionEntry implements ICompletionEntry {
                 relevanceBoost = 0;
                 if (name.equals(prefix)) {
                     if (minPrefixLengthForTypes < prefix.length()) {
-                        relevanceBoost = 16 * (RelevanceConstants.R_EXACT_NAME + RelevanceConstants.R_CASE);
+                        relevanceBoost = 16 * (CompletionEntry.R_EXACT_NAME + CompletionEntry.R_CASE);
                     }
                 } else if (name.equalsIgnoreCase(prefix)) {
                     if (minPrefixLengthForTypes < prefix.length()) {
-                        relevanceBoost = 16 * RelevanceConstants.R_EXACT_NAME;
+                        relevanceBoost = 16 * CompletionEntry.R_EXACT_NAME;
                     }
                 } else if (startsWithIgnoreCase(prefix, name)) {
                     // Don't adjust score

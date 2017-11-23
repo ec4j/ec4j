@@ -31,17 +31,17 @@ import org.ec4j.core.parser.ErrorHandler;
  */
 public class EditorConfigLoader {
 
-    private static final EditorConfigLoader DEFAULT = new EditorConfigLoader(
-            new EditorConfigModelHandler(PropertyTypeRegistry.getDefault(), Version.CURRENT,
-                    ErrorHandler.THROW_SYNTAX_ERRORS_IGNORE_OTHERS),
-            ErrorHandler.THROW_SYNTAX_ERRORS_IGNORE_OTHERS);
-
-    public static EditorConfigLoader getDefault() {
-        return DEFAULT;
+    /**
+     * @return a new {@link EditorConfigLoader} with {@link PropertyTypeRegistry#default_()}, {@link Version#CURRENT}
+     *         and {@link ErrorHandler#THROW_SYNTAX_ERRORS_IGNORE_OTHERS}
+     */
+    public static EditorConfigLoader default_() {
+        return new EditorConfigLoader(new EditorConfigModelHandler(PropertyTypeRegistry.default_(), Version.CURRENT),
+                ErrorHandler.THROW_SYNTAX_ERRORS_IGNORE_OTHERS);
     }
 
     public static EditorConfigLoader of(Version version) {
-        return of(version, PropertyTypeRegistry.getDefault());
+        return of(version, PropertyTypeRegistry.default_());
     }
 
     public static EditorConfigLoader of(Version version, PropertyTypeRegistry registry) {
@@ -49,7 +49,7 @@ public class EditorConfigLoader {
     }
 
     public static EditorConfigLoader of(Version version, PropertyTypeRegistry registry, ErrorHandler errorHandler) {
-        return new EditorConfigLoader(new EditorConfigModelHandler(registry, version, errorHandler), errorHandler);
+        return new EditorConfigLoader(new EditorConfigModelHandler(registry, version), errorHandler);
     }
 
     private final ErrorHandler errorHandler;
@@ -59,7 +59,7 @@ public class EditorConfigLoader {
 
     public EditorConfigLoader(EditorConfigModelHandler handler, ErrorHandler errorHandler) {
         super();
-        this.parser = EditorConfigParser.builder().build();
+        this.parser = EditorConfigParser.default_();
         this.handler = handler;
         this.errorHandler = errorHandler;
     }

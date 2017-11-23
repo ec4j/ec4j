@@ -98,6 +98,7 @@ public class Cli {
                 .rootDirectory(
                         ResourcePaths.ofPath(Paths.get(".").toAbsolutePath().normalize(), StandardCharsets.UTF_8)) //
                 .loader(EditorConfigLoader.of(version)) //
+                .keepUnset(true) //
                 .build();
 
         for (String path : paths) {

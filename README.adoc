@@ -9,7 +9,7 @@ http://travis-ci.org/ec4j/ec4j[image:https://secure.travis-ci.org/ec4j/ec4j.png[
 
 * A parser for `.editorconfig` files
 * An API for querying EditorConfig properties applicable to a given file
-* A model of an `editorconfig` file rich enough to support highlighting, validation, folding, etc. of
+* A model of an `editorconfig` file rich enough to support validation, folding, code completion, etc. of
   `.editorconfig` files in editors and IDEs.
 
 == Who is using `ec4j`?
@@ -107,11 +107,11 @@ applicable to a given file, `ec4j` offers much more in addition to that:
 +
 |===
 | Library                  | Lib. revision | Tests passed/total on Linux | Tests passed/total on Windows
-| `ec4j`                   | b689407       | 182/182                     | 178/180
-| `editorconfig-core-java` | e3e0905       | 177/182                     | ?
+| `ec4j`                   | fa51d88       | 189/189                     | 185/187
+| `editorconfig-core-java` | e3e0905       | 185/189                     | ?
 |===
 +
-`editorconfig-core-test` revision: https://github.com/editorconfig/editorconfig-core-test/commit/552ccb7a6128a8459f6a3aec80f51a980469c9fc[552ccb7]
+`editorconfig-core-test` revision: https://github.com/editorconfig/editorconfig-core-test/commit/0001aa28f3816bb72cdbea09598252b50e4695c2[0001aa2]
 
 == Misc.
 
