@@ -121,6 +121,13 @@ public class LocationAwareModelHandler extends EditorConfigModelHandler {
 
     /** {@inheritDoc} */
     @Override
+    public void startDocument(ParseContext context) {
+        super.startDocument(context);
+        editorConfigBuilder.parentAware(true);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void startPattern(ParseContext context) {
         super.startPattern(context);
         patternSpan = Span.builder().start(context.getLocation());

@@ -16,6 +16,7 @@
  */
 package org.ec4j.core.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -39,9 +40,10 @@ public class Section extends Adaptable {
     public static class Builder extends Adaptable.Builder<Builder> {
 
         private Glob glob;
+        private boolean parentAware = false;
 
         final EditorConfig.Builder parentBuilder;
-        private Map<String, Property> properties = new LinkedHashMap<>();
+        private Map<String, Property.Builder> properties = new LinkedHashMap<>();
 
         /**
          * Constructs a new {@link Builder}
@@ -61,34 +63,34 @@ public class Section extends Adaptable {
          */
         public Builder applyDefaults() {
             final Version version = parentBuilder.version;
-            Property indentStyle = properties.get(PropertyType.indent_style.getName());
-            Property indentSize = properties.get(PropertyType.indent_size.getName());
-            Property tabWidth = properties.get(PropertyType.tab_width.getName());
+            Property.Builder indentStyle = properties.get(PropertyType.indent_style.getName());
+            Property.Builder indentSize = properties.get(PropertyType.indent_size.getName());
+            Property.Builder tabWidth = properties.get(PropertyType.tab_width.getName());
 
             // Set indent_size to "tab" if indent_size is unspecified and
             // indent_style is set to "tab".
-            if (indentStyle != null && IndentStyleValue.tab.name().equals(indentStyle.getSourceValue())
+            if (indentStyle != null && IndentStyleValue.tab.name().equals(indentStyle.value.getSource())
                     && indentSize == null && version.compareTo(Version._0_10_0) >= 0) {
                 final PropertyType<?> type = PropertyType.indent_size;
                 final String value = "tab";
-                indentSize = new Property(Collections.emptyList(), type, type.getName(), type.parse(value));
+                indentSize = openProperty().type(type).value(type.parse(value));
                 this.property(indentSize);
             }
 
             // Set tab_width to indent_size if indent_size is specified and
             // tab_width is unspecified
-            if (indentSize != null && !"tab".equals(indentSize.getSourceValue()) && tabWidth == null) {
+            if (indentSize != null && !"tab".equals(indentSize.value.getSource()) && tabWidth == null) {
                 final PropertyType<?> type = PropertyType.tab_width;
-                final String value = indentSize.getSourceValue();
-                tabWidth = new Property(Collections.emptyList(), type, type.getName(), type.parse(value));
+                final String value = indentSize.value.getSource();
+                tabWidth = openProperty().type(type).value(type.parse(value));
                 this.property(tabWidth);
             }
 
             // Set indent_size to tab_width if indent_size is "tab"
-            if (indentSize != null && "tab".equals(indentSize.getSourceValue()) && tabWidth != null) {
+            if (indentSize != null && "tab".equals(indentSize.value.getSource()) && tabWidth != null) {
                 final PropertyType<?> type = PropertyType.indent_size;
-                final String value = tabWidth.getSourceValue();
-                indentSize = new Property(Collections.emptyList(), type, type.getName(), type.parse(value));
+                final String value = tabWidth.value.getSource();
+                indentSize = openProperty().type(type).value(type.parse(value));
                 this.property(indentSize);
             }
             return this;
@@ -98,26 +100,43 @@ public class Section extends Adaptable {
          * @return a new {@link Section}
          */
         public Section build() {
-            Map<String, Property> useProps = Collections.unmodifiableMap(properties);
+            final Map<String, Property> useProps = new LinkedHashMap<>(properties.size());
+            /*
+             * This is a controled leak of the adapters list that we are going to ammend after the properties were
+             * actually built and their respective adapter lists sealed. This leak should be harmless as the Property
+             * objects should not be visible to the outside world before we return from the present method.
+             */
+            List<List<Object>> propAdapters = new ArrayList<>();
+            for (Property.Builder propBuilder : properties.values()) {
+                if (parentAware) {
+                    propAdapters.add(propBuilder.adapters);
+                }
+                Property prop = propBuilder.build();
+                useProps.put(prop.getName(), prop);
+            }
             this.properties = null;
-            return new Section(sealAdapters(), glob, useProps);
+            final Section result = new Section(sealAdapters(), glob, Collections.unmodifiableMap(useProps));
+            for (List<Object> adapters : propAdapters) {
+                adapters.add(result);
+            }
+            return result;
         }
 
         /**
-         * Creates a new instance of {@link Section} using {@link #build()}, adds the instance to {@link #parentBuilder}
-         * using {@link EditorConfig.Builder#section(Section)} and returns the parent {@link EditorConfig.Builder}.
+         * Adds this {@link Builder} to {@link #parentBuilder} using
+         * {@link EditorConfig.Builder#section(Section.Builder)} and returns the parent {@link EditorConfig.Builder}.
          *
          * @return the parent {@link EditorConfig.Builder}
          */
         public EditorConfig.Builder closeSection() {
             if (glob == null) {
                 /* this is the first glob-less section */
-                Property rootProp = properties.remove(PropertyType.root.getName());
+                Property.Builder rootProp = properties.remove(PropertyType.root.getName());
                 if (rootProp != null) {
-                    parentBuilder.root(rootProp.getSourceValue().equalsIgnoreCase(Boolean.TRUE.toString()));
+                    parentBuilder.root(rootProp.value.getSource().equalsIgnoreCase(Boolean.TRUE.toString()));
                 }
             } else {
-                parentBuilder.section(build());
+                parentBuilder.section(this);
             }
             return parentBuilder;
         }
@@ -142,42 +161,55 @@ public class Section extends Adaptable {
         }
 
         /**
-         * Adds multiple {@link Property}s to {@link #properties}.
+         * @param parentAware
+         *            if {@code true} the {@link Section#getProperties()} of the resulting {@link Section} will have the
+         *            Section set in their adapters (which can be used as the link to the parent {@link Section});
+         *            othwise the seczion will not be added to {@link Property}'s adapters
          *
-         * @param properties
-         *            the {@link Property}s to add
          * @return this {@link Builder}
          */
-        public Builder properties(Collection<Property> properties) {
-            for (Property property : properties) {
-                this.properties.put(property.getName(), property);
+        public Builder parentAware(boolean parentAware) {
+            this.parentAware = parentAware;
+            return this;
+        }
+
+        /**
+         * Adds multiple {@link Property.Builder}s to {@link #properties}.
+         *
+         * @param properties
+         *            the {@link Property.Builder}s to add
+         * @return this {@link Builder}
+         */
+        public Builder properties(Collection<Property.Builder> properties) {
+            for (Property.Builder property : properties) {
+                this.properties.put(property.name, property);
             }
             return this;
         }
 
         /**
-         * Adds multiple {@link Property}s to {@link #properties}.
+         * Adds multiple {@link Property.Builder}s to {@link #properties}.
          *
          * @param properties
-         *            the {@link Property}s to add
+         *            the {@link Property.Builder}s to add
          * @return this {@link Builder}
          */
-        public Builder properties(Property... properties) {
-            for (Property property : properties) {
-                this.properties.put(property.getName(), property);
+        public Builder properties(Property.Builder... properties) {
+            for (Property.Builder property : properties) {
+                this.properties.put(property.name, property);
             }
             return this;
         }
 
         /**
-         * Adds the given {@link Property} to {@link #properties}.
+         * Adds the given {@link Property.Builder} to {@link #properties}.
          *
          * @param property
-         *            the {@link Property} to add
+         *            the {@link Property.Builder} to add
          * @return this {@link Builder}
          */
-        public Builder property(Property property) {
-            this.properties.put(property.getName(), property);
+        public Builder property(Property.Builder property) {
+            this.properties.put(property.name, property);
             return this;
         }
 

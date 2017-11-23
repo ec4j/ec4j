@@ -27,6 +27,7 @@ import org.ec4j.core.Resource.Resources;
 import org.ec4j.core.model.Comments.CommentBlock;
 import org.ec4j.core.model.Comments.CommentBlocks;
 import org.ec4j.core.model.EditorConfig;
+import org.ec4j.core.model.Property;
 import org.ec4j.core.model.Section;
 import org.ec4j.core.model.Version;
 import org.junit.Assert;
@@ -55,6 +56,18 @@ public class LocationAwareModelHandlerTest {
 
         List<Section> sections = config.getSections();
         Assert.assertEquals(3, sections.size());
+
+        /* Check that sections and properties have their parent model objects set */
+        for (Section section : sections) {
+            EditorConfig parent = section.getAdapter(EditorConfig.class);
+            Assert.assertNotNull(parent);
+            Assert.assertEquals(config, parent);
+            for (Property property : section.getProperties().values()) {
+                Section propParent = property.getAdapter(Section.class);
+                Assert.assertNotNull(propParent);
+                Assert.assertEquals(section, propParent);
+            }
+        }
 
         Iterator<Section> it = sections.iterator();
         Section section = it.next();
