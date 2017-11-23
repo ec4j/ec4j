@@ -21,6 +21,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.ec4j.core.parser.Location;
+import org.ec4j.core.parser.Span;
+
 /**
  * Aggregates {@link CommentBlocks}, {@link CommentBlock} and {@link CommentLine}.
  *
@@ -39,6 +42,7 @@ public class Comments {
         public static class Builder extends Adaptable.Builder<Builder> {
             private List<CommentLine> commentLines = new ArrayList<>();
             private final CommentBlocks.Builder parentBuilder;
+            private Location start;
 
             public Builder(CommentBlocks.Builder parentBuilder) {
                 super();
@@ -49,6 +53,14 @@ public class Comments {
              * @return a new {@link CommentBlock}
              */
             public CommentBlock build() {
+                final int linesCount = this.commentLines.size();
+                if (start != null && linesCount > 0) {
+                    Span lastSpan = this.commentLines.get(linesCount - 1).getAdapter(Span.class);
+                    if (lastSpan != null) {
+                        adapter(new Span(start, lastSpan.getEnd()));
+                    }
+                }
+
                 List<CommentLine> useComments = Collections.unmodifiableList(this.commentLines);
                 this.commentLines = null;
                 return new CommentBlock(sealAdapters(), useComments);
@@ -71,6 +83,13 @@ public class Comments {
              * @return this {@link Builder}
              */
             public Builder commentLine(CommentLine commentLine) {
+                if (this.commentLines.size() == 0) {
+                    /* this was the first comment line of this block */
+                    Span span = commentLine.getAdapter(Span.class);
+                    if (span != null) {
+                        start = span.getStart();
+                    }
+                }
                 this.commentLines.add(commentLine);
                 return this;
             }
@@ -83,6 +102,13 @@ public class Comments {
              * @return this {@link Builder}
              */
             public Builder commentLines(Collection<CommentLine> commentLines) {
+                if (this.commentLines.size() == 0 && commentLines.size() > 0) {
+                    /* this was the first comment line of this block */
+                    Span span = commentLines.iterator().next().getAdapter(Span.class);
+                    if (span != null) {
+                        start = span.getStart();
+                    }
+                }
                 this.commentLines.addAll(commentLines);
                 return this;
             }
@@ -94,8 +120,15 @@ public class Comments {
              *            the {@link CommentLine}s to add
              * @return this {@link Builder}
              */
-            public Builder commentLines(CommentLine... comments) {
-                for (CommentLine commentLine : comments) {
+            public Builder commentLines(CommentLine... commentLines) {
+                if (this.commentLines.size() == 0 && commentLines.length > 0) {
+                    /* this was the first comment line of this block */
+                    Span span = commentLines[0].getAdapter(Span.class);
+                    if (span != null) {
+                        start = span.getStart();
+                    }
+                }
+                for (CommentLine commentLine : commentLines) {
                     this.commentLines.add(commentLine);
                 }
                 return this;

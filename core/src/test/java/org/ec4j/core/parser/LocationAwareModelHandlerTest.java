@@ -24,6 +24,7 @@ import java.util.List;
 import org.ec4j.core.PropertyTypeRegistry;
 import org.ec4j.core.Resource;
 import org.ec4j.core.Resource.Resources;
+import org.ec4j.core.model.Comments.CommentBlock;
 import org.ec4j.core.model.Comments.CommentBlocks;
 import org.ec4j.core.model.EditorConfig;
 import org.ec4j.core.model.Section;
@@ -41,6 +42,16 @@ public class LocationAwareModelHandlerTest {
         CommentBlocks commentBlocks = config.getAdapter(CommentBlocks.class);
         Assert.assertNotNull(commentBlocks);
         Assert.assertEquals(12, commentBlocks.getCommentBlocks().size());
+
+        CommentBlock block0 = commentBlocks.getCommentBlocks().get(0);
+        Span block0Span = block0.getAdapter(Span.class);
+        Assert.assertNotNull("CommentBlock should have a span", block0Span);
+        Assert.assertEquals(new Span(new Location(0, 1, 1), new Location(639, 16, 2)), block0Span);
+
+        CommentBlock block1 = commentBlocks.getCommentBlocks().get(1);
+        Span block1Span = block1.getAdapter(Span.class);
+        Assert.assertNotNull("CommentBlock should have a span", block1Span);
+        Assert.assertEquals(new Span(new Location(643, 20, 1), new Location(692, 21, 25)), block1Span);
 
         List<Section> sections = config.getSections();
         Assert.assertEquals(3, sections.size());
