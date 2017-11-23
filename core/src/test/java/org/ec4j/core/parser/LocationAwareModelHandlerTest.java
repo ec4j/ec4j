@@ -18,8 +18,9 @@ package org.ec4j.core.parser;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
 import java.util.List;
+
+import javax.xml.bind.JAXBElement.GlobalScope;
 
 import org.ec4j.core.PropertyTypeRegistry;
 import org.ec4j.core.Resource;
@@ -69,9 +70,25 @@ public class LocationAwareModelHandlerTest {
             }
         }
 
-        Iterator<Section> it = sections.iterator();
-        Section section = it.next();
-        // TODO Assert.assertEquals(Span.parse(""), section.getAdapter(Span.class));
+        int i = 0;
+        {
+            final Section section = sections.get(i++);
+            Span sectionSpan = section.getAdapter(Span.class);
+            Assert.assertNotNull(sectionSpan);
+            Assert.assertEquals(Span.parse("29:1 (803) - 32:15 (875)"), sectionSpan);
+        }
+        {
+            final Section section = sections.get(i++);
+            Span sectionSpan = section.getAdapter(Span.class);
+            Assert.assertNotNull(sectionSpan);
+            Assert.assertEquals(Span.parse("38:1 (979) - 47:15 (1169)"), sectionSpan);
+        }
+        {
+            final Section section = sections.get(i++);
+            Span sectionSpan = section.getAdapter(Span.class);
+            Assert.assertNotNull(sectionSpan);
+            Assert.assertEquals(Span.parse("52:1 (1222) - 53:12 (1239)"), sectionSpan);
+        }
     }
 
     private EditorConfig parse(Resource file) throws IOException {

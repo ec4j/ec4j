@@ -77,6 +77,20 @@ public class Span {
         }
 
         /**
+         * Sets the end of the {@link Span} unless it was set already.
+         *
+         * @param end
+         *            the end {@link Location}
+         * @return this {@link Builder}
+         */
+        public Builder endIfNeeded(Location end) {
+            if (this.end == null) {
+                this.end = end;
+            }
+            return this;
+        }
+
+        /**
          * Sets the start of the {@link Span}.
          *
          * @param start

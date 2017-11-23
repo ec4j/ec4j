@@ -83,8 +83,10 @@ public class LocationAwareModelHandler extends EditorConfigModelHandler {
     /** {@inheritDoc} */
     @Override
     public void endPattern(ParseContext context, String pattern) {
-        sectionBuilder.adapter(patternSpan.end(context.getLocation()).buildPatternSpan());
+        Location loc = context.getLocation();
+        sectionBuilder.adapter(patternSpan.end(loc).buildPatternSpan());
         patternSpan = null;
+        sectionSpan.end(loc);
         super.endPattern(context, pattern);
     }
 
@@ -99,15 +101,17 @@ public class LocationAwareModelHandler extends EditorConfigModelHandler {
     /** {@inheritDoc} */
     @Override
     public void endPropertyValue(ParseContext context, String value) {
-        propertyBuilder.adapter(propertyValueSpan.end(context.getLocation()).buildValueSpan());
+        Location loc = context.getLocation();
+        propertyBuilder.adapter(propertyValueSpan.end(loc).buildValueSpan());
         propertyValueSpan = null;
+        sectionSpan.end(loc);
         super.endPropertyValue(context, value);
     }
 
     /** {@inheritDoc} */
     @Override
     public void endSection(ParseContext context) {
-        sectionBuilder.adapter(sectionSpan.end(context.getLocation()).buildSpan());
+        sectionBuilder.adapter(sectionSpan.endIfNeeded(context.getLocation()).buildSpan());
         sectionSpan = null;
         super.endSection(context);
     }
