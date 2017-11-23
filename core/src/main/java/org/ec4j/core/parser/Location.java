@@ -52,19 +52,19 @@ public class Location {
     /**
      * The column number, starting at 1.
      */
-    public final int column;
+    private final int column;
 
     /**
      * The line number, starting at 1.
      */
-    public final int line;
+    private final int line;
 
     /**
      * The absolute character index, starting at 0.
      */
-    public final int offset;
+    private final int offset;
 
-    Location(int offset, int line, int column) {
+    public Location(int offset, int line, int column) {
         this.offset = offset;
         this.column = column;
         this.line = line;
@@ -84,6 +84,27 @@ public class Location {
         }
         Location other = (Location) obj;
         return offset == other.offset && column == other.column && line == other.line;
+    }
+
+    /**
+     * @return the column number, the first column is {@code 1}
+     */
+    public int getColumn() {
+        return column;
+    }
+
+    /**
+     * @return the line number, the first line is {@code 1}
+     */
+    public int getLine() {
+        return line;
+    }
+
+    /**
+     * @return an absolute index within the file; the first offset is {@code 0}
+     */
+    public int getOffset() {
+        return offset;
     }
 
     /** {@inheritDoc} */
