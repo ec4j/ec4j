@@ -107,6 +107,10 @@ public class Span {
      * A subclass of {@link Span} to be able to set a span for both name and value of a {@link Property}.
      */
     public static class NameSpan extends Span {
+        public static Span parse(String spanString) {
+            Span s = Span.parse(spanString);
+            return new NameSpan(s.start, s.end);
+        }
 
         private NameSpan(Location start, Location end) {
             super(start, end);
@@ -118,6 +122,7 @@ public class Span {
      * A subclass of {@link Span} to be able to set a span for both glob and the whole secttion of a {@link Section}.
      */
     public static class GlobSpan extends Span {
+
         public static Span parse(String spanString) {
             Span s = Span.parse(spanString);
             return new GlobSpan(s.start, s.end);
@@ -133,6 +138,11 @@ public class Span {
      * A subclass of {@link Span} to be able to set a span for both name and value of a {@link Property}.
      */
     public static class ValueSpan extends Span {
+
+        public static Span parse(String spanString) {
+            Span s = Span.parse(spanString);
+            return new ValueSpan(s.start, s.end);
+        }
 
         private ValueSpan(Location start, Location end) {
             super(start, end);

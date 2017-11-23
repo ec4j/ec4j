@@ -34,6 +34,7 @@ public class LocationAwareModelHandler extends EditorConfigModelHandler {
     private Span.Builder commentSpan;
     private Span.Builder globSpan;
 
+    private Span.Builder propertySpan;
     private Span.Builder propertyNameSpan;
     private Span.Builder propertyValueSpan;
     private Span.Builder sectionSpan;
@@ -98,6 +99,13 @@ public class LocationAwareModelHandler extends EditorConfigModelHandler {
         super.endPropertyName(context, name);
     }
 
+    @Override
+    public void endProperty(ParseContext context) {
+        propertyBuilder.adapter(propertySpan.end(context.getLocation()).buildSpan());
+        propertySpan = null;
+        super.endProperty(context);
+    }
+
     /** {@inheritDoc} */
     @Override
     public void endPropertyValue(ParseContext context, String value) {
@@ -142,6 +150,7 @@ public class LocationAwareModelHandler extends EditorConfigModelHandler {
     public void startProperty(ParseContext context) {
         closeCommentBlockIfNeeded();
         super.startProperty(context);
+        propertySpan = Span.builder().start(context.getLocation());
     }
 
     /** {@inheritDoc} */

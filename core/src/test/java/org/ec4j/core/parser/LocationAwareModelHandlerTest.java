@@ -30,6 +30,8 @@ import org.ec4j.core.model.Property;
 import org.ec4j.core.model.Section;
 import org.ec4j.core.model.Version;
 import org.ec4j.core.parser.Span.GlobSpan;
+import org.ec4j.core.parser.Span.NameSpan;
+import org.ec4j.core.parser.Span.ValueSpan;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -79,6 +81,20 @@ public class LocationAwareModelHandlerTest {
             Span globSpan = section.getAdapter(GlobSpan.class);
             Assert.assertNotNull(globSpan);
             Assert.assertEquals(GlobSpan.parse("29:2 (804) - 29:5 (807)"), globSpan);
+
+            Property prop = section.getProperties().values().iterator().next();
+
+            Span propSpan = prop.getAdapter(Span.class);
+            Assert.assertNotNull(propSpan);
+            Assert.assertEquals(Span.parse("32:1 (861) - 32:15 (875)"), propSpan);
+
+            Span nameSpan = prop.getAdapter(NameSpan.class);
+            Assert.assertNotNull(nameSpan);
+            Assert.assertEquals(NameSpan.parse("32:1 (861) - 32:8 (868)"), nameSpan);
+
+            Span valSpan = prop.getAdapter(ValueSpan.class);
+            Assert.assertNotNull(valSpan);
+            Assert.assertEquals(ValueSpan.parse("32:9 (869) - 32:15 (875)"), valSpan);
         }
         {
             final Section section = sections.get(i++);
