@@ -204,8 +204,8 @@ public class EditorConfigParser implements ParseContext {
         if (readChar(']')) {
             return;
         }
-        // read pattern of the given section
-        readPatternAndCloseSection();
+        // read the glob of the given section
+        readGlob();
     }
 
     private void globNotClosed() {
@@ -215,14 +215,15 @@ public class EditorConfigParser implements ParseContext {
         errorHandler.error(this, e);
     }
 
-    private void readPatternAndCloseSection() throws IOException {
-        handler.startPattern(this);
-        String patternAndCloseSection = readString(StopReading.Pattern);
+    private void readGlob() throws IOException {
+        handler.startGlob(this);
+        String globAndLBracket = readString(StopReading.Glob);
         // Search ']' close section at the end of the line
         char c;
         int i = -1;
-        for (i = patternAndCloseSection.length() - 1; i >= 0; i--) {
-            c = patternAndCloseSection.charAt(i);
+        final int patLen = globAndLBracket.length();
+        for (i = patLen  - 1; i >= 0; i--) {
+            c = globAndLBracket.charAt(i);
             if (c == ']') {
                 break;
             } else if (!isWhiteSpace(c)) {
@@ -239,10 +240,10 @@ public class EditorConfigParser implements ParseContext {
             globNotClosed();
         }
         int oldIndex = index;
-        index -= i + 1;
+        index -= patLen - i;
         try {
-            String pattern = patternAndCloseSection.substring(0, i);
-            handler.endPattern(this, pattern);
+            String glob = globAndLBracket.substring(0, i);
+            handler.endGlob(this, glob);
             index++;
         } finally {
             index = oldIndex;
@@ -250,7 +251,7 @@ public class EditorConfigParser implements ParseContext {
     }
 
     private enum StopReading {
-        Pattern, PropertyName, PropertyValue
+        Glob, PropertyName, PropertyValue
     }
 
     private String readString(StopReading stop) throws IOException {
@@ -281,7 +282,7 @@ public class EditorConfigParser implements ParseContext {
             return true;
         }
         switch (stop) {
-        case Pattern:
+        case Glob:
             // Read the full line
             if ((current == ';' || current == '#') && isWhiteSpace(last)) {
                 // Inline comment

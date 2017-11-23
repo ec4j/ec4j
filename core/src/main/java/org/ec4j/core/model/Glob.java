@@ -54,25 +54,24 @@ public class Glob {
     private final String source;
     static final Pattern ESCAPED_COMMENT_SIGNS = Pattern.compile("\\\\([#;])");
 
-    public Glob(String configDirname, String pattern) {
-        this.source = pattern;
+    public Glob(String configDirname, String source) {
+        this.source = source;
         this.ranges = new ArrayList<int[]>();
-        if (pattern.length() > MAX_GLOB_LENGTH) {
+        if (source.length() > MAX_GLOB_LENGTH) {
             this.regex = null;
             this.error = new PatternSyntaxException(
-                    "Glob length exceeds the maximal allowed length of " + MAX_GLOB_LENGTH + " characters", pattern,
+                    "Glob length exceeds the maximal allowed length of " + MAX_GLOB_LENGTH + " characters", source,
                     MAX_GLOB_LENGTH);
         } else {
-            //pattern = pattern.replace(File.separatorChar, '/');
-            pattern = ESCAPED_COMMENT_SIGNS.matcher(pattern).replaceAll("$1");
-            int slashPos = pattern.indexOf('/');
+            source = ESCAPED_COMMENT_SIGNS.matcher(source).replaceAll("$1");
+            int slashPos = source.indexOf('/');
             if (slashPos >= 0) {
-                pattern = configDirname + "/" + (slashPos == 0 ? pattern.substring(1) : pattern);
+                source = configDirname + "/" + (slashPos == 0 ? source.substring(1) : source);
             } else {
-                pattern = "**/" + pattern;
+                source = "**/" + source;
             }
-            final StringBuilder regex = new StringBuilder(pattern.length());
-            convertGlobToRegEx(pattern, ranges, regex);
+            final StringBuilder regex = new StringBuilder(source.length());
+            convertGlobToRegEx(source, ranges, regex);
             PatternSyntaxException err = null;
             Pattern pat = null;
             try {

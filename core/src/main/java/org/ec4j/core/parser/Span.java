@@ -44,10 +44,10 @@ public class Span {
         }
 
         /**
-         * @return a new {@link PatternSpan}
+         * @return a new {@link GlobSpan}
          */
-        public PatternSpan buildPatternSpan() {
-            return new PatternSpan(start, end);
+        public GlobSpan buildGlobSpan() {
+            return new GlobSpan(start, end);
         }
 
         /**
@@ -117,9 +117,13 @@ public class Span {
     /**
      * A subclass of {@link Span} to be able to set a span for both glob and the whole secttion of a {@link Section}.
      */
-    public static class PatternSpan extends Span {
+    public static class GlobSpan extends Span {
+        public static Span parse(String spanString) {
+            Span s = Span.parse(spanString);
+            return new GlobSpan(s.start, s.end);
+        }
 
-        private PatternSpan(Location start, Location end) {
+        private GlobSpan(Location start, Location end) {
             super(start, end);
         }
 

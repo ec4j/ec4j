@@ -32,7 +32,7 @@ import org.ec4j.core.parser.ErrorEvent.ErrorType;
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
 public abstract class AbstractValidatingHandler implements EditorConfigHandler {
-    protected Location patternStart;
+    protected Location globStart;
     protected Location propertyValueStart;
     protected final PropertyTypeRegistry registry;
     protected PropertyType<?> type;
@@ -44,15 +44,15 @@ public abstract class AbstractValidatingHandler implements EditorConfigHandler {
 
     /** {@inheritDoc} */
     @Override
-    public void endPattern(ParseContext context, String pattern) {
-        final Glob glob = new Glob(context.getResource().getParent().getPath(), pattern);
+    public void endGlob(ParseContext context, String globSource) {
+        final Glob glob = new Glob(context.getResource().getParent().getPath(), globSource);
         final PatternSyntaxException e = glob.getError();
         if (e != null) {
-            final String msg = String.format("The pattern '%s' is not valid: %s", pattern, e.getMessage());
-            context.getErrorHandler().error(context, new ErrorEvent(patternStart, context.getLocation(), msg, ErrorType.INVALID_GLOB));
+            final String msg = String.format("The glob '%s' is not valid: %s", globSource, e.getMessage());
+            context.getErrorHandler().error(context, new ErrorEvent(globStart, context.getLocation(), msg, ErrorType.INVALID_GLOB));
         }
         glob(context, glob);
-        patternStart = null;
+        globStart = null;
     }
 
     /** {@inheritDoc} */
@@ -82,8 +82,8 @@ public abstract class AbstractValidatingHandler implements EditorConfigHandler {
     }
 
     /**
-     * Handle the {@link Glob} created out of the pattern hit recently in the underlying {@code .editorconfig} file.
-     * Note that this method gets called after any evetual errors related to the pattern were sent to
+     * Handle the {@link Glob} created out of the glob string hit recently in the underlying {@code .editorconfig} file.
+     * Note that this method gets called after any evetual errors related to the glob were sent to
      * {@link ErrorHandler}.
      *
      * @param context
@@ -129,8 +129,8 @@ public abstract class AbstractValidatingHandler implements EditorConfigHandler {
 
     /** {@inheritDoc} */
     @Override
-    public void startPattern(ParseContext context) {
-        this.patternStart = context.getLocation();
+    public void startGlob(ParseContext context) {
+        this.globStart = context.getLocation();
     }
 
     /** {@inheritDoc} */

@@ -240,7 +240,7 @@ public class Section extends Adaptable {
     }
 
     public void appendTo(StringBuilder s) {
-        // patterns
+        // glob
         if (!glob.isEmpty()) {
             s.append('[');
             s.append(glob.toString());

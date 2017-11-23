@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import javax.xml.bind.JAXBElement.GlobalScope;
-
 import org.ec4j.core.PropertyTypeRegistry;
 import org.ec4j.core.Resource;
 import org.ec4j.core.Resource.Resources;
@@ -31,6 +29,7 @@ import org.ec4j.core.model.EditorConfig;
 import org.ec4j.core.model.Property;
 import org.ec4j.core.model.Section;
 import org.ec4j.core.model.Version;
+import org.ec4j.core.parser.Span.GlobSpan;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -76,18 +75,30 @@ public class LocationAwareModelHandlerTest {
             Span sectionSpan = section.getAdapter(Span.class);
             Assert.assertNotNull(sectionSpan);
             Assert.assertEquals(Span.parse("29:1 (803) - 32:15 (875)"), sectionSpan);
+
+            Span globSpan = section.getAdapter(GlobSpan.class);
+            Assert.assertNotNull(globSpan);
+            Assert.assertEquals(GlobSpan.parse("29:2 (804) - 29:5 (807)"), globSpan);
         }
         {
             final Section section = sections.get(i++);
             Span sectionSpan = section.getAdapter(Span.class);
             Assert.assertNotNull(sectionSpan);
             Assert.assertEquals(Span.parse("38:1 (979) - 47:15 (1169)"), sectionSpan);
+
+            Span globSpan = section.getAdapter(GlobSpan.class);
+            Assert.assertNotNull(globSpan);
+            Assert.assertEquals(GlobSpan.parse("38:2 (980) - 38:5 (983)"), globSpan);
         }
         {
             final Section section = sections.get(i++);
             Span sectionSpan = section.getAdapter(Span.class);
             Assert.assertNotNull(sectionSpan);
             Assert.assertEquals(Span.parse("52:1 (1222) - 53:12 (1239)"), sectionSpan);
+
+            Span globSpan = section.getAdapter(GlobSpan.class);
+            Assert.assertNotNull(globSpan);
+            Assert.assertEquals(GlobSpan.parse("52:2 (1223) - 52:5 (1226)"), globSpan);
         }
     }
 
