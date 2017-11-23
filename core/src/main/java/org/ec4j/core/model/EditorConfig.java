@@ -34,8 +34,9 @@ public class EditorConfig extends Adaptable {
      */
     public static class Builder extends Adaptable.Builder<Builder> {
 
+        boolean parentAware;
         Boolean root;
-        List<Section> sections;
+        List<Section.Builder> sections;
         Version version = Version.CURRENT;
 
         public Builder() {
@@ -47,16 +48,47 @@ public class EditorConfig extends Adaptable {
          * @return a new {@link EditorConfig}
          */
         public EditorConfig build() {
-            List<Section> useSections = sections;
+            List<Section> useSections = new ArrayList<>(sections.size());
+            /*
+             * This is a controled leak of the adapters list that we are going to ammend after the sections were
+             * actually built and their respective adapter lists sealed. This leak should be harmless as the Section
+             * objects should not be visible to the outside world before we return from the present method.
+             */
+            List<List<Object>> propAdapters = new ArrayList<>();
+            for (Section.Builder sectionBuilder : sections) {
+                if (parentAware) {
+                    propAdapters.add(sectionBuilder.adapters);
+                }
+                Section section = sectionBuilder.build();
+                useSections.add(section);
+            }
             sections = null;
-            return new EditorConfig(sealAdapters(), root, version, Collections.unmodifiableList(useSections));
+            final EditorConfig result = new EditorConfig(sealAdapters(), root, version,
+                    Collections.unmodifiableList(useSections));
+            for (List<Object> adapters : propAdapters) {
+                adapters.add(result);
+            }
+            return result;
         }
 
         /**
-         * @return a new {@link Section.Builder}
+         * @return a new {@link Section.Builder} and pass the current {@link #parentAware} value to it
          */
         public Section.Builder openSection() {
-            return new Section.Builder(this);
+            return new Section.Builder(this).parentAware(parentAware);
+        }
+
+        /**
+         * @param parentAware
+         *            if {@code true} the {@link Section#getProperties()} of the resulting {@link Section} will have the
+         *            Section set in their adapters (which can be used as the link to the parent {@link Section});
+         *            othwise the section will not be added to {@link Property}'s adapters
+         *
+         * @return this {@link Builder}
+         */
+        public Builder parentAware(boolean parentAware) {
+            this.parentAware = parentAware;
+            return this;
         }
 
         /**
@@ -77,38 +109,38 @@ public class EditorConfig extends Adaptable {
         }
 
         /**
-         * Adds a single {@link Section} to {@link #sections}.
+         * Adds a single {@link Section.Builder} to {@link #sections}.
          *
          * @param section
-         *            the {@link Section} to add
+         *            the {@link Section.Builder} to add
          * @return this {@link Builder}
          */
-        public Builder section(Section section) {
+        public Builder section(Section.Builder section) {
             this.sections.add(section);
             return this;
         }
 
         /**
-         * Adds multiple Sections to {@link #sections}
+         * Adds multiple {@link Section.Builder}s to {@link #sections}
          *
          * @param sections
-         *            the {@link Section}s to add
+         *            the {@link Section.Builder}s to add
          * @return this {@link Builder}
          */
-        public Builder sections(Collection<Section> sections) {
+        public Builder sections(Collection<Section.Builder> sections) {
             this.sections.addAll(sections);
             return this;
         }
 
         /**
-         * Adds multiple Sections to {@link #sections}
+         * Adds multiple {@link Section.Builder}s to {@link #sections}
          *
          * @param sections
-         *            the {@link Section}s to add
+         *            the {@link Section.Builder}s to add
          * @return this {@link Builder}
          */
-        public Builder sections(Section... sections) {
-            for (Section section : sections) {
+        public Builder sections(Section.Builder... sections) {
+            for (Section.Builder section : sections) {
                 this.sections.add(section);
             }
             return this;

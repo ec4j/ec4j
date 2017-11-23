@@ -72,7 +72,7 @@ public interface EditorConfigHandler {
      * @param context
      *            the {@link ParseContext}
      */
-    void startPattern(ParseContext context);
+    void startGlob(ParseContext context);
 
     /**
      * End of a glob pattern
@@ -80,7 +80,7 @@ public interface EditorConfigHandler {
      * @param context
      *            the {@link ParseContext}
      */
-    void endPattern(ParseContext context, String pattern);
+    void endGlob(ParseContext context, String glob);
 
     /**
      * Start of a property

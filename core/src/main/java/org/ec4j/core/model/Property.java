@@ -33,10 +33,10 @@ public class Property extends Adaptable {
      */
     public static class Builder extends Adaptable.Builder<Builder> {
 
-        private String name;
+        String name;
         private final Section.Builder parentBuilder;
-        private PropertyType<?> type;
-        private PropertyValue<?> value;
+        PropertyType<?> type;
+        PropertyValue<?> value;
 
         public Builder(org.ec4j.core.model.Section.Builder parentBuilder) {
             super();
@@ -61,14 +61,14 @@ public class Property extends Adaptable {
         }
 
         /**
-         * Creates a new {@link Property} instance, adds it to the parent {@link Section.Builder} using parent
-         * {@link Section.Builder#property(Property)} and returns the parent {@link Section.Builder}
+         * Adds this {@link Builder} to the parent {@link Section.Builder} using parent
+         * {@link Section.Builder#property(Property.Builder)} and returns the parent {@link Section.Builder}
          *
          * @return the parent {@link Section.Builder}
          */
         public Section.Builder closeProperty() {
             if (checkMax()) {
-                parentBuilder.property(build());
+                parentBuilder.property(this);
             }
             return parentBuilder;
         }

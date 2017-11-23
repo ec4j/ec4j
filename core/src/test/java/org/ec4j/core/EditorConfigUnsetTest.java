@@ -72,8 +72,8 @@ public class EditorConfigUnsetTest {
 
         ResourceProperties props2 = withUnset.queryProperties(resource);
         Assert.assertEquals(Section.builder() //
-                .property(Property.builder().name(key).value("unset").build()) //
-                .property(Property.builder().name(PropertyType.tab_width.getName()).value("unset").build()) //
+                .property(Property.builder().name(key).value("unset")) //
+                .property(Property.builder().name(PropertyType.tab_width.getName()).value("unset")) //
                 .build().getProperties(), //
                 props2.getProperties());
 

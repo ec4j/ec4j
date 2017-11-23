@@ -44,10 +44,10 @@ public class Span {
         }
 
         /**
-         * @return a new {@link PatternSpan}
+         * @return a new {@link GlobSpan}
          */
-        public PatternSpan buildPatternSpan() {
-            return new PatternSpan(start, end);
+        public GlobSpan buildGlobSpan() {
+            return new GlobSpan(start, end);
         }
 
         /**
@@ -77,6 +77,20 @@ public class Span {
         }
 
         /**
+         * Sets the end of the {@link Span} unless it was set already.
+         *
+         * @param end
+         *            the end {@link Location}
+         * @return this {@link Builder}
+         */
+        public Builder endIfNeeded(Location end) {
+            if (this.end == null) {
+                this.end = end;
+            }
+            return this;
+        }
+
+        /**
          * Sets the start of the {@link Span}.
          *
          * @param start
@@ -93,6 +107,10 @@ public class Span {
      * A subclass of {@link Span} to be able to set a span for both name and value of a {@link Property}.
      */
     public static class NameSpan extends Span {
+        public static Span parse(String spanString) {
+            Span s = Span.parse(spanString);
+            return new NameSpan(s.start, s.end);
+        }
 
         private NameSpan(Location start, Location end) {
             super(start, end);
@@ -103,9 +121,14 @@ public class Span {
     /**
      * A subclass of {@link Span} to be able to set a span for both glob and the whole secttion of a {@link Section}.
      */
-    public static class PatternSpan extends Span {
+    public static class GlobSpan extends Span {
 
-        private PatternSpan(Location start, Location end) {
+        public static Span parse(String spanString) {
+            Span s = Span.parse(spanString);
+            return new GlobSpan(s.start, s.end);
+        }
+
+        private GlobSpan(Location start, Location end) {
             super(start, end);
         }
 
@@ -115,6 +138,11 @@ public class Span {
      * A subclass of {@link Span} to be able to set a span for both name and value of a {@link Property}.
      */
     public static class ValueSpan extends Span {
+
+        public static Span parse(String spanString) {
+            Span s = Span.parse(spanString);
+            return new ValueSpan(s.start, s.end);
+        }
 
         private ValueSpan(Location start, Location end) {
             super(start, end);

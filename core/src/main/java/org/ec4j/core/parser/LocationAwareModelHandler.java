@@ -32,8 +32,9 @@ public class LocationAwareModelHandler extends EditorConfigModelHandler {
     private CommentBlock.Builder commentBlockBuilder;
     private CommentBlocks.Builder commentBlocksBuilder;
     private Span.Builder commentSpan;
-    private Span.Builder patternSpan;
+    private Span.Builder globSpan;
 
+    private Span.Builder propertySpan;
     private Span.Builder propertyNameSpan;
     private Span.Builder propertyValueSpan;
     private Span.Builder sectionSpan;
@@ -82,10 +83,12 @@ public class LocationAwareModelHandler extends EditorConfigModelHandler {
 
     /** {@inheritDoc} */
     @Override
-    public void endPattern(ParseContext context, String pattern) {
-        sectionBuilder.adapter(patternSpan.end(context.getLocation()).buildPatternSpan());
-        patternSpan = null;
-        super.endPattern(context, pattern);
+    public void endGlob(ParseContext context, String glob) {
+        Location loc = context.getLocation();
+        sectionBuilder.adapter(globSpan.end(loc).buildGlobSpan());
+        globSpan = null;
+        sectionSpan.end(loc);
+        super.endGlob(context, glob);
     }
 
     /** {@inheritDoc} */
@@ -96,18 +99,27 @@ public class LocationAwareModelHandler extends EditorConfigModelHandler {
         super.endPropertyName(context, name);
     }
 
+    @Override
+    public void endProperty(ParseContext context) {
+        propertyBuilder.adapter(propertySpan.end(context.getLocation()).buildSpan());
+        propertySpan = null;
+        super.endProperty(context);
+    }
+
     /** {@inheritDoc} */
     @Override
     public void endPropertyValue(ParseContext context, String value) {
-        propertyBuilder.adapter(propertyValueSpan.end(context.getLocation()).buildValueSpan());
+        Location loc = context.getLocation();
+        propertyBuilder.adapter(propertyValueSpan.end(loc).buildValueSpan());
         propertyValueSpan = null;
+        sectionSpan.end(loc);
         super.endPropertyValue(context, value);
     }
 
     /** {@inheritDoc} */
     @Override
     public void endSection(ParseContext context) {
-        sectionBuilder.adapter(sectionSpan.end(context.getLocation()).buildSpan());
+        sectionBuilder.adapter(sectionSpan.endIfNeeded(context.getLocation()).buildSpan());
         sectionSpan = null;
         super.endSection(context);
     }
@@ -121,9 +133,16 @@ public class LocationAwareModelHandler extends EditorConfigModelHandler {
 
     /** {@inheritDoc} */
     @Override
-    public void startPattern(ParseContext context) {
-        super.startPattern(context);
-        patternSpan = Span.builder().start(context.getLocation());
+    public void startDocument(ParseContext context) {
+        super.startDocument(context);
+        editorConfigBuilder.parentAware(true);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void startGlob(ParseContext context) {
+        super.startGlob(context);
+        globSpan = Span.builder().start(context.getLocation());
     }
 
     /** {@inheritDoc} */
@@ -131,6 +150,7 @@ public class LocationAwareModelHandler extends EditorConfigModelHandler {
     public void startProperty(ParseContext context) {
         closeCommentBlockIfNeeded();
         super.startProperty(context);
+        propertySpan = Span.builder().start(context.getLocation());
     }
 
     /** {@inheritDoc} */

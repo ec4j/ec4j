@@ -18,16 +18,20 @@ package org.ec4j.core.parser;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
 import java.util.List;
 
 import org.ec4j.core.PropertyTypeRegistry;
 import org.ec4j.core.Resource;
 import org.ec4j.core.Resource.Resources;
+import org.ec4j.core.model.Comments.CommentBlock;
 import org.ec4j.core.model.Comments.CommentBlocks;
 import org.ec4j.core.model.EditorConfig;
+import org.ec4j.core.model.Property;
 import org.ec4j.core.model.Section;
 import org.ec4j.core.model.Version;
+import org.ec4j.core.parser.Span.GlobSpan;
+import org.ec4j.core.parser.Span.NameSpan;
+import org.ec4j.core.parser.Span.ValueSpan;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -42,12 +46,76 @@ public class LocationAwareModelHandlerTest {
         Assert.assertNotNull(commentBlocks);
         Assert.assertEquals(12, commentBlocks.getCommentBlocks().size());
 
+        CommentBlock block0 = commentBlocks.getCommentBlocks().get(0);
+        Span block0Span = block0.getAdapter(Span.class);
+        Assert.assertNotNull("CommentBlock should have a span", block0Span);
+        Assert.assertEquals(new Span(new Location(0, 1, 1), new Location(639, 16, 2)), block0Span);
+
+        CommentBlock block1 = commentBlocks.getCommentBlocks().get(1);
+        Span block1Span = block1.getAdapter(Span.class);
+        Assert.assertNotNull("CommentBlock should have a span", block1Span);
+        Assert.assertEquals(new Span(new Location(643, 20, 1), new Location(692, 21, 25)), block1Span);
+
         List<Section> sections = config.getSections();
         Assert.assertEquals(3, sections.size());
 
-        Iterator<Section> it = sections.iterator();
-        Section section = it.next();
-        // TODO Assert.assertEquals(Span.parse(""), section.getAdapter(Span.class));
+        /* Check that sections and properties have their parent model objects set */
+        for (Section section : sections) {
+            EditorConfig parent = section.getAdapter(EditorConfig.class);
+            Assert.assertNotNull(parent);
+            Assert.assertEquals(config, parent);
+            for (Property property : section.getProperties().values()) {
+                Section propParent = property.getAdapter(Section.class);
+                Assert.assertNotNull(propParent);
+                Assert.assertEquals(section, propParent);
+            }
+        }
+
+        int i = 0;
+        {
+            final Section section = sections.get(i++);
+            Span sectionSpan = section.getAdapter(Span.class);
+            Assert.assertNotNull(sectionSpan);
+            Assert.assertEquals(Span.parse("29:1 (803) - 32:15 (875)"), sectionSpan);
+
+            Span globSpan = section.getAdapter(GlobSpan.class);
+            Assert.assertNotNull(globSpan);
+            Assert.assertEquals(GlobSpan.parse("29:2 (804) - 29:5 (807)"), globSpan);
+
+            Property prop = section.getProperties().values().iterator().next();
+
+            Span propSpan = prop.getAdapter(Span.class);
+            Assert.assertNotNull(propSpan);
+            Assert.assertEquals(Span.parse("32:1 (861) - 32:15 (875)"), propSpan);
+
+            Span nameSpan = prop.getAdapter(NameSpan.class);
+            Assert.assertNotNull(nameSpan);
+            Assert.assertEquals(NameSpan.parse("32:1 (861) - 32:8 (868)"), nameSpan);
+
+            Span valSpan = prop.getAdapter(ValueSpan.class);
+            Assert.assertNotNull(valSpan);
+            Assert.assertEquals(ValueSpan.parse("32:9 (869) - 32:15 (875)"), valSpan);
+        }
+        {
+            final Section section = sections.get(i++);
+            Span sectionSpan = section.getAdapter(Span.class);
+            Assert.assertNotNull(sectionSpan);
+            Assert.assertEquals(Span.parse("38:1 (979) - 47:15 (1169)"), sectionSpan);
+
+            Span globSpan = section.getAdapter(GlobSpan.class);
+            Assert.assertNotNull(globSpan);
+            Assert.assertEquals(GlobSpan.parse("38:2 (980) - 38:5 (983)"), globSpan);
+        }
+        {
+            final Section section = sections.get(i++);
+            Span sectionSpan = section.getAdapter(Span.class);
+            Assert.assertNotNull(sectionSpan);
+            Assert.assertEquals(Span.parse("52:1 (1222) - 53:12 (1239)"), sectionSpan);
+
+            Span globSpan = section.getAdapter(GlobSpan.class);
+            Assert.assertNotNull(globSpan);
+            Assert.assertEquals(GlobSpan.parse("52:2 (1223) - 52:5 (1226)"), globSpan);
+        }
     }
 
     private EditorConfig parse(Resource file) throws IOException {
