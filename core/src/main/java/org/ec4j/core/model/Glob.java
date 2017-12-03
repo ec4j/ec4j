@@ -52,9 +52,10 @@ public class Glob {
     private final List<int[]> ranges;
     private final Pattern regex;
     private final String source;
+    private final boolean matchLastSegmentOnly;
     static final Pattern ESCAPED_COMMENT_SIGNS = Pattern.compile("\\\\([#;])");
 
-    public Glob(String configDirname, String source) {
+    public Glob(String source) {
         this.source = source;
         this.ranges = new ArrayList<int[]>();
         if (source.length() > MAX_GLOB_LENGTH) {
@@ -62,14 +63,15 @@ public class Glob {
             this.error = new PatternSyntaxException(
                     "Glob length exceeds the maximal allowed length of " + MAX_GLOB_LENGTH + " characters", source,
                     MAX_GLOB_LENGTH);
+            this.matchLastSegmentOnly = false;
         } else {
             source = ESCAPED_COMMENT_SIGNS.matcher(source).replaceAll("$1");
-            int slashPos = source.indexOf('/');
+            final int slashPos = source.indexOf('/');
+            final int doubleAsteriskPos = source.indexOf("**");
             if (slashPos >= 0) {
-                source = configDirname + "/" + (slashPos == 0 ? source.substring(1) : source);
-            } else {
-                source = "**/" + source;
+                source = (slashPos == 0 ? source.substring(1) : source);
             }
+            this.matchLastSegmentOnly = slashPos < 0 && doubleAsteriskPos < 0;
             final StringBuilder regex = new StringBuilder(source.length());
             convertGlobToRegEx(source, ranges, regex);
             PatternSyntaxException err = null;
@@ -133,7 +135,8 @@ public class Glob {
     }
 
     /**
-     * Matches the given slash ({@code /}) separated path against this {@link Glob}.
+     * Matches the given slash ({@code /}) separated path against this {@link Glob}. The {@code filePath} MUST be
+     * relative to the directory if the {@code .editorconfig} file this {@link Glob} was defined in.
      * <p>
      * Based on <a href=
      * "https://github.com/editorconfig/editorconfig-core-java/blob/e3e090545f44d20f5f228ef1068af4c9d7323a51/src/main/java/org/editorconfig/core/EditorConfig.java#L242">EditorConfig</a>
@@ -143,11 +146,12 @@ public class Glob {
      *            a slash ({@code /}) separated file path to match against this {@link Glob}
      * @return {@code true} if the given {@code filePath} matches; {@code false} otherwise
      */
-    public boolean match(String filePath) {
+    public boolean match(Ec4jPath filePath) {
         if (!isValid()) {
             return false;
         }
-        final Matcher matcher = regex.matcher(filePath);
+
+        final Matcher matcher = regex.matcher(matchLastSegmentOnly ? filePath.getLastSegment() : filePath.toString());
         if (matcher.matches()) {
             for (int i = 0; i < matcher.groupCount(); i++) {
                 final int[] range = ranges.get(i);
@@ -269,7 +273,8 @@ public class Glob {
     }
 
     /**
-     * @param globString the glob string to check
+     * @param globString
+     *            the glob string to check
      * @return {@code true} if the count of opening braces is equal to the count of the closing braces; {@code false}
      *         otherwise
      */

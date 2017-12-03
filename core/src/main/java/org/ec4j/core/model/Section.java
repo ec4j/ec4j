@@ -296,7 +296,7 @@ public class Section extends Adaptable {
         return result;
     }
 
-    public boolean match(String filePath) {
+    public boolean match(Ec4jPath filePath) {
         /* null glob matches all */
         return glob == null ? true : glob.match(filePath);
     }

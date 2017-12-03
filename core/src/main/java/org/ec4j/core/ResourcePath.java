@@ -18,9 +18,12 @@ package org.ec4j.core;
 
 import java.nio.charset.Charset;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+
+import org.ec4j.core.Resource.Resources.ClassPathResource;
+import org.ec4j.core.Resource.Resources.PathResource;
+import org.ec4j.core.Resource.Resources.StringResource;
+import org.ec4j.core.model.Ec4jPath;
 
 /**
  * A directory path in filesystem like {@link Resource} hierarchies. The implementations must implement
@@ -29,7 +32,6 @@ import java.util.Map;
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
 public interface ResourcePath {
-
     /**
      * A class that aggregates the {@link ResourcePath} interface and a few common implementations of
      * {@link ResourcePath}.
@@ -42,33 +44,11 @@ public interface ResourcePath {
          */
         static class ClassPathResourcePath implements ResourcePath {
 
-            /**
-             * A utility method to get the parent path out of a class-path like resource path.
-             *
-             * @param path
-             *            a slash delimite path
-             * @return the parent path of the given {@code path} or {@code null} if the path has no parent
-             */
-            public static String parentPath(String path) {
-                if (path == null || "/".equals(path)) {
-                    return null;
-                } else {
-                    int lastSlash = path.lastIndexOf('/');
-                    if (lastSlash < 0) {
-                        return null;
-                    } else if (lastSlash == 0) {
-                        return "/";
-                    } else {
-                        return path.substring(0, lastSlash);
-                    }
-                }
-            }
+            final Charset encoding;
+            final ClassLoader loader;
+            final Ec4jPath path;
 
-            private final Charset encoding;
-            private final ClassLoader loader;
-            private final String path;
-
-            ClassPathResourcePath(ClassLoader loader, String path, Charset encoding) {
+            ClassPathResourcePath(ClassLoader loader, Ec4jPath path, Charset encoding) {
                 super();
                 this.path = path;
                 this.loader = loader;
@@ -100,13 +80,13 @@ public interface ResourcePath {
             /** {@inheritDoc} */
             @Override
             public ResourcePath getParent() {
-                String parentPath = parentPath(path);
+                Ec4jPath parentPath = path.getParentPath();
                 return parentPath == null ? null : new ClassPathResourcePath(loader, parentPath, encoding);
             }
 
             /** {@inheritDoc} */
             @Override
-            public String getPath() {
+            public Ec4jPath getPath() {
                 return path;
             }
 
@@ -123,14 +103,27 @@ public interface ResourcePath {
             /** {@inheritDoc} */
             @Override
             public boolean hasParent() {
-                return parentPath(path) != null;
+                return path.getParentPath() != null;
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public Resource relativize(Resource resource) {
+                if (resource instanceof ClassPathResource) {
+                    ClassPathResource cpResource = (ClassPathResource) resource;
+                    return new ClassPathResource(cpResource.loader, path.relativize(cpResource.path),
+                            cpResource.encoding);
+                } else {
+                    throw new IllegalArgumentException(
+                            this.getClass().getName() + ".relativize(Resource resource) can handle only instances of "
+                                    + ClassPathResource.class.getName());
+                }
             }
 
             /** {@inheritDoc} */
             @Override
             public Resource resolve(String name) {
-                String newPath = path + "/" + name;
-                return new Resource.Resources.ClassPathResource(loader, newPath, encoding);
+                return new Resource.Resources.ClassPathResource(loader, path.resolve(name), encoding);
             }
 
             /** {@inheritDoc} */
@@ -178,16 +171,8 @@ public interface ResourcePath {
 
             /** {@inheritDoc} */
             @Override
-            public String getPath() {
-                StringBuilder result = new StringBuilder();
-                final int len = path.getNameCount();
-                for (int i = 0; i < len; i++) {
-                    if (i != 0 || path.isAbsolute()) {
-                        result.append('/');
-                    }
-                    result.append(path.getName(i));
-                }
-                return result.toString();
+            public Ec4jPath getPath() {
+                return Ec4jPath.Ec4jPaths.of(path);
             }
 
             /** {@inheritDoc} */
@@ -200,6 +185,19 @@ public interface ResourcePath {
             @Override
             public boolean hasParent() {
                 return path.getParent() != null;
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public Resource relativize(Resource resource) {
+                if (resource instanceof PathResource) {
+                    PathResource pathResource = (PathResource) resource;
+                    return new PathResource(this.path.relativize(pathResource.path), pathResource.encoding);
+                } else {
+                    throw new IllegalArgumentException(
+                            this.getClass().getName() + ".relativize(Resource resource) can handle only instances of "
+                                    + PathResource.class.getName());
+                }
             }
 
             /** {@inheritDoc} */
@@ -219,10 +217,10 @@ public interface ResourcePath {
          */
         static class StringResourcePath implements ResourcePath {
 
-            private final List<String> path;
-            private final Map<List<String>, Resource> resources;
+            private final Ec4jPath path;
+            private final Map<Ec4jPath, Resource> resources;
 
-            StringResourcePath(List<String> path, Map<List<String>, Resource> resources) {
+            StringResourcePath(Ec4jPath path, Map<Ec4jPath, Resource> resources) {
                 super();
                 this.path = path;
                 this.resources = resources;
@@ -244,13 +242,14 @@ public interface ResourcePath {
             /** {@inheritDoc} */
             @Override
             public ResourcePath getParent() {
-                return hasParent() ? new StringResourcePath(path.subList(0, path.size() - 1), resources) : null;
+                Ec4jPath parentPath = path.getParentPath();
+                return parentPath == null ? null : new StringResourcePath(parentPath, resources);
             }
 
             /** {@inheritDoc} */
             @Override
-            public String getPath() {
-                return Resource.Resources.StringResourceTree.toString(path);
+            public Ec4jPath getPath() {
+                return path;
             }
 
             /** {@inheritDoc} */
@@ -262,14 +261,27 @@ public interface ResourcePath {
             /** {@inheritDoc} */
             @Override
             public boolean hasParent() {
-                return path.size() > 1;
+                return path.getParentPath() != null;
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public Resource relativize(Resource resource) {
+                if (resource instanceof StringResource) {
+                    StringResource strResource = (StringResource) resource;
+                    return new StringResource(strResource.resources, path.relativize(strResource.path),
+                            strResource.content);
+                } else {
+                    throw new IllegalArgumentException(
+                            this.getClass().getName() + ".relativize(Resource resource) can handle only instances of "
+                                    + StringResource.class.getName());
+                }
             }
 
             /** {@inheritDoc} */
             @Override
             public Resource resolve(String name) {
-                List<String> newPath = new ArrayList<>(path);
-                newPath.add(name);
+                Ec4jPath newPath = path.resolve(name);
                 Resource result = resources.get(newPath);
                 if (result == null) {
                     result = new Resource.Resources.StringResource(resources, newPath, null);
@@ -309,12 +321,22 @@ public interface ResourcePath {
     /**
      * @return this path as a string; the segments are separated by slash {@code /}
      */
-    String getPath();
+    Ec4jPath getPath();
 
     /**
      * @return {@code true} if this {@link ResourcePath} has parent; {@code false} otherwise
      */
     boolean hasParent();
+
+    /**
+     * Constructs a {@link Resource} whose path is a relative path between this {@link ResourcePath#getPath()} and the
+     * given {@link Resource#getPath()}.
+     *
+     * @param resource
+     *            the {@link Resource} to relativize
+     * @return a new relativized {@link Resource}
+     */
+    Resource relativize(Resource resource);
 
     /**
      * Resolves an immediate child of this {@link ResourcePath}.

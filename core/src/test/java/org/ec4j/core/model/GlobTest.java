@@ -16,6 +16,7 @@
  */
 package org.ec4j.core.model;
 
+import org.ec4j.core.model.Ec4jPath.Ec4jPaths;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -23,8 +24,8 @@ public class GlobTest {
 
     @Test
     public void braces_alpha_range1() {
-        Glob glob = new Glob("/dir1", "{aardvark..antelope}");
-        Assert.assertTrue(glob.match("/dir/{aardvark..antelope}"));
+        Glob glob = new Glob("{aardvark..antelope}");
+        Assert.assertTrue(glob.match(Ec4jPaths.of("{aardvark..antelope}")));
     }
 
 }
