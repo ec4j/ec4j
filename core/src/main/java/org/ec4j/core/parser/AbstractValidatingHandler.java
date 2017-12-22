@@ -45,7 +45,7 @@ public abstract class AbstractValidatingHandler implements EditorConfigHandler {
     /** {@inheritDoc} */
     @Override
     public void endGlob(ParseContext context, String globSource) {
-        final Glob glob = new Glob(context.getResource().getParent().getPath(), globSource);
+        final Glob glob = new Glob(globSource);
         final PatternSyntaxException e = glob.getError();
         if (e != null) {
             final String msg = String.format("The glob '%s' is not valid: %s", globSource, e.getMessage());

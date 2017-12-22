@@ -25,17 +25,16 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.ec4j.core.Resource.Resources.StringResourceTree.Builder;
 import org.ec4j.core.ResourcePath.ResourcePaths.ClassPathResourcePath;
 import org.ec4j.core.ResourcePath.ResourcePaths.PathResourcePath;
 import org.ec4j.core.ResourcePath.ResourcePaths.StringResourcePath;
+import org.ec4j.core.model.Ec4jPath;
+import org.ec4j.core.model.Ec4jPath.Ec4jPaths;
 
 /**
  * A file in filesystem like {@link Resource} hierarchies. The implementations must implement {@link #hashCode()} and
@@ -77,18 +76,16 @@ public interface Resource {
          */
         static class ClassPathResource implements Resource {
 
-            private final Charset encoding;
-            private final ClassLoader loader;
-            private final String path;
+            private static String removeInitialSlash(Ec4jPath path) {
+                return Ec4jPaths.root().relativize(path).toString();
+            }
 
-            ClassPathResource(ClassLoader loader, String path, Charset encoding) {
+            final Charset encoding;
+            final ClassLoader loader;
+            final Ec4jPath path;
+
+            ClassPathResource(ClassLoader loader, Ec4jPath path, Charset encoding) {
                 super();
-                if (path == null || path.isEmpty()) {
-                    throw new IllegalArgumentException(
-                            "Path cannot be null or empty to create a new " + getClass().getName());
-                } else if (path.charAt(0) != '/') {
-                    throw new IllegalArgumentException("Unexpected path \"" + path + "\": must start with slash");
-                }
                 this.loader = loader;
                 this.path = path;
                 this.encoding = encoding;
@@ -119,19 +116,19 @@ public interface Resource {
             /** {@inheritDoc} */
             @Override
             public boolean exists() {
-                return loader.getResource(path.substring(1 /* strip the initial slash */)) != null;
+                return loader.getResource(removeInitialSlash(path)) != null;
             }
 
             /** {@inheritDoc} */
             @Override
             public ResourcePath getParent() {
-                String parentPath = ClassPathResourcePath.parentPath(path);
-                return new ClassPathResourcePath(loader, parentPath, encoding);
+                Ec4jPath parentPath = path.getParentPath();
+                return parentPath == null ? null : new ClassPathResourcePath(loader, parentPath, encoding);
             }
 
             /** {@inheritDoc} */
             @Override
-            public String getPath() {
+            public Ec4jPath getPath() {
                 return path;
             }
 
@@ -148,15 +145,13 @@ public interface Resource {
             /** {@inheritDoc} */
             @Override
             public RandomReader openRandomReader() throws IOException {
-                return StringRandomReader.ofUrl(loader.getResource(path.substring(1 /* strip the initial slash */)),
-                        encoding);
+                return StringRandomReader.ofUrl(loader.getResource(removeInitialSlash(path)), encoding);
             }
 
             /** {@inheritDoc} */
             @Override
             public Reader openReader() throws IOException {
-                return new InputStreamReader(
-                        loader.getResourceAsStream(path.substring(1 /* strip the initial slash */)), encoding);
+                return new InputStreamReader(loader.getResourceAsStream(removeInitialSlash(path)), encoding);
             }
 
             /** {@inheritDoc} */
@@ -173,8 +168,8 @@ public interface Resource {
          */
         static class PathResource implements Resource {
 
-            private final Charset encoding;
-            private final Path path;
+            final Charset encoding;
+            final Path path;
 
             PathResource(Path path, Charset encoding) {
                 super();
@@ -210,16 +205,8 @@ public interface Resource {
 
             /** {@inheritDoc} */
             @Override
-            public String getPath() {
-                StringBuilder result = new StringBuilder();
-                final int len = path.getNameCount();
-                for (int i = 0; i < len; i++) {
-                    if (i != 0 || path.isAbsolute()) {
-                        result.append('/');
-                    }
-                    result.append(path.getName(i));
-                }
-                return result.toString();
+            public Ec4jPath getPath() {
+                return Ec4jPaths.of(path);
             }
 
             /** {@inheritDoc} */
@@ -324,13 +311,13 @@ public interface Resource {
         static class StringResource implements Resource {
 
             /** The {@link String} content */
-            private final String content;
+            final String content;
             /** The list of path segments */
-            private final List<String> path;
+            final Ec4jPath path;
             /** The tree this resource is bound to. Necessary to resolve relative resources */
-            private final Map<List<String>, Resource> resources;
+            final Map<Ec4jPath, Resource> resources;
 
-            StringResource(Map<List<String>, Resource> resources, List<String> path, String content) {
+            StringResource(Map<Ec4jPath, Resource> resources, Ec4jPath path, String content) {
                 super();
                 this.path = path;
                 this.resources = resources;
@@ -358,13 +345,14 @@ public interface Resource {
             /** {@inheritDoc} */
             @Override
             public ResourcePath getParent() {
-                return new StringResourcePath(path.subList(0, path.size() - 1), resources);
+                Ec4jPath parentPath = path.getParentPath();
+                return parentPath == null ? null : new StringResourcePath(parentPath, resources);
             }
 
             /** {@inheritDoc} */
             @Override
-            public String getPath() {
-                return StringResourceTree.toString(path);
+            public Ec4jPath getPath() {
+                return path;
             }
 
             /** {@inheritDoc} */
@@ -400,20 +388,20 @@ public interface Resource {
         public static class StringResourceTree {
 
             public static class Builder {
-                private final Map<List<String>, Resource> resources = new LinkedHashMap<>();
+                private final Map<Ec4jPath, Resource> resources = new LinkedHashMap<>();
 
                 public StringResourceTree build() {
                     return new StringResourceTree(Collections.unmodifiableMap(resources));
                 }
 
                 public Builder resource(String path, String content) {
-                    List<String> segments = toSegments(path);
-                    resources.put(segments, new StringResource(resources, segments, content));
+                    Ec4jPath p = Ec4jPaths.of(path);
+                    resources.put(p, new StringResource(resources, p, content));
                     return this;
                 }
 
                 public Builder resource(String path, URL url, Charset encoding) throws IOException {
-                    List<String> segments = toSegments(path);
+                    Ec4jPath segments = Ec4jPaths.of(path);
 
                     StringBuilder sb = new StringBuilder();
                     try (Reader r = new InputStreamReader(url.openStream(), encoding)) {
@@ -428,7 +416,7 @@ public interface Resource {
                 }
 
                 public Builder touch(String path) {
-                    List<String> segments = toSegments(path);
+                    Ec4jPath segments = Ec4jPaths.of(path);
                     resources.put(segments, new StringResource(resources, segments, ""));
                     return this;
                 }
@@ -438,36 +426,19 @@ public interface Resource {
                 return new Builder();
             }
 
-            public static List<String> toSegments(String rawPath) {
-                List<String> result = new ArrayList<>();
-                StringTokenizer st = new StringTokenizer(rawPath, "/");
-                while (st.hasMoreTokens()) {
-                    result.add(st.nextToken());
-                }
-                return Collections.unmodifiableList(result);
-            }
+            private final Map<Ec4jPath, Resource> resources;
 
-            public static String toString(List<String> segments) {
-                StringBuilder sb = new StringBuilder();
-                for (String segment : segments) {
-                    sb.append('/').append(segment);
-                }
-                return sb.toString();
-            }
-
-            private final Map<List<String>, Resource> resources;
-
-            StringResourceTree(Map<List<String>, Resource> resources) {
+            StringResourceTree(Map<Ec4jPath, Resource> resources) {
                 super();
                 this.resources = resources;
             }
 
-            public Resource getResource(List<String> path) {
+            public Resource getResource(Ec4jPath path) {
                 return resources.get(path);
             }
 
             public Resource getResource(String path) {
-                return resources.get(toSegments(path));
+                return resources.get(Ec4jPaths.of(path));
             }
 
         }
@@ -484,7 +455,7 @@ public interface Resource {
          * @return a new {@link ClassPathResource}
          */
         public static Resource ofClassPath(ClassLoader loader, String path, Charset encoding) {
-            return new ClassPathResource(loader, path, encoding);
+            return new ClassPathResource(loader, Ec4jPaths.of(path), encoding);
         }
 
         /**
@@ -535,9 +506,9 @@ public interface Resource {
     ResourcePath getParent();
 
     /**
-     * @return the path of this {@link Resource} as a string; the segments are separated by slash {@code /}
+     * @return the {@link Ec4jPath} of this {@link Resource}
      */
-    String getPath();
+    Ec4jPath getPath();
 
     /**
      * Opens a {@link RandomReader} to read the content of this {@link Resource}.
@@ -554,4 +525,5 @@ public interface Resource {
      * @throws IOException
      */
     Reader openReader() throws IOException;
+
 }

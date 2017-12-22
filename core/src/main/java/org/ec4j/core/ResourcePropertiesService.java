@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.ec4j.core.Cache.Caches;
+import org.ec4j.core.model.Ec4jPath;
 import org.ec4j.core.model.EditorConfig;
 import org.ec4j.core.model.Property;
 import org.ec4j.core.model.Section;
@@ -160,6 +161,22 @@ public class ResourcePropertiesService {
     }
 
     /**
+     * A pair of {@link EditorConfigLoader} and {@link ResourcePath} of the directory under which the underlyinf
+     * {@code .editorconfig} file is located.
+     */
+    private static class DirEditorConfigPair {
+
+        private final ResourcePath directory;
+        private final EditorConfig editorConfig;
+
+        private DirEditorConfigPair(ResourcePath directory, EditorConfig editorConfig) {
+            super();
+            this.directory = directory;
+            this.editorConfig = editorConfig;
+        }
+    }
+
+    /**
      * @return a new {@link ResourcePropertiesService} {@link Builder}.
      */
     public static Builder builder() {
@@ -238,9 +255,8 @@ public class ResourcePropertiesService {
      */
     public ResourceProperties queryProperties(Resource resource) throws IOException {
         ResourceProperties.Builder result = ResourceProperties.builder();
-        List<EditorConfig> editorConfigs = new ArrayList<>();
+        List<DirEditorConfigPair> editorConfigs = new ArrayList<>();
         boolean root = false;
-        final String path = resource.getPath();
         ResourcePath dir = resource.getParent();
         /* Walk up the tree storing the .editorconfig models to editorConfigs */
         while (dir != null && !root) {
@@ -248,7 +264,7 @@ public class ResourcePropertiesService {
             if (configFile.exists()) {
                 EditorConfig config = cache.get(configFile, loader);
                 root = config.isRoot();
-                editorConfigs.add(config);
+                editorConfigs.add(new DirEditorConfigPair(configFile.getParent(), config));
             }
             root |= rootDirectories.contains(dir);
             dir = dir.getParent();
@@ -256,7 +272,10 @@ public class ResourcePropertiesService {
         /* Now go back top down so that the duplicate properties defined closer to the given resource win */
         int i = editorConfigs.size() - 1;
         while (i >= 0) {
-            final EditorConfig config = editorConfigs.get(i--);
+            final DirEditorConfigPair pair = editorConfigs.get(i--);
+            final ResourcePath editorConfigDir = pair.directory;
+            final EditorConfig config = pair.editorConfig;
+            final Ec4jPath path = editorConfigDir.relativize(resource).getPath();
             List<Section> sections = config.getSections();
             for (Section section : sections) {
                 if (section.match(path)) {
