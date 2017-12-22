@@ -16,9 +16,11 @@
  */
 package org.ec4j.core.parser;
 
+import org.ec4j.core.Resource;
+
 /**
  * A handler that gets notified about parse events from
- * {@link EditorConfigParser#parse(org.ec4j.core.Resource.Resources.Resource, EditorConfigHandler)}.
+ * {@link EditorConfigParser#parse(Resource, EditorConfigHandler, ErrorHandler)} .
  * <p>
  * Implementations will generally want to keep some internal state and therefore their instances should not be accessed
  * from concurrent threads.
@@ -79,6 +81,8 @@ public interface EditorConfigHandler {
      *
      * @param context
      *            the {@link ParseContext}
+     * @param glob
+     *            the glob that ends
      */
     void endGlob(ParseContext context, String glob);
 

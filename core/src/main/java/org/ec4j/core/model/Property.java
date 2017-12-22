@@ -115,7 +115,7 @@ public class Property extends Adaptable {
         /**
          * Sets the {@link #value}.
          *
-         * @param name
+         * @param value
          *            the value of this key value pair
          * @return this {@link Builder}
          */
@@ -203,9 +203,11 @@ public class Property extends Adaptable {
     }
 
     /**
+     * @param <T>
+     *            the type of the value
      * @return the parsed value
      * @throws RuntimeException
-     *             if the {@link #sourceValue} is not a valid value for the associated {@link PropertyType}
+     *             if the {@link #value} is not a valid value for the associated {@link PropertyType}
      */
     @SuppressWarnings("unchecked")
     public <T> T getValueAs() {
@@ -233,7 +235,7 @@ public class Property extends Adaptable {
     }
 
     /**
-     * @return {@code true} if {@link #type} is {@code null} or {@link #sourceValue} is a valid value for the associated
+     * @return {@code true} if {@link #type} is {@code null} or {@link #value} is a valid value for the associated
      *         {@link PropertyType}; {@code false} otherwise
      */
     public boolean isValid() {

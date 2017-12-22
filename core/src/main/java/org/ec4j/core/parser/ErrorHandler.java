@@ -18,7 +18,7 @@ package org.ec4j.core.parser;
 
 /**
  * A handler that gets notified on {@link ErrorEvent}s by {@link EditorConfigParser}. Note that the basic
- * {@link #THROWING}, {@value #THROW_SYNTAX_ERRORS_IGNORE_OTHERS} and {@link #IGNORING} implementations are available in
+ * {@link #THROWING}, {@link #THROW_SYNTAX_ERRORS_IGNORE_OTHERS} and {@link #IGNORING} implementations are available in
  * this class.
  *
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
@@ -45,7 +45,7 @@ public interface ErrorHandler {
 
     /**
      * An {@link ErrorHandler} that throws a {@link ParseException} only for those {@link ParseException}s whose
-     * {@link errorEvent.getErrorType().isSyntaxError()} returns {@code true}
+     * {@code errorEvent.getErrorType().isSyntaxError()} returns {@code true}
      */
     ErrorHandler THROW_SYNTAX_ERRORS_IGNORE_OTHERS = new ErrorHandler() {
         @Override

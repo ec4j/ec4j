@@ -25,7 +25,7 @@ import org.ec4j.core.model.PropertyType;
 
 /**
  * A collection of {@link Property}s applicable to a {@link Resource} as returned by
- * {@link ResourcePropertiesService#queryProperties(org.ec4j.core.Resource.Resources.Resource)}.
+ * {@link ResourcePropertiesService#queryProperties(Resource)}.
  * <p>
  * This is basically just a wrapper around a {@link Map} of {@link Property}s that offers utility methods for getting
  * entries from the underlying {@link Map} not only by name but also by {@link PropertyType} in a type safe manner.
@@ -87,8 +87,8 @@ public class ResourceProperties {
         /**
          * Adds a single property.
          *
-         * @param properties
-         *            the properties to add
+         * @param property
+         *            the property to add
          * @return this {@link Builder}
          */
         public Builder property(Property property) {
@@ -99,7 +99,8 @@ public class ResourceProperties {
         /**
          * Removes the given {@link Property} from {@link #properties}.
          *
-         * @param property the property to remove
+         * @param property
+         *            the property to remove
          * @return this {@link Builder}
          */
         public Builder removeProperty(Property property) {
@@ -139,9 +140,11 @@ public class ResourceProperties {
      * @param defaultValue
      *            the value to return if the {@code name} is not available in {@link #properties}
      * @param throwInvalid
-     *            if {@code true} and the underlying {@link Property} value is invalid, an
-     *            {@link RuntimeException} will be thrown. Otherwise, in the same case the invalid value
-     *            will be ignored and {@code defaultValue} will be returned instead
+     *            if {@code true} and the underlying {@link Property} value is invalid, an {@link RuntimeException} will
+     *            be thrown. Otherwise, in the same case the invalid value will be ignored and {@code defaultValue} will
+     *            be returned instead
+     * @param <T>
+     *            the type of the property value
      * @return the value associated with the given {@code type}'s {@code name} or the {@code defaultValue} if the
      *         {@code name} is not available in {@link #properties}
      * @throws RuntimeException
@@ -161,9 +164,11 @@ public class ResourceProperties {
      * @param defaultValue
      *            the value to return if the {@code name} is not available in {@link #properties}
      * @param throwInvalid
-     *            if {@code true} and the underlying {@link Property} value is invalid, an
-     *            {@link RuntimeException} will be thrown. Otherwise, in the same case the invalid value
-     *            will be ignored and {@code defaultValue} will be returned instead
+     *            if {@code true} and the underlying {@link Property} value is invalid, an {@link RuntimeException} will
+     *            be thrown. Otherwise, in the same case the invalid value will be ignored and {@code defaultValue} will
+     *            be returned instead
+     * @param <T>
+     *            the type of the property value
      * @return the value associated with the given {@code name} or the {@code defaultValue} if the {@code name} is not
      *         available in {@link #properties}
      * @throws RuntimeException

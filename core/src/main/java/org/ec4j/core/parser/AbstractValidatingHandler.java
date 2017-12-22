@@ -49,7 +49,8 @@ public abstract class AbstractValidatingHandler implements EditorConfigHandler {
         final PatternSyntaxException e = glob.getError();
         if (e != null) {
             final String msg = String.format("The glob '%s' is not valid: %s", globSource, e.getMessage());
-            context.getErrorHandler().error(context, new ErrorEvent(globStart, context.getLocation(), msg, ErrorType.INVALID_GLOB));
+            context.getErrorHandler().error(context,
+                    new ErrorEvent(globStart, context.getLocation(), msg, ErrorType.INVALID_GLOB));
         }
         glob(context, glob);
         globStart = null;
@@ -83,8 +84,7 @@ public abstract class AbstractValidatingHandler implements EditorConfigHandler {
 
     /**
      * Handle the {@link Glob} created out of the glob string hit recently in the underlying {@code .editorconfig} file.
-     * Note that this method gets called after any evetual errors related to the glob were sent to
-     * {@link ErrorHandler}.
+     * Note that this method gets called after any evetual errors related to the glob were sent to {@link ErrorHandler}.
      *
      * @param context
      *            the current {@link ParseContext}
@@ -124,6 +124,7 @@ public abstract class AbstractValidatingHandler implements EditorConfigHandler {
      * @param context
      *            the current parse context
      * @param propValue
+     *            the {@link PropertyValue} to handle
      */
     protected abstract void propertyValue(ParseContext context, PropertyValue<?> propValue);
 

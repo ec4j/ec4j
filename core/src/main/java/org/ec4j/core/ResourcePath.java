@@ -26,8 +26,8 @@ import org.ec4j.core.Resource.Resources.StringResource;
 import org.ec4j.core.model.Ec4jPath;
 
 /**
- * A directory path in filesystem like {@link Resource} hierarchies. The implementations must implement
- * {@link #hashCode()} and {@link #equals(Object)}
+ * A directory path in filesystem like {@link Resource} hierarchies. The implementations must override
+ * {@link Object#hashCode()} and {@link Object#equals(Object)}
  *
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
