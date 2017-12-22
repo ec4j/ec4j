@@ -264,7 +264,7 @@ limitations under the License.</inlineHeader>
                 </executions>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${osgi.bundle.symbolic.name}</Bundle-SymbolicName><!-- needs to be defined per module -->
                         <Built-From-Git-SHA1>${buildNumber}</Built-From-Git-SHA1>
                         <Built-On>${timestamp}</Built-On>
                         <Built-From-Git-Branch>${scmBranch}</Built-From-Git-Branch>

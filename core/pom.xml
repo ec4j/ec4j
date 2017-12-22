@@ -33,6 +33,7 @@
 
     <properties>
         <checkstyle.xml.path>${basedir}/../src/build/xml/checkstyle.xml</checkstyle.xml.path>
+        <osgi.bundle.symbolic.name>org.ec4j.core</osgi.bundle.symbolic.name>
     </properties>
 
 
