@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 /**
- * An EditorConfig glob. Citing from <a href="http://editorconfig.org/">:
+ * An EditorConfig glob. Citing from <a href="http://editorconfig.org/">http://editorconfig.org/</a>:
  * <p>
  * Special characters recognized in section names for wildcard matching:
  * <ul>

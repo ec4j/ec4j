@@ -37,8 +37,8 @@ import org.ec4j.core.model.Ec4jPath;
 import org.ec4j.core.model.Ec4jPath.Ec4jPaths;
 
 /**
- * A file in filesystem like {@link Resource} hierarchies. The implementations must implement {@link #hashCode()} and
- * {@link #equals(Object)}
+ * A file in filesystem like {@link Resource} hierarchies. The implementations must override {@link Object#hashCode()}
+ * and {@link Object#equals(Object)}
  *
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
@@ -47,7 +47,7 @@ public interface Resource {
     /**
      * A readed allowing to access a character on any offset in the underlying resource.
      */
-    public interface RandomReader extends Closeable {
+    interface RandomReader extends Closeable {
         /**
          * @return the number of characters
          */
@@ -150,7 +150,7 @@ public interface Resource {
 
             /** {@inheritDoc} */
             @Override
-            public Reader openReader() throws IOException {
+            public Reader openReader() {
                 return new InputStreamReader(loader.getResourceAsStream(removeInitialSlash(path)), encoding);
             }
 
@@ -164,7 +164,7 @@ public interface Resource {
 
         /**
          * A {@link Resource} implementation based on {@code java.nio.file.Path}. To create a new instance use
-         * {@link Resources#ofPath(Path)}.
+         * {@link Resources#ofPath(Path, Charset)}.
          */
         static class PathResource implements Resource {
 
@@ -363,13 +363,13 @@ public interface Resource {
 
             /** {@inheritDoc} */
             @Override
-            public RandomReader openRandomReader() throws IOException {
+            public RandomReader openRandomReader() {
                 return new StringRandomReader(content);
             }
 
             /** {@inheritDoc} */
             @Override
-            public Reader openReader() throws IOException {
+            public Reader openReader() {
                 return new StringReader(content);
             }
 
@@ -461,6 +461,8 @@ public interface Resource {
         /**
          * @param path
          *            the {@link Path} to create a new {@link Resource} from
+         * @param encoding
+         *            the {@link Charset} to use when reading from the given @{code path}
          * @return a new {@link PathResource}
          */
         public static Resource ofPath(Path path, Charset encoding) {
@@ -515,6 +517,7 @@ public interface Resource {
      *
      * @return an open {@link RandomReader}
      * @throws IOException
+     *             on I/O problems
      */
     RandomReader openRandomReader() throws IOException;
 
@@ -523,6 +526,7 @@ public interface Resource {
      *
      * @return an open {@link Reader}
      * @throws IOException
+     *             on I/O problems
      */
     Reader openReader() throws IOException;
 

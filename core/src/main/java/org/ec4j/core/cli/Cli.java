@@ -33,7 +33,7 @@ import org.ec4j.core.model.PropertyType;
 import org.ec4j.core.model.Version;
 
 /**
- * A simple command line wrapper over {@link EditorConfigManager} so that it can be tested against
+ * A simple command line wrapper over {@link ResourcePropertiesService} so that it can be tested against
  * <a href= "https://github.com/editorconfig/editorconfig-core-test">editorconfig-core-test</a>
  * <p>
  * The current class is based on <a href=

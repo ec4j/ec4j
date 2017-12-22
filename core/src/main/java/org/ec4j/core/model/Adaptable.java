@@ -116,6 +116,8 @@ public abstract class Adaptable {
     /**
      * @param type
      *            the type of the adapter to lookup
+     * @param <T>
+     *            the type to get an adapter for
      * @return the adapter of the given type or {@code null} if an adapter for the given type is not available
      */
     @SuppressWarnings("unchecked")

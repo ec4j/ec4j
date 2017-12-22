@@ -217,8 +217,8 @@ public class Comments {
              *            the {@link CommentBlock}s to add
              * @return this {@link Builder}
              */
-            public Builder commentBlocks(CommentBlock... comments) {
-                for (CommentBlock commentBlock : comments) {
+            public Builder commentBlocks(CommentBlock... commentBlocks) {
+                for (CommentBlock commentBlock : commentBlocks) {
                     this.commentBlocks.add(commentBlock);
                 }
                 return this;
