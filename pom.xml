@@ -39,8 +39,8 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:https://github.com/angelozerr/ec4j.git</connection>
-        <developerConnection>scm:git:https://github.com/angelozerr/ec4j.git</developerConnection>
+        <connection>scm:git:git@github.com:ec4j/ec4j.git</connection>
+        <developerConnection>scm:git:git@github.com:ec4j/ec4j.git</developerConnection>
         <url>https://github.com/angelozerr/ec4j</url>
     </scm>
 
