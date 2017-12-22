@@ -38,6 +38,19 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <id>angelozerr</id>
+            <name>Angelo Zerr</name>
+            <timezone>Europe/Paris</timezone>
+        </developer>
+        <developer>
+            <id>ppalaga</id>
+            <name>Peter Palaga</name>
+            <timezone>Europe/Prague</timezone>
+        </developer>
+    </developers>
+
     <scm>
         <connection>scm:git:git@github.com:ec4j/ec4j.git</connection>
         <developerConnection>scm:git:git@github.com:ec4j/ec4j.git</developerConnection>
