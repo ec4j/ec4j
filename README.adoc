@@ -21,15 +21,25 @@ GenericEditor and https://github.com/eclipse/tm4e/[tm4e].
 
 == Basic usage
 
+Add the following dependency to your project:
+
+[source,xml]
+----
+<dependency>
+  <groupId>org.ec4j.core</groupId>
+  <artifactId>ec4j-core</artifactId>
+  <version><!-- check the latest on http://central.maven.org/maven2/org/ec4j/core/ec4j-core/ --></version>
+</dependency>
+----
+
 To parse a single `.editorconfig` file into an `EditorConfig` model:
 
 [source,java]
 ----
 java.nio.file.Path editorConfigFile = Paths.get("path/to/my/.editorconfig");
 EditorConfigParser parser = EditorConfigParser.builder().build();
-EditorConfigModelHandler handler = new EditorConfigModelHandler(EditorConfigConstants.VERSION,
-            PropertyTypeRegistry.getDefault());
-parser.parse(Resources.ofPath(editorConfigFile), StandardCharsets.UTF_8, handler);
+EditorConfigModelHandler handler = new EditorConfigModelHandler(PropertyTypeRegistry.default_(), Version.CURRENT);
+parser.parse(Resources.ofPath(editorConfigFile, StandardCharsets.UTF_8), handler, ErrorHandler.THROW_SYNTAX_ERRORS_IGNORE_OTHERS);
 EditorConfig editorConfig = handler.getEditorConfig();
 ----
 
@@ -42,11 +52,11 @@ EditorConfigLoader myLoader = ...; // e.g. EditorConfigLoader.default_()
 ResourcePropertiesService propService = ResourcePropertiesService.builder()
         .cache(myCache)
         .loader(myLoader)
-        .rootDirectory(ResourcePaths.ofPath(Paths.get("/my/dir")))
+        .rootDirectory(ResourcePaths.ofPath(Paths.get("/my/dir"), StandardCharsets.UTF_8))
         .build();
 
-ResourceProperties props = propService.queryProperties(Resources.ofPath(Paths.get("/my/dir1/Class1.java")));
-IndentStyleValue indentStyleValue = props.getValue(PropertyType.indent_style, IndentStyleValue.space);
+ResourceProperties props = propService.queryProperties(Resources.ofPath(Paths.get("/my/dir1/Class1.java"), StandardCharsets.UTF_8));
+IndentStyleValue indentStyleValue = props.getValue(PropertyType.indent_style, IndentStyleValue.space, true);
 char indentChar = indentStyleValue.getIndentChar();
 // Now you can e.g. check that /my/dir1/Class1.java is indented using indentChar
 ----
@@ -101,7 +111,7 @@ applicable to a given file, `ec4j` offers much more in addition to that:
 * link:core/src/main/java/org/eclipse/ec4j/core/parser/EditorConfigParser.java[EditorConfigParser] and
   link:core/src/main/java/org/eclipse/ec4j/core/parser/EditorConfigHandler.java[EditorConfigHandler] interface
   designed to support syntax highlighting, validation, folding, etc. of `.editorconfig` files in IDEs.
-* `ec4j` *will* release to Maven Central
+* `ec4j` is available on Maven Central
 * `ec4j` performs better against the
   https://github.com/editorconfig/editorconfig-core-test[editorconfig-core test suite]:
 +
@@ -117,5 +127,5 @@ applicable to a given file, `ec4j` offers much more in addition to that:
 
 * All code and contributions are under link:/LICENSE[Apache License]
 * Issues and Discussions: https://github.com/ec4j/ec4j/issues
-* The `https://github.com/ec4j/ec4j[ec4j/ec4j]` repository is the reference repository for contributing `ec4j`.
+* The `https://github.com/ec4j/ec4j[ec4j/ec4j]` repository is the reference repository for contributing to `ec4j`.
 * Continuous integration is performed for each pull request by Travis CI on Linux and by AppVeyor on Windows.
