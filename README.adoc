@@ -1,4 +1,6 @@
-= `ec4j` (alias `ec4j-core`)
+image::src/main/images/ec4j-logo-with-name.svg[ec4j,height=60]
+
+{empty}
 
 https://github.com/ec4j/ec4j/blob/master/LICENSE[image:https://img.shields.io/github/license/ec4j/ec4j.svg[License]]
 http://search.maven.org/#search%7Cga%7C1%7Corg.ec4j.core[image:https://img.shields.io/maven-central/v/org.ec4j.core/ec4j-core.svg[Maven
@@ -20,6 +22,7 @@ Here are some projects that use `ec4j`:
 * https://github.com/angelozerr/ec4e[EditorConfig for Eclipse] based on GenericEditor and
   https://github.com/eclipse/tm4e/[tm4e].
 * `https://github.com/ec4j/editorconfig-maven-plugin[editorconfig-maven-plugin]`
+* `https://github.com/ec4j/editorconfig-gradle-plugin[editorconfig-gradle-plugin]`
 
 == Basic usage
 
