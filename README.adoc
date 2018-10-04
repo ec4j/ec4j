@@ -23,6 +23,7 @@ Here are some projects that use `ec4j`:
   https://github.com/eclipse/tm4e/[tm4e].
 * `https://github.com/ec4j/editorconfig-maven-plugin[editorconfig-maven-plugin]`
 * `https://github.com/ec4j/editorconfig-gradle-plugin[editorconfig-gradle-plugin]`
+* `https://github.com/ec4j/editorconfig-ant-tasks[editorconfig-ant-tasks]`
 
 == Basic usage
 
