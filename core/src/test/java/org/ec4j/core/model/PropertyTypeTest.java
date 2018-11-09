@@ -87,6 +87,17 @@ public class PropertyTypeTest {
     }
 
     @Test
+    public void maxLineLength() {
+        Assert.assertEquals(PropertyValue.valid("1", 1), PropertyType.max_line_length.parse("1"));
+        Assert.assertEquals(PropertyValue.valid("off", null), PropertyType.max_line_length.parse("off"));
+        Assert.assertFalse(PropertyType.max_line_length.parse("").isValid());
+        Assert.assertFalse(PropertyType.max_line_length.parse("0").isValid());
+        Assert.assertFalse(PropertyType.max_line_length.parse("-1").isValid());
+        Assert.assertTrue(PropertyType.max_line_length.parse("off").isValid());
+        Assert.assertFalse(PropertyType.max_line_length.parse(null).isValid());
+    }
+
+    @Test
     public void root() {
         assertBoolean(PropertyType.root);
     }

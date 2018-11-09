@@ -32,6 +32,9 @@ indent_style=space
 [insert_final_newline.txt]
 insert_final_newline=true
 
+[max_line_length.txt]
+max_line_length=120
+
 [tab_width.txt]
 tab_width=4
 
