@@ -28,7 +28,7 @@ build_script:
   - .\mvnw.cmd -Pcore-test clean install -Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2 -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
   - cd core
   - cmake .
-  - ctest -E (utf_8_char^|spaces_in_section_name) .
+  - ctest -E "(utf_8_char|spaces_in_section_name)" .
 on_failure:
   - echo "failed"
   - type Testing\Temporary\LastTest.log
