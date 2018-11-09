@@ -352,10 +352,23 @@ public class PropertyType<T> {
 
         };
 
+        /** A parser for {@link PropertyType#indent_size} */
         PropertyValueParser<Integer> INDENT_SIZE_VALUE_PARSER = new PropertyValueParser<Integer>() {
             @Override
             public PropertyValue<Integer> parse(String name, String value) {
                 if ("tab".equalsIgnoreCase(value)) {
+                    return PropertyValue.valid(value, null);
+                } else {
+                    return POSITIVE_INT_VALUE_PARSER.parse(name, value);
+                }
+            }
+        };
+
+        /** A parser for {@link PropertyType#max_line_length} */
+        PropertyValueParser<Integer> MAX_LINE_LENGTH_VALUE_PARSER = new PropertyValueParser<Integer>() {
+            @Override
+            public PropertyValue<Integer> parse(String name, String value) {
+                if ("off".equalsIgnoreCase(value)) {
                     return PropertyValue.valid(value, null);
                 } else {
                     return POSITIVE_INT_VALUE_PARSER.parse(name, value);
@@ -439,6 +452,22 @@ public class PropertyType<T> {
             "set to true to ensure file ends with a newline when saving and false to ensure it doesn't.", //
             PropertyValueParser.BOOLEAN_VALUE_PARSER, //
             BOOLEAN_POSSIBLE_VALUES //
+    );
+
+    /**
+     * Note that {@code off} is a legal value of {@code max_line_length} - see
+     * https://github.com/editorconfig/editorconfig/wiki/EditorConfig-Properties#max_line_length
+     * <p>
+     * If {@code max_line_length} {@link Property} is constructed using {@code off} value, the resulting instance's
+     * {@link Property#getValueAs()} returns {@code null}.
+     *
+     * @since 0.0.2
+     */
+    public static final PropertyType<Integer> max_line_length = new LowerCasingPropertyType<>( //
+            "max_line_length", //
+            "forces hard line wrapping after the amount of characters specified. Use the `off` value to turn this feature off (use the editor settings).", //
+            PropertyValueParser.MAX_LINE_LENGTH_VALUE_PARSER, //
+            "1", "2", "3", "4", "5", "6", "7", "8", "off" //
     );
 
     public static final PropertyType<Boolean> root = new LowerCasingPropertyType<>( //

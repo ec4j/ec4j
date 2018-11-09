@@ -90,6 +90,11 @@ public class EditorConfigUnsetTest {
     }
 
     @Test
+    public void unset_max_line_length() throws IOException {
+        assertProperties(PropertyType.max_line_length.getName());
+    }
+
+    @Test
     public void unset_tab_width() throws IOException {
         assertProperties(PropertyType.tab_width.getName());
     }
