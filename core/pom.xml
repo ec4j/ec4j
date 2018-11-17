@@ -32,7 +32,7 @@
     <description>An EditorConfig parser and tree walker</description>
 
     <properties>
-        <checkstyle.xml.path>${basedir}/../src/build/xml/checkstyle.xml</checkstyle.xml.path>
+        <checkstyle.xml.path>${basedir}/../core-build/src/main/resources/org/ec4j/core/build/checkstyle.xml</checkstyle.xml.path>
         <osgi.bundle.symbolic.name>org.ec4j.core</osgi.bundle.symbolic.name>
     </properties>
 

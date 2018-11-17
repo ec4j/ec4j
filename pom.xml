@@ -61,6 +61,7 @@
     <modules>
         <module>core</module>
         <module>ide-support</module>
+        <module>core-build</module>
     </modules>
 
     <properties>
@@ -70,7 +71,7 @@
         <!-- Checkstyle and maven-checkstyle-plugin -->
         <version.com.puppycrawl.tools.checkstyle>6.13</version.com.puppycrawl.tools.checkstyle>
         <!-- checkstyle.xml location in the source tree -->
-        <checkstyle.xml.path>${basedir}/src/build/xml/checkstyle.xml</checkstyle.xml.path>
+        <checkstyle.xml.path>${basedir}/core-build/src/main/resources/org/ec4j/core/build/checkstyle.xml</checkstyle.xml.path>
         <checkstyle.consoleOutput>true</checkstyle.consoleOutput>
         <checkstyle.failOnError>true</checkstyle.failOnError>
         <checkstyle.includes>

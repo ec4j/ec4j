@@ -26,30 +26,13 @@
         <version>0.0.3-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ec4j-ide-support</artifactId>
+    <artifactId>ec4j-core-build</artifactId>
 
-    <name>ec4j-ide-support</name>
-    <description>EditorConfig validation and completion</description>
+    <name>ec4j-core-build</name>
+    <description>ec4j core build tooling</description>
 
     <properties>
-        <checkstyle.xml.path>${basedir}/../core-build/src/main/resources/org/ec4j/core/build/checkstyle.xml</checkstyle.xml.path>
-        <osgi.bundle.symbolic.name>org.ec4j.core.ide-support</osgi.bundle.symbolic.name>
+        <checkstyle.xml.path>${basedir}/src/main/resources/org/ec4j/core/build/checkstyle.xml</checkstyle.xml.path>
     </properties>
-
-    <dependencies>
-        <!-- Ordering: alphabetical by groupId and artifactId -->
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.ec4j.core</groupId>
-            <artifactId>ec4j-core</artifactId>
-        </dependency>
-
-    </dependencies>
 
 </project>
