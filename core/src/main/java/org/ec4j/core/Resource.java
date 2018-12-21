@@ -16,17 +16,24 @@
  */
 package org.ec4j.core;
 
+import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.ec4j.core.Resource.Resources.StringResourceTree.Builder;
@@ -45,6 +52,244 @@ import org.ec4j.core.model.Ec4jPath.Ec4jPaths;
 public interface Resource {
 
     /**
+     * An enum of Byte Order Marks (BOMs) to be able to support encodings with BOM unsupported by
+     * {@link Charset#forName(String)}.
+     *
+     * @since 0.0.4
+     */
+    enum Bom {
+
+        /**
+         * {@code utf-8-bom}
+         *
+         * @since 0.0.4
+         */
+        UTF_8_BOM("utf-8-bom", new byte[] { (byte) 0xEF, (byte) 0xBB, (byte) 0xBF }, StandardCharsets.UTF_8);
+
+        /**
+         * A {@link Charset} delegating to obe
+         */
+        static class BomCharset extends Charset {
+
+            private static final String[] EMPTY_STRING_ARRAY = new String[0];
+            private final Bom bom;
+            private final Charset delegate;
+
+            BomCharset(Bom bom, Charset delegate) {
+                super(bom.getName(), EMPTY_STRING_ARRAY);
+                this.delegate = delegate;
+                this.bom = bom;
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public boolean contains(Charset cs) {
+                return delegate.contains(cs);
+            }
+
+            /**
+             * @return the associated {@link Bom}
+             */
+            public Bom getBom() {
+                return bom;
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public CharsetDecoder newDecoder() {
+                return delegate.newDecoder();
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public CharsetEncoder newEncoder() {
+                return delegate.newEncoder();
+            }
+
+        }
+
+        /**
+         * Returns a {@link Bom} having the given {@code name}.
+         *
+         * @param name name of the encoding
+         * @return a {@link Bom} or {@code null} if the name is unknown
+         * @since 0.0.4
+         */
+        public static Bom ofName(String name) {
+            final String lcName = name.toLowerCase(Locale.ROOT);
+            for (Bom bom : values()) {
+                if (bom.name.equals(lcName)) {
+                    return bom;
+                }
+            }
+            return null;
+        }
+
+        /**
+         * If the given {@code charset} is a {@link BomCharset}, skips the BOM sequence in the given {@code bytes} array
+         * and returns a new String built out the remaining part of {@code bytes}; otherwise returns a new String built
+         * out the {@code bytes}.
+         *
+         * @param bytes the byte array to process
+         * @param charset the encoding of the {@code bytes}
+         * @return a new {@link String}
+         * @since 0.0.4
+         */
+        public static String skipBom(byte[] bytes, Charset charset) {
+            if (charset instanceof BomCharset) {
+                final Bom bom = ((BomCharset) charset).getBom();
+                final int bomLength = bom.bomBytes.length;
+                if (bomLength > bytes.length) {
+                    throw new IllegalStateException("Input too short; expected to start with Byte Order Mark (BOM)");
+                }
+                for (int i = 0; i < bomLength; i++) {
+                    byte c = bytes[i];
+                    if (c != bom.bomBytes[i]) {
+                        throw new IllegalStateException(String.format(
+                                "Input expected to start with Byte Order Mark (BOM) [%s], found [0x%02X] at offset [%d]",
+                                bom.bomBytesHumanReadable(), c, i));
+                    }
+                }
+                return new String(bytes, bomLength, bytes.length - bomLength, charset);
+            } else {
+                return new String(bytes, charset);
+            }
+        }
+
+        /**
+         * If the given {@code charset} is a {@link BomCharset}, skips the BOM sequence in the given {@code inputStream}
+         * and returns the given {@code inputStream}; otherwise just returns the given {@code inputStream}.
+         *
+         * @param inputStream {@link InputStream} to process
+         * @param charset the encoding of the {@code in}
+         * @return {@code in}
+         * @throws IOException
+         * @since 0.0.4
+         */
+        public static InputStream skipBom(InputStream inputStream, Charset charset) throws IOException {
+            if (charset instanceof BomCharset) {
+                Bom bom = ((BomCharset) charset).getBom();
+                final byte[] bytes = bom.bomBytes;
+                for (int i = 0; i < bytes.length; i++) {
+                    int c = inputStream.read();
+                    if (c < 0) {
+                        inputStream.close();
+                        throw new IllegalStateException(
+                                "Premature end of stream; expected to start with Byte Order Mark (BOM)");
+                    } else if ((byte) c != bytes[i]) {
+                        inputStream.close();
+                        throw new IllegalStateException(String.format(
+                                "Stream expected to start with Byte Order Mark (BOM) [%s], found [0x%02X] at offset [%d]",
+                                bom.bomBytesHumanReadable(), c, i));
+                    }
+                }
+            }
+            return inputStream;
+        }
+
+        /**
+         * If the given {@code charset} is a {@link BomCharset}, writes the BOM sequence into the given
+         * {@code outpuStream} and returns the given {@code outpuStream}; otherwise just returns the given
+         * {@code outpuStream}.
+         *
+         * @param outpuStream the {@link OutputStream} to write to
+         * @param charset the {@link Charset} of the given {@code outputStream}
+         * @return {@code outpuStream}
+         * @throws IOException
+         * @since 0.0.4
+         */
+        public static OutputStream writeBom(OutputStream outpuStream, Charset charset) throws IOException {
+            if (charset instanceof BomCharset) {
+                Bom bom = ((BomCharset) charset).getBom();
+                outpuStream.write(bom.bomBytes);
+            }
+            return outpuStream;
+        }
+
+        private final byte[] bomBytes;
+
+        private final Charset charset;
+
+        private final String name;
+
+        Bom(String name, byte[] bytes, Charset delegate) {
+            this.name = name;
+            this.bomBytes = bytes;
+            this.charset = new BomCharset(this, delegate);
+        }
+
+        /**
+         * @return a comma and space separated HEX formatted BOM bytes
+         * @since 0.0.4
+         */
+        public String bomBytesHumanReadable() {
+            final StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < bomBytes.length; i++) {
+                if (i == 0) {
+                    sb.append(String.format("0x%02X", bomBytes[i]));
+                } else {
+                    sb.append(String.format(", 0x%02X", bomBytes[i]));
+                }
+            }
+            return sb.toString();
+        }
+
+        /**
+         * @return a copy of {@link #bomBytes}
+         * @since 0.0.4
+         */
+        public byte[] getBomBytes() {
+            final byte[] result = new byte[bomBytes.length];
+            System.arraycopy(bomBytes, 0, result, 0, bomBytes.length);
+            return result;
+        }
+
+        /**
+         * @return the {@link BomCharset} associated with this {@link Bom}
+         * @since 0.0.4
+         */
+        public Charset getCharset() {
+            return charset;
+        }
+
+        /**
+         * @return the name of the encoding
+         * @since 0.0.4
+         */
+        public String getName() {
+            return name;
+        }
+
+    }
+
+    /**
+     * A host of {@link #forName(String)}.
+     *
+     * @since 0.0.4
+     */
+    class Charsets {
+
+        private Charsets() {
+        }
+
+        /**
+         * A BOM aware replacement of {@link Charset#forName(String)}
+         *
+         * @param name the name of the encoding
+         * @return a {@link Charset}
+         */
+        public static Charset forName(String name) {
+            Bom bom = Bom.ofName(name);
+            if (bom != null) {
+                return bom.getCharset();
+            } else {
+                return Charset.forName(name);
+            }
+        }
+
+    }
+
+    /**
      * A readed allowing to access a character on any offset in the underlying resource.
      */
     interface RandomReader extends Closeable {
@@ -54,11 +299,9 @@ public interface Resource {
         long getLength();
 
         /**
-         * @param offset
-         *            the index from which the character should be read
+         * @param offset the index from which the character should be read
          * @return the character at the given {@code offset}
-         * @throws IndexOutOfBoundsException
-         *             if the offset it less than {@code 0} or greater than {@link #getLength()}
+         * @throws IndexOutOfBoundsException if the offset it less than {@code 0} or greater than {@link #getLength()}
          */
         char read(long offset) throws IndexOutOfBoundsException;
     }
@@ -148,10 +391,15 @@ public interface Resource {
                 return StringRandomReader.ofUrl(loader.getResource(removeInitialSlash(path)), encoding);
             }
 
-            /** {@inheritDoc} */
+            /**
+             * {@inheritDoc}
+             *
+             * @throws IOException
+             */
             @Override
-            public Reader openReader() {
-                return new InputStreamReader(loader.getResourceAsStream(removeInitialSlash(path)), encoding);
+            public Reader openReader() throws IOException {
+                return new InputStreamReader(
+                        Bom.skipBom(loader.getResourceAsStream(removeInitialSlash(path)), encoding), encoding);
             }
 
             /** {@inheritDoc} */
@@ -218,13 +466,15 @@ public interface Resource {
             /** {@inheritDoc} */
             @Override
             public RandomReader openRandomReader() throws IOException {
-                return new StringRandomReader(new String(Files.readAllBytes(path), encoding));
+                return new StringRandomReader(Bom.skipBom(Files.readAllBytes(path), encoding));
             }
 
             /** {@inheritDoc} */
             @Override
             public Reader openReader() throws IOException {
-                return Files.newBufferedReader(path, encoding);
+                CharsetDecoder decoder = encoding.newDecoder();
+                Reader reader = new InputStreamReader(Bom.skipBom(Files.newInputStream(path), encoding), decoder);
+                return new BufferedReader(reader);
             }
 
             /** {@inheritDoc} */
@@ -244,11 +494,9 @@ public interface Resource {
              * Reads the given {@link Reader} into a {@link String} and creates a new {@link StringRandomReader} out of
              * it.
              *
-             * @param reader
-             *            the {@link Reader} to read
+             * @param reader the {@link Reader} to read
              * @return a new {@link StringRandomReader}
-             * @throws IOException
-             *             in case there is any read problem
+             * @throws IOException in case there is any read problem
              */
             public static RandomReader ofReader(Reader reader) throws IOException {
                 StringBuilder result = new StringBuilder();
@@ -261,8 +509,7 @@ public interface Resource {
             }
 
             /**
-             * @param content
-             *            the contents the resulting {@link RandomReader} should be based on
+             * @param content the contents the resulting {@link RandomReader} should be based on
              * @return a new {@link StringRandomReader}
              */
             public static RandomReader ofString(String content) {
@@ -270,7 +517,7 @@ public interface Resource {
             }
 
             public static RandomReader ofUrl(URL url, Charset encoding) throws IOException {
-                try (Reader r = new InputStreamReader(url.openStream(), encoding)) {
+                try (Reader r = new InputStreamReader(Bom.skipBom(url.openStream(), encoding), encoding)) {
                     return ofReader(r);
                 }
             }
@@ -446,12 +693,9 @@ public interface Resource {
         /**
          * Returns a new {@link ClassPathResource} associated with the given {@code path} and {@link ClassLoader}.
          *
-         * @param loader
-         *            the {@link ClassLoader} to load the resource from
-         * @param path
-         *            the path to load
-         * @param encoding
-         *            the encoding of the resource under the given {@code path}
+         * @param loader the {@link ClassLoader} to load the resource from
+         * @param path the path to load
+         * @param encoding the encoding of the resource under the given {@code path}
          * @return a new {@link ClassPathResource}
          */
         public static Resource ofClassPath(ClassLoader loader, String path, Charset encoding) {
@@ -459,10 +703,8 @@ public interface Resource {
         }
 
         /**
-         * @param path
-         *            the {@link Path} to create a new {@link Resource} from
-         * @param encoding
-         *            the {@link Charset} to use when reading from the given @{code path}
+         * @param path the {@link Path} to create a new {@link Resource} from
+         * @param encoding the {@link Charset} to use when reading from the given @{code path}
          * @return a new {@link PathResource}
          */
         public static Resource ofPath(Path path, Charset encoding) {
@@ -470,11 +712,9 @@ public interface Resource {
         }
 
         /**
-         * @param path
-         *            the file path of this {@link StringResource}, must have at least one segment, e.g.
-         *            {@code "my-file.txt"}, or {@code "path/to/my-file.txt"} or {@code "/path/to/my-file.txt"}
-         * @param content
-         *            the content of the {@link Resource}
+         * @param path the file path of this {@link StringResource}, must have at least one segment, e.g.
+         *        {@code "my-file.txt"}, or {@code "path/to/my-file.txt"} or {@code "/path/to/my-file.txt"}
+         * @param content the content of the {@link Resource}
          * @return a new {@link StringResource} with the given {@code path}, bound to a {@link StringResourceTree} that
          *         contains just the given {@code path}
          */
@@ -516,8 +756,7 @@ public interface Resource {
      * Opens a {@link RandomReader} to read the content of this {@link Resource}.
      *
      * @return an open {@link RandomReader}
-     * @throws IOException
-     *             on I/O problems
+     * @throws IOException on I/O problems
      */
     RandomReader openRandomReader() throws IOException;
 
@@ -525,8 +764,7 @@ public interface Resource {
      * Opens a {@link Reader} to read the content of this {@link Resource}.
      *
      * @return an open {@link Reader}
-     * @throws IOException
-     *             on I/O problems
+     * @throws IOException on I/O problems
      */
     Reader openReader() throws IOException;
 
