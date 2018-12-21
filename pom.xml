@@ -252,6 +252,7 @@ limitations under the License.</inlineHeader>
                         <exclude>Makefile</exclude>
                         <exclude>mvnw</exclude>
                         <exclude>mvnw.cmd</exclude>
+                        <exclude>src/test/resources/bom/*</exclude>
                         <exclude>Testing/</exclude>
                     </excludes>
                 </configuration>
