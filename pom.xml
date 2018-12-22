@@ -117,8 +117,8 @@
         <trimStackTrace>false</trimStackTrace>
 
         <!-- maven-compiler-plugin -->
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 
         <!-- nexus-staging-maven-plugin -->
@@ -392,7 +392,7 @@ limitations under the License.</inlineHeader>
                         <configuration>
                             <rules>
                                 <requireJavaVersion>
-                                    <version>1.7</version>
+                                    <version>1.8</version>
                                 </requireJavaVersion>
                                 <requireMavenVersion>
                                     <version>3.5.4</version>
