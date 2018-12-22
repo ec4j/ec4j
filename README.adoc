@@ -71,8 +71,8 @@ char indentChar = indentStyleValue.getIndentChar();
 
 Prerequisites:
 
-* Java 7+
-* Optionally Maven 3.5.0+, unless you want to use `./mvnw` or `mvnw.bat` delivered by the project
+* Java 8+
+* Optionally Maven 3.5.4+, unless you want to use `./mvnw` or `mvnw.bat` delivered by the project
 * cmake 2.6+ to run the https://github.com/editorconfig/editorconfig-core-test[editorconfig-core-test] testsuite (optional).
 
 The most common build with unit tests:
