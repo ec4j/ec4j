@@ -37,3 +37,9 @@ on_failure:
   - type Testing\Temporary\LastTest.log
 cache:
   - C:\Users\appveyor\.m2\wrapper
+
+notifications:
+  - provider: Email
+    on_build_success: false
+    on_build_failure: false
+    on_build_status_changed: false
