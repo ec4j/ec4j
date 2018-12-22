@@ -139,7 +139,11 @@ public interface Resource {
             if (charset instanceof BomCharset) {
                 final Bom bom = ((BomCharset) charset).getBom();
                 final int bomLength = bom.bomBytes.length;
-                if (bomLength > bytes.length) {
+                if (bytes.length == 0) {
+                    /* Handle zero length files as valid */
+                    return "";
+                }
+                else if (bomLength > bytes.length) {
                     throw new IllegalStateException("Input too short; expected to start with Byte Order Mark (BOM)");
                 }
                 for (int i = 0; i < bomLength; i++) {
@@ -173,9 +177,14 @@ public interface Resource {
                 for (int i = 0; i < bytes.length; i++) {
                     int c = inputStream.read();
                     if (c < 0) {
-                        inputStream.close();
-                        throw new IllegalStateException(
-                                "Premature end of stream; expected to start with Byte Order Mark (BOM)");
+                        if (i == 0) {
+                            /* Handle zero length files as valid */
+                            break;
+                        } else {
+                            inputStream.close();
+                            throw new IllegalStateException(
+                                    "Premature end of stream; expected to start with Byte Order Mark (BOM)");
+                        }
                     } else if ((byte) c != bytes[i]) {
                         inputStream.close();
                         throw new IllegalStateException(String.format(

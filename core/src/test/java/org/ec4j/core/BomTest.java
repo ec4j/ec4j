@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.ec4j.core.Resource.Charsets;
+import org.ec4j.core.Resource.RandomReader;
 import org.ec4j.core.Resource.Resources;
 import org.junit.Assert;
 import org.junit.Test;
@@ -30,6 +31,56 @@ import org.junit.Test;
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
 public class BomTest {
+
+    @Test
+    public void openRandomReaderUtf8BomBad() throws IOException {
+        final Path path = Paths.get("src/test/resources/bom/utf-8-bom-bad.txt");
+        final Resource resource = Resources.ofPath(path, Charsets.forName("utf-8-bom"));
+        try {
+            resource.openRandomReader();
+        } catch (IllegalStateException e) {
+            Assert.assertEquals(
+                    "Input expected to start with Byte Order Mark (BOM) [0xEF, 0xBB, 0xBF], found [0x68] at offset [2]",
+                    e.getMessage());
+        }
+    }
+
+    @Test
+    public void openRandomReaderUtf8BomGood() throws IOException {
+        final Path path = Paths.get("src/test/resources/bom/utf-8-bom-good.txt");
+        final Resource resource = Resources.ofPath(path, Charsets.forName("utf-8-bom"));
+        final StringBuilder sb = new StringBuilder();
+        final RandomReader r = resource.openRandomReader();
+        for (int i = 0; i < r.getLength(); i++) {
+            sb.append(r.read(i));
+        }
+        Assert.assertEquals("hello world", sb.toString());
+    }
+
+    @Test
+    public void openRandomReaderUtf8BomZeroLength() throws IOException {
+        final Path path = Paths.get("src/test/resources/bom/zero-length.txt");
+        final Resource resource = Resources.ofPath(path, Charsets.forName("utf-8-bom"));
+        final StringBuilder sb = new StringBuilder();
+        final RandomReader r = resource.openRandomReader();
+        for (int i = 0; i < r.getLength(); i++) {
+            sb.append(r.read(i));
+        }
+        Assert.assertEquals("", sb.toString());
+    }
+
+    @Test
+    public void openReaderUtf8BomBad() throws IOException {
+        final Path path = Paths.get("src/test/resources/bom/utf-8-bom-bad.txt");
+        final Resource resource = Resources.ofPath(path, Charsets.forName("utf-8-bom"));
+        try (Reader r = resource.openReader()) {
+            Assert.fail(IllegalStateException.class.getSimpleName() + " expected");
+        } catch (IllegalStateException e) {
+            Assert.assertEquals(
+                    "Stream expected to start with Byte Order Mark (BOM) [0xEF, 0xBB, 0xBF], found [0x68] at offset [2]",
+                    e.getMessage());
+        }
+    }
 
     @Test
     public void openReaderUtf8BomGood() throws IOException {
@@ -46,14 +97,16 @@ public class BomTest {
     }
 
     @Test
-    public void openReaderUtf8BomBad() throws IOException {
-        final Path path = Paths.get("src/test/resources/bom/utf-8-bom-bad.txt");
+    public void openReaderUtf8BomZeroLength() throws IOException {
+        final Path path = Paths.get("src/test/resources/bom/zero-length.txt");
         final Resource resource = Resources.ofPath(path, Charsets.forName("utf-8-bom"));
+        final StringBuilder sb = new StringBuilder();
         try (Reader r = resource.openReader()) {
-            Assert.fail(IllegalStateException.class.getSimpleName() + " expected");
-        } catch (IllegalStateException e) {
-            Assert.assertEquals("Stream expected to start with Byte Order Mark (BOM) [0xEF, 0xBB, 0xBF], found [0x68] at offset [2]", e.getMessage());
+            int c;
+            while ((c = r.read()) >= 0) {
+                sb.append((char) c);
+            }
         }
+        Assert.assertEquals("", sb.toString());
     }
-
 }
