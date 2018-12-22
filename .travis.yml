@@ -4,13 +4,8 @@ language: java
 sudo: false
 
 jdk:
-  - oraclejdk8
-
-# Setting the same var twice in the env actually makes Travis create a matrix
-# - i.e. there will be two separate executions, one for each value
-env:
-  - CMD="./mvnw clean test"
-  - CMD="./mvnw -Pcore-test clean install && ( cd core && cmake . && ctest . )"
+  - openjdk8
+  - openjdk11
 
 notifications:
   email: true
@@ -25,7 +20,7 @@ before_script:
   - unset _JAVA_OPTIONS
 
 script:
-- eval $CMD
+- ./mvnw -Pcore-test clean install && ( cd core && cmake . && ctest . )
 
 after_failure:
 - '[ -f core/Testing/Temporary/LastTest.log ] && cat core/Testing/Temporary/LastTest.log'
