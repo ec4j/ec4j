@@ -57,6 +57,27 @@ public class PropertyTypeTest {
     }
 
     @Test
+    public void autodetectEol() {
+        Assert.assertEquals(EndOfLineValue.lf, EndOfLineValue.autodetect(""));
+        Assert.assertEquals(EndOfLineValue.lf, EndOfLineValue.autodetect(null));
+        Assert.assertEquals(EndOfLineValue.lf, EndOfLineValue.autodetect("\n"));
+        Assert.assertEquals(EndOfLineValue.crlf, EndOfLineValue.autodetect("\r\n"));
+        Assert.assertEquals(EndOfLineValue.lf, EndOfLineValue.autodetect("\n\r"));
+        Assert.assertEquals(EndOfLineValue.cr, EndOfLineValue.autodetect("\r"));
+
+        Assert.assertEquals(EndOfLineValue.lf, EndOfLineValue.autodetect("foo\n"));
+        Assert.assertEquals(EndOfLineValue.crlf, EndOfLineValue.autodetect("foo\r\n"));
+        Assert.assertEquals(EndOfLineValue.lf, EndOfLineValue.autodetect("foo\n\r"));
+        Assert.assertEquals(EndOfLineValue.cr, EndOfLineValue.autodetect("foo\r"));
+
+        Assert.assertEquals(EndOfLineValue.lf, EndOfLineValue.autodetect("foo\nbar\r"));
+        Assert.assertEquals(EndOfLineValue.crlf, EndOfLineValue.autodetect("foo\r\nbar\n"));
+        Assert.assertEquals(EndOfLineValue.lf, EndOfLineValue.autodetect("foo\n\rbar\n"));
+        Assert.assertEquals(EndOfLineValue.cr, EndOfLineValue.autodetect("foo\rbar\n"));
+
+    }
+
+    @Test
     public void indentSize() {
         Assert.assertEquals(PropertyValue.valid("1", 1), PropertyType.indent_size.parse("1"));
         Assert.assertEquals(PropertyValue.valid("tab", null), PropertyType.indent_size.parse("tab"));

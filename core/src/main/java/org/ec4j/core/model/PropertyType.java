@@ -29,8 +29,7 @@ import java.util.Set;
  *
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  *
- * @param <T>
- *            the type of the parsed {@link Property} value
+ * @param <T> the type of the parsed {@link Property} value
  */
 public class PropertyType<T> {
 
@@ -55,9 +54,47 @@ public class PropertyType<T> {
         }
 
         /**
-         * @param endOfLineString
-         *            the actual end of line string such as @{code "\n"} or {@code "\r\n"} to find an
-         *            {@link EndOfLineValue} for
+         * Autodetects an {@link EndOfLineValue} based on the first end of line in the given file content.
+         *
+         * @param source the content of a file
+         * @return an {@link EndOfLineValue}
+         * @since 0.2.0
+         */
+        public static EndOfLineValue autodetect(String source) {
+            if (source == null || source.isEmpty()) {
+                return EndOfLineValue.lf;
+            }
+            final int lfOffset = source.indexOf('\n');
+            if (lfOffset == 0) {
+                return EndOfLineValue.lf;
+            } else if (lfOffset > 0) {
+                final int crOffset = source.indexOf('\r');
+                if (crOffset >= 0) {
+                    final int diff = lfOffset - crOffset;
+                    if (diff == 1) {
+                        return EndOfLineValue.crlf;
+                    } else if (diff > 0) {
+                        return EndOfLineValue.cr;
+                    } else {
+                        return EndOfLineValue.lf;
+                    }
+                } else {
+                    return EndOfLineValue.lf;
+                }
+            } else {
+                /* No LF there */
+                if (source.indexOf('\r') >= 0) {
+                    return EndOfLineValue.cr;
+                } else {
+                    /* blind default */
+                    return EndOfLineValue.lf;
+                }
+            }
+        }
+
+        /**
+         * @param endOfLineString the actual end of line string such as @{code "\n"} or {@code "\r\n"} to find an
+         *        {@link EndOfLineValue} for
          * @return an {@link EndOfLineValue} that corresponds to the given {@code endOfLineString}
          */
         public static EndOfLineValue ofEndOfLineString(String endOfLineString) {
@@ -138,8 +175,7 @@ public class PropertyType<T> {
      *
      * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
      *
-     * @param <T>
-     *            the type of the {@link Property} parsed
+     * @param <T> the type of the {@link Property} parsed
      */
     public static class LowerCasingPropertyType<T> extends PropertyType<T> {
 
@@ -164,8 +200,7 @@ public class PropertyType<T> {
      * The result of {@link Property} parsed parsing. The result may either be valid when it has {@link #parsed} or
      * invalid when it has no {@link #parsed}, but it has an {@link #errorMessage}.
      *
-     * @param <T>
-     *            the type of the parsed parsed
+     * @param <T> the type of the parsed parsed
      */
     public static class PropertyValue<T> {
         /** A singleton with the special {@code unset} source value */
@@ -285,16 +320,14 @@ public class PropertyType<T> {
     /**
      * A facility able to parse string values into other types.
      *
-     * @param <T>
-     *            the type of the parse result
+     * @param <T> the type of the parse result
      */
     public interface PropertyValueParser<T> {
 
         /**
          * A {@link PropertyValueParser} implementation that allows only members of a given {@link Enum} type.
          *
-         * @param <T>
-         *            the type of the value
+         * @param <T> the type of the value
          */
         class EnumValueParser<T extends Enum<T>> implements PropertyValueParser<T> {
 
@@ -398,10 +431,8 @@ public class PropertyType<T> {
         /**
          * Parses the given {@code parsed} into a {@link PropertyValue}
          *
-         * @param name
-         *            the name of the parsed property
-         * @param value
-         *            the value to parse
+         * @param name the name of the parsed property
+         * @param value the value to parse
          * @return the {@link PropertyType.PropertyValue}
          */
         PropertyValue<T> parse(String name, String value);
@@ -560,8 +591,7 @@ public class PropertyType<T> {
      * is supposed to perform such transformations. This particular implementation performs no transformation. See also
      * {@link LowerCasingPropertyType}.
      *
-     * @param value
-     *            the value to normalize
+     * @param value the value to normalize
      * @return the normalized parsed or the passed-in {@code parsed} if no transformation is necessary
      */
     public String normalizeIfNeeded(String value) {
@@ -571,8 +601,7 @@ public class PropertyType<T> {
     /**
      * Parses the given {@code parsed} into a {@link PropertyValue}
      *
-     * @param value
-     *            the value to parse
+     * @param value the value to parse
      * @return the {@link PropertyValue}
      */
     public PropertyValue<T> parse(String value) {
