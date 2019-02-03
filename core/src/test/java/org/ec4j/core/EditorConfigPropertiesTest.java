@@ -22,6 +22,8 @@ import java.util.Iterator;
 
 import org.ec4j.core.Resource.Resources.StringResourceTree;
 import org.ec4j.core.model.Property;
+import org.ec4j.core.model.PropertyType;
+import org.ec4j.core.model.Version;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -34,17 +36,17 @@ public class EditorConfigPropertiesTest {
 
     @Test
     public void indent_size_default() throws IOException {
-        String content = "root = true\r\n" + //
-                "\r\n" + //
-                "[test.c]\r\n" + //
-                "indent_style = tab\r\n" + //
-                "\r\n" + //
-                "[test2.c]\r\n" + //
-                "indent_style = space\r\n" + //
-                "\r\n" + //
-                "[test3.c]\r\n" + //
-                "indent_style = tab\r\n" + //
-                "tab_width = 2\r\n" + //
+        String content = "root = true\n" + //
+                "\n" + //
+                "[test.c]\n" + //
+                "indent_style = tab\n" + //
+                "\n" + //
+                "[test2.c]\n" + //
+                "indent_style = space\n" + //
+                "\n" + //
+                "[test3.c]\n" + //
+                "indent_style = tab\n" + //
+                "tab_width = 2\n" + //
                 "";
 
         final String testFile = "root/test.c";
@@ -62,4 +64,53 @@ public class EditorConfigPropertiesTest {
         Assert.assertEquals("indent_size = tab", iter.next().toString());
     }
 
+    @Test
+    public void max_line_length() throws IOException {
+        String content = "root = true\n" + //
+                "\n" + //
+                "[test.a]\n" + //
+                "max_line_length = 2147483647\n" + //
+                "\n" + //
+                "[test.b]\n" + //
+                "max_line_length = 128\n" + //
+                "\n" + //
+                "[test.c]\n" + //
+                "max_line_length = off\n" + //
+                "";
+
+        final String testA = "root/test.a";
+        final String testB = "root/test.b";
+        final String testC = "root/test.c";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig", content)//
+                .touch(testA) //
+                .touch(testB) //
+                .touch(testC) //
+                .build();
+
+        final PropertyTypeRegistry registry = PropertyTypeRegistry.builder() //
+                .defaults() //
+                .type(PropertyType.max_line_length) //
+                .build();
+        final ResourcePropertiesService rps = ResourcePropertiesService.builder() //
+                .loader(EditorConfigLoader.of(Version.CURRENT, registry)) //
+                .build();
+
+        {
+            ResourceProperties properties = rps.queryProperties(tree.getResource(testC));
+            Assert.assertNull(properties.getValue(PropertyType.max_line_length, null, true));
+            Assert.assertEquals(1, properties.getProperties().size());
+        }
+        {
+            ResourceProperties properties = rps.queryProperties(tree.getResource(testA));
+            Assert.assertEquals(1, properties.getProperties().size());
+            Assert.assertEquals(Integer.valueOf(Integer.MAX_VALUE),
+                    properties.getValue(PropertyType.max_line_length, null, true));
+        }
+        {
+            ResourceProperties properties = rps.queryProperties(tree.getResource(testB));
+            Assert.assertEquals(1, properties.getProperties().size());
+            Assert.assertEquals(Integer.valueOf(128), properties.getValue(PropertyType.max_line_length, null, true));
+        }
+    }
 }
