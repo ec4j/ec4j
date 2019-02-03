@@ -66,20 +66,24 @@ public class ResourcePropertiesService {
     public static class Builder {
         private Cache cache = Caches.none();
         private String configFileName = EditorConfigConstants.EDITORCONFIG;
+        private List<EditorConfig> defaultEditorConfigs = new ArrayList<>();
         private boolean keepUnset = false;
         private EditorConfigLoader loader = EditorConfigLoader.default_();
         private Set<ResourcePath> rootDirectories = new LinkedHashSet<>();
 
         public ResourcePropertiesService build() {
-            return new ResourcePropertiesService(configFileName, Collections.unmodifiableSet(rootDirectories), cache,
-                    loader, keepUnset);
+            final Set<ResourcePath> useRootDirs = Collections.unmodifiableSet(rootDirectories);
+            this.rootDirectories = null;
+            final List<EditorConfig> useDefaultEditorConfigs = Collections.unmodifiableList(defaultEditorConfigs);
+            this.defaultEditorConfigs = null;
+            return new ResourcePropertiesService(configFileName, useRootDirs, useDefaultEditorConfigs, cache, loader,
+                    keepUnset);
         }
 
         /**
          * Sets the cache implementation
          *
-         * @param cache
-         *            the Cache to set
+         * @param cache the Cache to set
          * @return this {@link Builder}
          */
         public Builder cache(Cache cache) {
@@ -90,12 +94,55 @@ public class ResourcePropertiesService {
         /**
          * Sets the file name to consider as an {@code .editorconfig} file.
          *
-         * @param configFileName
-         *            an alternative name {@code .editorconfig} file name
+         * @param configFileName an alternative name {@code .editorconfig} file name
          * @return this {@link Builder}
          */
         public Builder configFileName(String configFileName) {
             this.configFileName = configFileName;
+            return this;
+        }
+
+        /**
+         * Adds a single {@link EditorConfig} model that contains default settings beyond the ones set in the
+         * filesystem. This can be used to implement user or system defaults. Note several default files can be added.
+         * In such a case the order of adding matters: the file added as the last one will least significant. In other
+         * words, you should add user defaults before system defaults.
+         *
+         * @param defaultEditorConfig the default {@link EditorConfig} model to add
+         * @return this {@link Builder}
+         */
+        public Builder defaultEditorConfig(EditorConfig defaultEditorConfig) {
+            this.defaultEditorConfigs.add(defaultEditorConfig);
+            return this;
+        }
+
+        /**
+         * Adds multiple {@link EditorConfig} models that contain default settings beyond the ones set in the
+         * filesystem. This can be used to implement user or system defaults. The order of the added files matters: the
+         * file added as the last one will least significant. In other words, you should add user defaults before system
+         * defaults.
+         *
+         * @param defaultEditorConfigs a collection of default {@link EditorConfig} models to add
+         * @return this {@link Builder}
+         */
+        public Builder defaultEditorConfigs(Collection<EditorConfig> defaultEditorConfigs) {
+            this.defaultEditorConfigs.addAll(defaultEditorConfigs);
+            return this;
+        }
+
+        /**
+         * Adds multiple {@link EditorConfig} models that contain default settings beyond the ones set in the
+         * filesystem. This can be used to implement user or system defaults. The order of the added files matters: the
+         * file added as the last one will least significant. In other words, you should add user defaults before system
+         * defaults.
+         *
+         * @param defaultEditorConfigs default {@link EditorConfig} models to add
+         * @return this {@link Builder}
+         */
+        public Builder defaultEditorConfigs(EditorConfig... defaultEditorConfigs) {
+            for (EditorConfig defaultEditorConfig : defaultEditorConfigs) {
+                this.defaultEditorConfigs.add(defaultEditorConfig);
+            }
             return this;
         }
 
@@ -105,8 +152,7 @@ public class ResourcePropertiesService {
          * the {@link Property}s with the {@code unset} value will be removed from the {@link ResourceProperties}
          * returned by {@link ResourcePropertiesService#queryProperties(Resource)}.
          *
-         * @param keepUnset
-         *            see above
+         * @param keepUnset see above
          * @return this {@link Builder}
          */
         public Builder keepUnset(boolean keepUnset) {
@@ -117,8 +163,7 @@ public class ResourcePropertiesService {
         /**
          * Sets the {@link EditorConfigLoader}
          *
-         * @param loader
-         *            the {@link EditorConfigLoader} to set
+         * @param loader the {@link EditorConfigLoader} to set
          * @return this {@link Builder}
          */
         public Builder loader(EditorConfigLoader loader) {
@@ -129,8 +174,7 @@ public class ResourcePropertiesService {
         /**
          * Adds multiple root directories
          *
-         * @param rootDirectories
-         *            the root directories to add
+         * @param rootDirectories the root directories to add
          * @return this {@link Builder}
          */
         public Builder rootDirectories(Collection<ResourcePath> rootDirectories) {
@@ -141,8 +185,7 @@ public class ResourcePropertiesService {
         /**
          * Adds multiple root directories
          *
-         * @param rootDirectories
-         *            the root directories to add
+         * @param rootDirectories the root directories to add
          * @return this {@link Builder}
          */
         public Builder rootDirectories(ResourcePath... rootDirectories) {
@@ -155,14 +198,14 @@ public class ResourcePropertiesService {
         /**
          * Adds a single root directory
          *
-         * @param rootDirectory
-         *            the root directory to add
+         * @param rootDirectory the root directory to add
          * @return this {@link Builder}
          */
         public Builder rootDirectory(ResourcePath rootDirectory) {
             this.rootDirectories.add(rootDirectory);
             return this;
         }
+
     }
 
     /**
@@ -202,14 +245,16 @@ public class ResourcePropertiesService {
 
     private final Cache cache;
     private final String configFileName;
+    private final List<EditorConfig> defaultEditorConfigs;
     private final boolean keepUnset;
     private final EditorConfigLoader loader;
     private final Set<ResourcePath> rootDirectories;
 
-    ResourcePropertiesService(String configFileName, Set<ResourcePath> rootDirectories, Cache cache,
-            EditorConfigLoader loader, boolean keepUnset) {
+    ResourcePropertiesService(String configFileName, Set<ResourcePath> rootDirectories,
+            List<EditorConfig> defaultEditorConfigs, Cache cache, EditorConfigLoader loader, boolean keepUnset) {
         super();
         this.rootDirectories = rootDirectories;
+        this.defaultEditorConfigs = defaultEditorConfigs;
         this.loader = loader;
         this.configFileName = configFileName;
         this.cache = cache;
@@ -226,6 +271,16 @@ public class ResourcePropertiesService {
      */
     public String getConfigFileName() {
         return configFileName;
+    }
+
+    /**
+     * @return a {@link List} of {@link EditorConfig} models that contain default settings beyond the ones set in the
+     *         filesystem. These can be used to implement user or system defaults. The order of the files matters: the
+     *         last file will least significant. In other words, user defaults would appear before system defaults in
+     *         the returned list.
+     */
+    public List<EditorConfig> getDefaultEditorConfigs() {
+        return defaultEditorConfigs;
     }
 
     /**
@@ -252,11 +307,9 @@ public class ResourcePropertiesService {
      * explicitly, {@link Caches#none()} is used that causes this method to parse each {@code .editorconfig} file every
      * time it is necessary.
      *
-     * @param resource
-     *            the resource to find the {@link Property}s for
+     * @param resource the resource to find the {@link Property}s for
      * @return a {@link ResourceProperties} that contains {@link Property}s applicable to the given {@link Resource}
-     * @throws IOException
-     *             on I/O problems during the reading from the {@code .editorconfig} files.
+     * @throws IOException on I/O problems during the reading from the {@code .editorconfig} files.
      */
     public ResourceProperties queryProperties(Resource resource) throws IOException {
         ResourceProperties.Builder result = ResourceProperties.builder();
@@ -274,6 +327,17 @@ public class ResourcePropertiesService {
             root |= rootDirectories.contains(dir);
             dir = dir.getParent();
         }
+
+        /* Add the defaults in order */
+        if (!defaultEditorConfigs.isEmpty()) {
+            final ResourcePath lastDir = editorConfigs.isEmpty() //
+                    ? resource.getParent() //
+                    : editorConfigs.get(editorConfigs.size() - 1).directory;
+            for (EditorConfig ec : defaultEditorConfigs) {
+                editorConfigs.add(new DirEditorConfigPair(lastDir, ec));
+            }
+        }
+
         /* Now go back top down so that the duplicate properties defined closer to the given resource win */
         int i = editorConfigs.size() - 1;
         while (i >= 0) {
