@@ -22,9 +22,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.ec4j.core.Resource.Resources;
 import org.ec4j.core.Resource.Resources.StringResourceTree;
+import org.ec4j.core.model.EditorConfig;
+import org.ec4j.core.model.Glob;
 import org.ec4j.core.model.Property;
 import org.junit.Assert;
 import org.junit.Test;
@@ -63,6 +66,23 @@ public class EditorConfigFileTreeTest {
         }
     }
 
+    @Test
+    public void parent_directory() throws IOException {
+        final String testFile = "root/parent_directory/test.a";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig", getClass().getResource("/filetree/.editorconfig"),
+                        StandardCharsets.UTF_8)//
+                .resource("root/parent_directory/.editorconfig",
+                        getClass().getResource("/filetree/parent_directory/.editorconfig"), StandardCharsets.UTF_8)//
+                .touch(testFile) //
+                .build();
+
+        Collection<Property> properties = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile)).getProperties().values();
+        Assert.assertEquals(1, properties.size());
+        Assert.assertEquals("key = value", properties.iterator().next().toString());
+    }
+
     /**
      * Windows style path separator in the command line should work on Windows, but should not work on other systems
      *
@@ -90,7 +110,7 @@ public class EditorConfigFileTreeTest {
     }
 
     @Test
-    public void parent_directory() throws IOException {
+    public void singleDefault() throws IOException {
         final String testFile = "root/parent_directory/test.a";
         StringResourceTree tree = StringResourceTree.builder() //
                 .resource("root/.editorconfig", getClass().getResource("/filetree/.editorconfig"),
@@ -100,10 +120,82 @@ public class EditorConfigFileTreeTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = ResourcePropertiesService.default_()
-                .queryProperties(tree.getResource(testFile)).getProperties().values();
-        Assert.assertEquals(1, properties.size());
-        Assert.assertEquals("key = value", properties.iterator().next().toString());
+        final EditorConfig defaultEditorConfig = EditorConfig.builder() //
+                .openSection() //
+                .glob(new Glob("test.a")) //
+                .openProperty() //
+                .name("key2") //
+                .value("value2") //
+                .closeProperty() //
+                .openProperty() //
+                .name("key") //
+                .value("foo") //
+                .closeProperty() //
+                .closeSection() //
+                .build();
+
+        ResourcePropertiesService rps = ResourcePropertiesService.builder() //
+                .defaultEditorConfig(defaultEditorConfig) //
+                .build();
+
+        Map<String, Property> properties = rps.queryProperties(tree.getResource(testFile)).getProperties();
+        Assert.assertEquals(2, properties.size());
+        Assert.assertEquals("value", properties.get("key").getValueAs());
+        Assert.assertEquals("value2", properties.get("key2").getValueAs());
+    }
+
+    @Test
+    public void twoDefaults() throws IOException {
+        final String testFile = "root/parent_directory/test.a";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig", getClass().getResource("/filetree/.editorconfig"),
+                        StandardCharsets.UTF_8)//
+                .resource("root/parent_directory/.editorconfig",
+                        getClass().getResource("/filetree/parent_directory/.editorconfig"), StandardCharsets.UTF_8)//
+                .touch(testFile) //
+                .build();
+
+        final EditorConfig defaultEditorConfig1 = EditorConfig.builder() //
+                .openSection() //
+                .glob(new Glob("test.a")) //
+                .openProperty() //
+                .name("key2") //
+                .value("value2") //
+                .closeProperty() //
+                .openProperty() //
+                .name("key") //
+                .value("foo") //
+                .closeProperty() //
+                .closeSection() //
+                .build();
+
+        final EditorConfig defaultEditorConfig2 = EditorConfig.builder() //
+                .openSection() //
+                .glob(new Glob("test.a")) //
+                .openProperty() //
+                .name("key3") //
+                .value("value3") //
+                .closeProperty() //
+                .openProperty() //
+                .name("key2") //
+                .value("foo") //
+                .closeProperty() //
+                .openProperty() //
+                .name("key") //
+                .value("foo") //
+                .closeProperty() //
+                .closeSection() //
+                .build();
+
+        ResourcePropertiesService rps = ResourcePropertiesService.builder() //
+                .defaultEditorConfigs(defaultEditorConfig1, defaultEditorConfig2) //
+                .build();
+
+        Map<String, Property> properties = rps.queryProperties(tree.getResource(testFile)).getProperties();
+        Assert.assertEquals(3, properties.size());
+        Assert.assertEquals("value", properties.get("key").getValueAs());
+        Assert.assertEquals("value2", properties.get("key2").getValueAs());
+        Assert.assertEquals("value3", properties.get("key3").getValueAs());
     }
 
     @Test
