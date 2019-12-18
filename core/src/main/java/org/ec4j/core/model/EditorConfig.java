@@ -80,9 +80,9 @@ public class EditorConfig extends Adaptable {
 
         /**
          * @param parentAware
-         *            if {@code true} the {@link Section#getProperties()} of the resulting {@link Section} will have the
-         *            Section set in their adapters (which can be used as the link to the parent {@link Section});
-         *            othwise the section will not be added to {@link Property}'s adapters
+         *        if {@code true} the {@link Section#getProperties()} of the resulting {@link Section} will have the
+         *        Section set in their adapters (which can be used as the link to the parent {@link Section});
+         *        othwise the section will not be added to {@link Property}'s adapters
          *
          * @return this {@link Builder}
          */
@@ -95,12 +95,12 @@ public class EditorConfig extends Adaptable {
          * Sets the {@link #root} field.
          *
          * @param root
-         *            if {@link Boolean#TRUE} this is the top-most {@code .editorconfig} file and the a search for
-         *            {@code .editorconfig} files should stop at the present directory level. If {@link Boolean#FALSE},
-         *            this is not the top-most {@code .editorconfig} file and underlying source tree should be searched
-         *            for further {@code .editorconfig} files in the ancestor directories. A {@code null} {@link #root}
-         *            means that the `root` property was not available in the underlying {@code .editorconfig} file and
-         *            that the default {@code root = false}
+         *        if {@link Boolean#TRUE} this is the top-most {@code .editorconfig} file and the a search for
+         *        {@code .editorconfig} files should stop at the present directory level. If {@link Boolean#FALSE},
+         *        this is not the top-most {@code .editorconfig} file and underlying source tree should be searched
+         *        for further {@code .editorconfig} files in the ancestor directories. A {@code null} {@link #root}
+         *        means that the `root` property was not available in the underlying {@code .editorconfig} file and
+         *        that the default {@code root = false}
          * @return this {@link Builder}
          */
         public Builder root(Boolean root) {
@@ -112,7 +112,7 @@ public class EditorConfig extends Adaptable {
          * Adds a single {@link Section.Builder} to {@link #sections}.
          *
          * @param section
-         *            the {@link Section.Builder} to add
+         *        the {@link Section.Builder} to add
          * @return this {@link Builder}
          */
         public Builder section(Section.Builder section) {
@@ -124,7 +124,7 @@ public class EditorConfig extends Adaptable {
          * Adds multiple {@link Section.Builder}s to {@link #sections}
          *
          * @param sections
-         *            the {@link Section.Builder}s to add
+         *        the {@link Section.Builder}s to add
          * @return this {@link Builder}
          */
         public Builder sections(Collection<Section.Builder> sections) {
@@ -136,7 +136,7 @@ public class EditorConfig extends Adaptable {
          * Adds multiple {@link Section.Builder}s to {@link #sections}
          *
          * @param sections
-         *            the {@link Section.Builder}s to add
+         *        the {@link Section.Builder}s to add
          * @return this {@link Builder}
          */
         public Builder sections(Section.Builder... sections) {
@@ -150,7 +150,7 @@ public class EditorConfig extends Adaptable {
          * Sets the {@link #version} field.
          *
          * @param version
-         *            the version to set
+         *        the version to set
          * @return this {@link Builder}
          */
         public Builder version(Version version) {

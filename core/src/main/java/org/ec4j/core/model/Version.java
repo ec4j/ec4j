@@ -80,12 +80,12 @@ public class Version implements Comparable<Version> {
     public int compareTo(Version other) {
         final int mmmCompared = Integer.compare(this.majorMinorMicro, other.majorMinorMicro);
         switch (mmmCompared) {
-        case 0:
-            return this.qualifier == other.qualifier ? 0
-                    : (this.qualifier == null ? -1
-                            : (other.qualifier == null ? 1 : this.qualifier.compareTo(other.qualifier)));
-        default:
-            return mmmCompared;
+            case 0:
+                return this.qualifier == other.qualifier ? 0
+                        : (this.qualifier == null ? -1
+                                : (other.qualifier == null ? 1 : this.qualifier.compareTo(other.qualifier)));
+            default:
+                return mmmCompared;
         }
     }
 

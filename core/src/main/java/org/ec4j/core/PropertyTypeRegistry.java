@@ -65,7 +65,7 @@ public class PropertyTypeRegistry {
          * Adds a single {@link PropertyType}
          *
          * @param type
-         *            the {@link PropertyType} to add
+         *        the {@link PropertyType} to add
          * @return this {@link Builder}
          */
         public Builder type(PropertyType<?> type) {
@@ -101,7 +101,7 @@ public class PropertyTypeRegistry {
 
     /**
      * @param name
-     *            the name of a {@link Property}
+     *        the name of a {@link Property}
      * @return the {@link PropertyType} associated with the given {@code name} or {@code null} if there is no
      *         {@link PropertyType} associated with the given {@code name}
      */

@@ -53,32 +53,32 @@ public class Cli {
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             switch (arg) {
-            case "-b":
-                if (i + 1 < args.length) {
-                    version = Version.of(args[++i]);
-                    continue;
-                } else {
-                    System.err.println("-b option must be followed by a version");
-                    System.exit(1);
-                }
-                break;
-            case "-f":
-                if (i + 1 < args.length) {
-                    editorconfigFileName = args[++i];
-                    continue;
-                } else {
-                    System.err.println("-f option must be followed by a file path");
-                    System.exit(1);
-                }
-                break;
-            case "--version":
-            case "-v":
-                System.out.println("EditorConfig Java Version " + Version.CURRENT);
-                System.exit(0);
-                break;
-            default:
-                paths.add(args[i]);
-                break;
+                case "-b":
+                    if (i + 1 < args.length) {
+                        version = Version.of(args[++i]);
+                        continue;
+                    } else {
+                        System.err.println("-b option must be followed by a version");
+                        System.exit(1);
+                    }
+                    break;
+                case "-f":
+                    if (i + 1 < args.length) {
+                        editorconfigFileName = args[++i];
+                        continue;
+                    } else {
+                        System.err.println("-f option must be followed by a file path");
+                        System.exit(1);
+                    }
+                    break;
+                case "--version":
+                case "-v":
+                    System.out.println("EditorConfig Java Version " + Version.CURRENT);
+                    System.exit(0);
+                    break;
+                default:
+                    paths.add(args[i]);
+                    break;
             }
         }
 

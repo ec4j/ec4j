@@ -299,9 +299,9 @@ public interface ResourcePath {
 
         /**
          * @param path
-         *            the {@link Path} to create a new {@link ResourcePath} from
+         *        the {@link Path} to create a new {@link ResourcePath} from
          * @param encoding
-         *            the {@link Charset} to use when reading {@link Resource}s from the returned {@link ResourcePath}
+         *        the {@link Charset} to use when reading {@link Resource}s from the returned {@link ResourcePath}
          * @return a new {@link PathResourcePath}
          */
         public static ResourcePath ofPath(Path path, Charset encoding) {
@@ -333,7 +333,7 @@ public interface ResourcePath {
      * given {@link Resource#getPath()}.
      *
      * @param resource
-     *            the {@link Resource} to relativize
+     *        the {@link Resource} to relativize
      * @return a new relativized {@link Resource}
      */
     Resource relativize(Resource resource);
@@ -342,7 +342,7 @@ public interface ResourcePath {
      * Resolves an immediate child of this {@link ResourcePath}.
      *
      * @param name
-     *            the name of the child; should not contain path separators
+     *        the name of the child; should not contain path separators
      * @return the child {@link Resource}
      */
     Resource resolve(String name);

@@ -33,7 +33,7 @@ public abstract class Adaptable {
      * An {@link Adaptable} builder.
      *
      * @param <B>
-     *            the type of the extending builder
+     *        the type of the extending builder
      */
     public abstract static class Builder<B extends Builder<B>> {
         protected List<Object> adapters = null;
@@ -42,7 +42,7 @@ public abstract class Adaptable {
          * Adds a single {@code adapter}
          *
          * @param adapter
-         *            the adapter to add
+         *        the adapter to add
          * @return this {@link Builder}
          */
         @SuppressWarnings("unchecked")
@@ -58,7 +58,7 @@ public abstract class Adaptable {
          * Adds multiple {@code adapter}s
          *
          * @param adapters
-         *            the adapters to add
+         *        the adapters to add
          * @return this {@link Builder}
          */
         @SuppressWarnings("unchecked")
@@ -75,7 +75,7 @@ public abstract class Adaptable {
          * Adds multiple {@code adapter}s
          *
          * @param adapters
-         *            the adapters to add
+         *        the adapters to add
          * @return this {@link Builder}
          */
         @SuppressWarnings("unchecked")
@@ -115,9 +115,9 @@ public abstract class Adaptable {
 
     /**
      * @param type
-     *            the type of the adapter to lookup
+     *        the type of the adapter to lookup
      * @param <T>
-     *            the type to get an adapter for
+     *        the type to get an adapter for
      * @return the adapter of the given type or {@code null} if an adapter for the given type is not available
      */
     @SuppressWarnings("unchecked")

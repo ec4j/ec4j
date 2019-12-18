@@ -87,9 +87,9 @@ public abstract class AbstractValidatingHandler implements EditorConfigHandler {
      * Note that this method gets called after any evetual errors related to the glob were sent to {@link ErrorHandler}.
      *
      * @param context
-     *            the current {@link ParseContext}
+     *        the current {@link ParseContext}
      * @param glob
-     *            the {@link Glob} to handle
+     *        the {@link Glob} to handle
      */
     protected abstract void glob(ParseContext context, Glob glob);
 
@@ -100,9 +100,9 @@ public abstract class AbstractValidatingHandler implements EditorConfigHandler {
      * If the given property name has an associated {@link PropertyType}, {@link #type} is invoked instead.
      *
      * @param context
-     *            the current {@link ParseContext}
+     *        the current {@link ParseContext}
      * @param name
-     *            the property name
+     *        the property name
      */
     protected abstract void name(ParseContext context, String name);
 
@@ -110,7 +110,7 @@ public abstract class AbstractValidatingHandler implements EditorConfigHandler {
      * Lower-cases the given property {@code name}.
      *
      * @param name
-     *            the property name to normalize
+     *        the property name to normalize
      * @return the normalized property name
      */
     protected String normalizePropertyName(String name) {
@@ -122,9 +122,9 @@ public abstract class AbstractValidatingHandler implements EditorConfigHandler {
      * value were sent to {@link ErrorHandler}.
      *
      * @param context
-     *            the current parse context
+     *        the current parse context
      * @param propValue
-     *            the {@link PropertyValue} to handle
+     *        the {@link PropertyValue} to handle
      */
     protected abstract void propertyValue(ParseContext context, PropertyValue<?> propValue);
 
@@ -154,9 +154,9 @@ public abstract class AbstractValidatingHandler implements EditorConfigHandler {
      * instead.
      *
      * @param context
-     *            the current parse context
+     *        the current parse context
      * @param type
-     *            the {@link PropertyType} to handle
+     *        the {@link PropertyType} to handle
      */
     protected abstract void type(ParseContext context, PropertyType<?> type);
 

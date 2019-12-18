@@ -51,35 +51,36 @@ public class IdeSupportService {
             CompletionEntryMatcher matcher) throws Exception {
         TokenContext context = getTokenContext(offset, reader, false);
         switch (context.getType()) {
-        case PROPERTY_NAME: {
-            List<CompletionEntry> entries = new ArrayList<>();
-            for (PropertyType<?> type : registry.getTypes()) {
-                final CompletionEntry entry = new CompletionEntry(type.getName(), matcher, type, context.getType(), offset);
-                if (entry.updatePrefix(context.getPrefix())) {
-                    entries.add(entry);
-                }
-            }
-            return entries;
-        }
-        case PROPERTY_VALUE: {
-            PropertyType<?> propertyType = registry.getType(context.getName());
-            if (propertyType != null) {
-                Set<String> values = propertyType.getPossibleValues();
-                if (values != null) {
-                    List<CompletionEntry> entries = new ArrayList<>();
-                    for (String value : values) {
-                        final CompletionEntry entry = new CompletionEntry(value, matcher, propertyType, context.getType(), offset);
-                        if (entry.updatePrefix(context.prefix)) {
-                            entries.add(entry);
-                        }
+            case PROPERTY_NAME: {
+                List<CompletionEntry> entries = new ArrayList<>();
+                for (PropertyType<?> type : registry.getTypes()) {
+                    final CompletionEntry entry = new CompletionEntry(type.getName(), matcher, type, context.getType(), offset);
+                    if (entry.updatePrefix(context.getPrefix())) {
+                        entries.add(entry);
                     }
-                    return entries;
+                }
+                return entries;
+            }
+            case PROPERTY_VALUE: {
+                PropertyType<?> propertyType = registry.getType(context.getName());
+                if (propertyType != null) {
+                    Set<String> values = propertyType.getPossibleValues();
+                    if (values != null) {
+                        List<CompletionEntry> entries = new ArrayList<>();
+                        for (String value : values) {
+                            final CompletionEntry entry = new CompletionEntry(value, matcher, propertyType, context.getType(),
+                                    offset);
+                            if (entry.updatePrefix(context.prefix)) {
+                                entries.add(entry);
+                            }
+                        }
+                        return entries;
+                    }
                 }
             }
-        }
-            break;
-        default:
-            break;
+                break;
+            default:
+                break;
         }
         return Collections.emptyList();
     }
@@ -88,16 +89,16 @@ public class IdeSupportService {
             throws Exception {
         TokenContext context = getTokenContext(offset, reader, true);
         switch (context.getType()) {
-        case PROPERTY_NAME: {
-            PropertyType<?> type = registry.getType(context.getPrefix());
-            return type != null ? type.getDescription() : null;
-        }
-        case PROPERTY_VALUE: {
-            PropertyType<?> type = registry.getType(context.getName());
-            return type != null ? type.getDescription() : null;
-        }
-        default:
-            return null;
+            case PROPERTY_NAME: {
+                PropertyType<?> type = registry.getType(context.getPrefix());
+                return type != null ? type.getDescription() : null;
+            }
+            case PROPERTY_VALUE: {
+                PropertyType<?> type = registry.getType(context.getName());
+                return type != null ? type.getDescription() : null;
+            }
+            default:
+                return null;
         }
     }
 
@@ -138,29 +139,29 @@ public class IdeSupportService {
         while (i >= 0 && !stop) {
             c = reader.read(i--);
             switch (c) {
-            case '[':
-                type = TokenContextType.SECTION;
-                stop = true;
-                break;
-            case '#':
-                type = TokenContextType.COMMENTS;
-                stop = true;
-                break;
-            case ' ':
-            case '\t':
-                continue;
-            case '\r':
-            case '\n':
-                stop = true;
-                break;
-            case '=':
-                name = new StringBuilder();
-                type = TokenContextType.PROPERTY_VALUE;
-                break;
-            default:
-                if (name != null && Character.isJavaIdentifierPart(c)) {
-                    name.insert(0, c);
-                }
+                case '[':
+                    type = TokenContextType.SECTION;
+                    stop = true;
+                    break;
+                case '#':
+                    type = TokenContextType.COMMENTS;
+                    stop = true;
+                    break;
+                case ' ':
+                case '\t':
+                    continue;
+                case '\r':
+                case '\n':
+                    stop = true;
+                    break;
+                case '=':
+                    name = new StringBuilder();
+                    type = TokenContextType.PROPERTY_VALUE;
+                    break;
+                default:
+                    if (name != null && Character.isJavaIdentifierPart(c)) {
+                        name.insert(0, c);
+                    }
             }
         }
         return new TokenContext(prefix.toString(), name != null ? name.toString() : null, type);

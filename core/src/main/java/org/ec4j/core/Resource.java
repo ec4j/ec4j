@@ -142,8 +142,7 @@ public interface Resource {
                 if (bytes.length == 0) {
                     /* Handle zero length files as valid */
                     return "";
-                }
-                else if (bomLength > bytes.length) {
+                } else if (bomLength > bytes.length) {
                     throw new IllegalStateException("Input too short; expected to start with Byte Order Mark (BOM)");
                 }
                 for (int i = 0; i < bomLength; i++) {

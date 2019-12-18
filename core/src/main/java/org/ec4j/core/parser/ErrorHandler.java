@@ -61,9 +61,9 @@ public interface ErrorHandler {
      * {@link ErrorEvent}.
      *
      * @param context
-     *            the {@link ParseContext}
+     *        the {@link ParseContext}
      * @param errorEvent
-     *            the error to handle
+     *        the error to handle
      */
     void error(ParseContext context, ErrorEvent errorEvent) throws ParseException;
 

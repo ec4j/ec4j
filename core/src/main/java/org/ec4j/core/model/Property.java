@@ -79,7 +79,7 @@ public class Property extends Adaptable {
          * {@link PropertyType}.
          *
          * @param name
-         *            the key of this key value pair
+         *        the key of this key value pair
          * @return this {@link Builder}
          */
         public Builder name(String name) {
@@ -91,7 +91,7 @@ public class Property extends Adaptable {
          * Sets {@link #type} and also sets {@link #name} to {@code type.getName}.
          *
          * @param type
-         *            the {@link PropertyType} to set
+         *        the {@link PropertyType} to set
          * @return this {@link Builder}
          */
         public Builder type(PropertyType<?> type) {
@@ -104,7 +104,7 @@ public class Property extends Adaptable {
          * Sets the {@link #value}.
          *
          * @param value
-         *            the value of this key value pair
+         *        the value of this key value pair
          * @return this {@link Builder}
          */
         public Builder value(PropertyValue<?> value) {
@@ -116,7 +116,7 @@ public class Property extends Adaptable {
          * Sets the {@link #value}.
          *
          * @param value
-         *            the value of this key value pair
+         *        the value of this key value pair
          * @return this {@link Builder}
          */
         public Builder value(String value) {
@@ -204,10 +204,10 @@ public class Property extends Adaptable {
 
     /**
      * @param <T>
-     *            the type of the value
+     *        the type of the value
      * @return the parsed value
      * @throws RuntimeException
-     *             if the {@link #value} is not a valid value for the associated {@link PropertyType}
+     *         if the {@link #value} is not a valid value for the associated {@link PropertyType}
      */
     @SuppressWarnings("unchecked")
     public <T> T getValueAs() {
