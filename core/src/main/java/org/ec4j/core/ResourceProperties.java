@@ -48,7 +48,7 @@ public class ResourceProperties {
          * Adds multiple properties.
          *
          * @param properties
-         *            the properties to add
+         *        the properties to add
          * @return this {@link Builder}
          */
         public Builder properties(Collection<Property> properties) {
@@ -62,7 +62,7 @@ public class ResourceProperties {
          * Adds multiple properties.
          *
          * @param properties
-         *            the properties to add
+         *        the properties to add
          * @return this {@link Builder}
          */
         public Builder properties(Map<String, Property> properties) {
@@ -74,7 +74,7 @@ public class ResourceProperties {
          * Adds multiple properties.
          *
          * @param properties
-         *            the properties to add
+         *        the properties to add
          * @return this {@link Builder}
          */
         public Builder properties(Property... properties) {
@@ -88,7 +88,7 @@ public class ResourceProperties {
          * Adds a single property.
          *
          * @param property
-         *            the property to add
+         *        the property to add
          * @return this {@link Builder}
          */
         public Builder property(Property property) {
@@ -100,7 +100,7 @@ public class ResourceProperties {
          * Removes the given {@link Property} from {@link #properties}.
          *
          * @param property
-         *            the property to remove
+         *        the property to remove
          * @return this {@link Builder}
          */
         public Builder removeProperty(Property property) {
@@ -136,19 +136,19 @@ public class ResourceProperties {
      * {@link #properties}.
      *
      * @param type
-     *            the {@link PropertyType} whose {@code name} will be used to get the value fron {@link #properties}
+     *        the {@link PropertyType} whose {@code name} will be used to get the value fron {@link #properties}
      * @param defaultValue
-     *            the value to return if the {@code name} is not available in {@link #properties}
+     *        the value to return if the {@code name} is not available in {@link #properties}
      * @param throwInvalid
-     *            if {@code true} and the underlying {@link Property} value is invalid, an {@link RuntimeException} will
-     *            be thrown. Otherwise, in the same case the invalid value will be ignored and {@code defaultValue} will
-     *            be returned instead
+     *        if {@code true} and the underlying {@link Property} value is invalid, an {@link RuntimeException} will
+     *        be thrown. Otherwise, in the same case the invalid value will be ignored and {@code defaultValue} will
+     *        be returned instead
      * @param <T>
-     *            the type of the property value
+     *        the type of the property value
      * @return the value associated with the given {@code type}'s {@code name} or the {@code defaultValue} if the
      *         {@code name} is not available in {@link #properties}
      * @throws RuntimeException
-     *             if {@code throwInvalid} is {@code true} and the underlying {@link Property} value is invalid.
+     *         if {@code throwInvalid} is {@code true} and the underlying {@link Property} value is invalid.
      */
     public <T> T getValue(PropertyType<T> type, T defaultValue, boolean throwInvalid) {
         return getValue(type.getName(), defaultValue, throwInvalid);
@@ -160,19 +160,19 @@ public class ResourceProperties {
      * {@link #properties}.
      *
      * @param name
-     *            the name to use to get the value fron {@link #properties}
+     *        the name to use to get the value fron {@link #properties}
      * @param defaultValue
-     *            the value to return if the {@code name} is not available in {@link #properties}
+     *        the value to return if the {@code name} is not available in {@link #properties}
      * @param throwInvalid
-     *            if {@code true} and the underlying {@link Property} value is invalid, an {@link RuntimeException} will
-     *            be thrown. Otherwise, in the same case the invalid value will be ignored and {@code defaultValue} will
-     *            be returned instead
+     *        if {@code true} and the underlying {@link Property} value is invalid, an {@link RuntimeException} will
+     *        be thrown. Otherwise, in the same case the invalid value will be ignored and {@code defaultValue} will
+     *        be returned instead
      * @param <T>
-     *            the type of the property value
+     *        the type of the property value
      * @return the value associated with the given {@code name} or the {@code defaultValue} if the {@code name} is not
      *         available in {@link #properties}
      * @throws RuntimeException
-     *             if {@code throwInvalid} is {@code true} and the underlying {@link Property} value is invalid.
+     *         if {@code throwInvalid} is {@code true} and the underlying {@link Property} value is invalid.
      */
     @SuppressWarnings("unchecked")
     public <T> T getValue(String name, T defaultValue, boolean throwInvalid) {

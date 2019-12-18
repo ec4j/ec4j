@@ -39,6 +39,7 @@ public class CompletionEntry {
     private final int initialOffset;
     private final TokenContextType contextType;
     private final PropertyType<?> propertyType;
+
     public CompletionEntry(String name, CompletionEntryMatcher matcher, PropertyType<?> propertyType,
             TokenContextType contextType, int initialOffset) {
         this.name = name;

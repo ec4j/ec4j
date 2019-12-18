@@ -72,7 +72,7 @@ public class Ec4jPathTest {
         } catch (IllegalArgumentException expected) {
         }
         try {
-            Ec4jPaths.of((String)null);
+            Ec4jPaths.of((String) null);
             Assert.fail(IllegalArgumentException.class.getSimpleName() + " expected");
         } catch (IllegalArgumentException expected) {
         }

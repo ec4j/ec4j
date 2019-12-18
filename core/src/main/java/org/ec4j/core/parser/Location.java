@@ -30,7 +30,7 @@ public class Location {
      * it easier to write tests.
      *
      * @param locationString
-     *            the location string to parse
+     *        the location string to parse
      * @return a new {@link Location} parsed out of the given {@code locationString}
      */
     public static Location parse(String locationString) {

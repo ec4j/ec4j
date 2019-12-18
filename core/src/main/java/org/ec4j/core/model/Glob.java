@@ -143,7 +143,7 @@ public class Glob {
      * by Dennis Ushakov.
      *
      * @param filePath
-     *            a slash ({@code /}) separated file path to match against this {@link Glob}
+     *        a slash ({@code /}) separated file path to match against this {@link Glob}
      * @return {@code true} if the given {@code filePath} matches; {@code false} otherwise
      */
     public boolean match(Ec4jPath filePath) {
@@ -274,7 +274,7 @@ public class Glob {
 
     /**
      * @param globString
-     *            the glob string to check
+     *        the glob string to check
      * @return {@code true} if the count of opening braces is equal to the count of the closing braces; {@code false}
      *         otherwise
      */
@@ -284,17 +284,17 @@ public class Glob {
         int openedCount = 0;
         while (i < len) {
             switch (globString.charAt(i++)) {
-            case '\\':
-                i++;
-                break;
-            case '{':
-                openedCount++;
-                break;
-            case '}':
-                openedCount--;
-                break;
-            default:
-                break;
+                case '\\':
+                    i++;
+                    break;
+                case '{':
+                    openedCount++;
+                    break;
+                case '}':
+                    openedCount--;
+                    break;
+                default:
+                    break;
             }
         }
         return openedCount == 0;

@@ -99,14 +99,14 @@ public class PropertyType<T> {
          */
         public static EndOfLineValue ofEndOfLineString(String endOfLineString) {
             switch (endOfLineString) {
-            case "\r":
-                return EndOfLineValue.cr;
-            case "\r\n":
-                return EndOfLineValue.crlf;
-            case "\n":
-                return EndOfLineValue.lf;
-            default:
-                return null;
+                case "\r":
+                    return EndOfLineValue.cr;
+                case "\r\n":
+                    return EndOfLineValue.crlf;
+                case "\n":
+                    return EndOfLineValue.lf;
+                default:
+                    return null;
             }
         }
 

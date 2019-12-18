@@ -102,16 +102,16 @@ public class EditorConfigParser implements ParseContext {
      * to the given {@link EditorConfigHandler}.
      *
      * @param resource
-     *            the {@link Resource} to parse
+     *        the {@link Resource} to parse
      * @param handler
-     *            the handler to send the parse events to
+     *        the handler to send the parse events to
      * @param errorHandler
-     *            an {@link ErrorHandler} to notify on parse errors
+     *        an {@link ErrorHandler} to notify on parse errors
      * @throws IOException
-     *             on I/O problems when reading out of the given {@link Resource}
+     *         on I/O problems when reading out of the given {@link Resource}
      * @throws ParseException
-     *             only if the supplied {@link ErrorHandler} chooses to react on some {@link ErrorEvent} by throwing
-     *             {@code ParseException}s for them
+     *         only if the supplied {@link ErrorHandler} chooses to react on some {@link ErrorEvent} by throwing
+     *         {@code ParseException}s for them
      */
     public void parse(Resource resource, EditorConfigHandler handler, ErrorHandler errorHandler) throws IOException {
         this.resource = resource;
@@ -166,18 +166,18 @@ public class EditorConfigParser implements ParseContext {
             return;
         }
         switch (current) {
-        case '#':
-        case ';':
-            // comment line
-            readComment();
-            break;
-        case '[':
-            // section line
-            readSection();
-            break;
-        default:
-            // property line
-            readProperty();
+            case '#':
+            case ';':
+                // comment line
+                readComment();
+                break;
+            case '[':
+                // section line
+                readSection();
+                break;
+            default:
+                // property line
+                readProperty();
         }
     }
 
@@ -222,7 +222,7 @@ public class EditorConfigParser implements ParseContext {
         char c;
         int i = -1;
         final int patLen = globAndLBracket.length();
-        for (i = patLen  - 1; i >= 0; i--) {
+        for (i = patLen - 1; i >= 0; i--) {
             c = globAndLBracket.charAt(i);
             if (c == ']') {
                 break;
@@ -251,7 +251,9 @@ public class EditorConfigParser implements ParseContext {
     }
 
     private enum StopReading {
-        Glob, PropertyName, PropertyValue
+        Glob,
+        PropertyName,
+        PropertyValue
     }
 
     private String readString(StopReading stop) throws IOException {
@@ -282,23 +284,23 @@ public class EditorConfigParser implements ParseContext {
             return true;
         }
         switch (stop) {
-        case Glob:
-            // Read the full line
-            if ((current == ';' || current == '#') && isWhiteSpace(last)) {
-                // Inline comment
-                return true;
-            }
-            return false;
-        case PropertyName:
-            return isColonSeparator() || isWhiteSpace();
-        case PropertyValue:
-            if ((current == ';' || current == '#') && isWhiteSpace(last)) {
-                // Inline comment
-                return true;
-            }
-            return false;
-        default:
-            return isWhiteSpace();
+            case Glob:
+                // Read the full line
+                if ((current == ';' || current == '#') && isWhiteSpace(last)) {
+                    // Inline comment
+                    return true;
+                }
+                return false;
+            case PropertyName:
+                return isColonSeparator() || isWhiteSpace();
+            case PropertyValue:
+                if ((current == ';' || current == '#') && isWhiteSpace(last)) {
+                    // Inline comment
+                    return true;
+                }
+                return false;
+            default:
+                return isWhiteSpace();
         }
     }
 

@@ -236,7 +236,7 @@ public interface Ec4jPath {
 
         /**
          * @param path
-         *            the {@link Path} to create a new {@link Ec4jPath} from
+         *        the {@link Path} to create a new {@link Ec4jPath} from
          * @return a new {@link Ec4jPath}
          */
         public static Ec4jPath of(Path path) {
@@ -245,7 +245,7 @@ public interface Ec4jPath {
 
         /**
          * @param path
-         *            the {@link Path} to create a new {@link Ec4jPath} from
+         *        the {@link Path} to create a new {@link Ec4jPath} from
          * @return a new {@link Ec4jPath}
          */
         public static Ec4jPath of(String path) {
@@ -285,7 +285,7 @@ public interface Ec4jPath {
      * {@code /dir1} and {@code other} is {@code /dir1/dir2/file} then the relative path is {@code dir2/file}.
      *
      * @param other
-     *            the path to relativize
+     *        the path to relativize
      * @return a relative path between this path and a given path.
      */
     Ec4jPath relativize(Ec4jPath other);
@@ -294,7 +294,7 @@ public interface Ec4jPath {
      * Creates a new {@link Ec4jPath} by appending the given {@code segment} to this {@link Ec4jPath}.
      *
      * @param segment
-     *            the segment to append to this {@link Ec4jPath}
+     *        the segment to append to this {@link Ec4jPath}
      * @return a new {@link Ec4jPath}
      */
     Ec4jPath resolve(String segment);

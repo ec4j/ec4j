@@ -68,7 +68,7 @@ public class Span {
          * Sets the end of the {@link Span}.
          *
          * @param end
-         *            the end {@link Location}
+         *        the end {@link Location}
          * @return this {@link Builder}
          */
         public Builder end(Location end) {
@@ -80,7 +80,7 @@ public class Span {
          * Sets the end of the {@link Span} unless it was set already.
          *
          * @param end
-         *            the end {@link Location}
+         *        the end {@link Location}
          * @return this {@link Builder}
          */
         public Builder endIfNeeded(Location end) {
@@ -94,7 +94,7 @@ public class Span {
          * Sets the start of the {@link Span}.
          *
          * @param start
-         *            the start {@link Location}
+         *        the start {@link Location}
          * @return this {@link Builder}
          */
         public Builder start(Location start) {
@@ -162,7 +162,7 @@ public class Span {
      * easier to write tests.
      *
      * @param spanString
-     *            the span string to parse
+     *        the span string to parse
      * @return a new {@link Span} parsed out of the given {@code spanString}
      */
     public static Span parse(String spanString) {

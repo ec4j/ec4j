@@ -49,7 +49,7 @@ public class Section extends Adaptable {
          * Constructs a new {@link Builder}
          *
          * @param parentBuilder
-         *            can be {@code null} if you do not to call {@link #closeSection()}
+         *        can be {@code null} if you do not to call {@link #closeSection()}
          */
         public Builder(org.ec4j.core.model.EditorConfig.Builder parentBuilder) {
             super();
@@ -145,7 +145,7 @@ public class Section extends Adaptable {
          * Sets the {@link Glob}
          *
          * @param glob
-         *            the {@link Glob} to set
+         *        the {@link Glob} to set
          * @return this {@link Builder}
          */
         public Builder glob(Glob glob) {
@@ -162,9 +162,9 @@ public class Section extends Adaptable {
 
         /**
          * @param parentAware
-         *            if {@code true} the {@link Section#getProperties()} of the resulting {@link Section} will have the
-         *            Section set in their adapters (which can be used as the link to the parent {@link Section});
-         *            othwise the seczion will not be added to {@link Property}'s adapters
+         *        if {@code true} the {@link Section#getProperties()} of the resulting {@link Section} will have the
+         *        Section set in their adapters (which can be used as the link to the parent {@link Section});
+         *        othwise the seczion will not be added to {@link Property}'s adapters
          *
          * @return this {@link Builder}
          */
@@ -177,7 +177,7 @@ public class Section extends Adaptable {
          * Adds multiple {@link Property.Builder}s to {@link #properties}.
          *
          * @param properties
-         *            the {@link Property.Builder}s to add
+         *        the {@link Property.Builder}s to add
          * @return this {@link Builder}
          */
         public Builder properties(Collection<Property.Builder> properties) {
@@ -191,7 +191,7 @@ public class Section extends Adaptable {
          * Adds multiple {@link Property.Builder}s to {@link #properties}.
          *
          * @param properties
-         *            the {@link Property.Builder}s to add
+         *        the {@link Property.Builder}s to add
          * @return this {@link Builder}
          */
         public Builder properties(Property.Builder... properties) {
@@ -205,7 +205,7 @@ public class Section extends Adaptable {
          * Adds the given {@link Property.Builder} to {@link #properties}.
          *
          * @param property
-         *            the {@link Property.Builder} to add
+         *        the {@link Property.Builder} to add
          * @return this {@link Builder}
          */
         public Builder property(Property.Builder property) {

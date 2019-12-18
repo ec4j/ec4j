@@ -68,10 +68,10 @@ public class EditorConfigLoader {
      * Loads an {@link EditorConfig} object out of the given {@code configFile}.
      *
      * @param configFile
-     *            the {@link Resource} to read the EditorConfig model from
+     *        the {@link Resource} to read the EditorConfig model from
      * @return a new {@link EditorConfig} instance
      * @throws IOException
-     *             on I/O problems during the reading from the given {@link Resource}
+     *         on I/O problems during the reading from the given {@link Resource}
      */
     public EditorConfig load(Resource configFile) throws IOException {
         try {

@@ -79,7 +79,7 @@ public class Comments {
              * Adds a single {@link CommentLine}.
              *
              * @param commentLine
-             *            the {@link CommentLine} to add
+             *        the {@link CommentLine} to add
              * @return this {@link Builder}
              */
             public Builder commentLine(CommentLine commentLine) {
@@ -98,7 +98,7 @@ public class Comments {
              * Adds multiple {@link CommentLine}s.
              *
              * @param commentLines
-             *            the {@link CommentLine}s to add
+             *        the {@link CommentLine}s to add
              * @return this {@link Builder}
              */
             public Builder commentLines(Collection<CommentLine> commentLines) {
@@ -117,7 +117,7 @@ public class Comments {
              * Adds multiple {@link CommentLine}s.
              *
              * @param commentLines
-             *            the {@link CommentLine}s to add
+             *        the {@link CommentLine}s to add
              * @return this {@link Builder}
              */
             public Builder commentLines(CommentLine... commentLines) {
@@ -190,7 +190,7 @@ public class Comments {
              * Adds a single {@link CommentBlock}.
              *
              * @param commentBlock
-             *            the {@link CommentBlock} to add
+             *        the {@link CommentBlock} to add
              * @return this {@link Builder}
              */
             public Builder commentBlock(CommentBlock commentBlock) {
@@ -202,7 +202,7 @@ public class Comments {
              * Adds multiple {@link CommentBlock}s.
              *
              * @param commentBlocks
-             *            the {@link CommentBlock}s to add
+             *        the {@link CommentBlock}s to add
              * @return this {@link Builder}
              */
             public Builder commentBlocks(Collection<CommentBlock> commentBlocks) {
@@ -214,7 +214,7 @@ public class Comments {
              * Adds multiple {@link CommentBlock}s.
              *
              * @param commentBlocks
-             *            the {@link CommentBlock}s to add
+             *        the {@link CommentBlock}s to add
              * @return this {@link Builder}
              */
             public Builder commentBlocks(CommentBlock... commentBlocks) {
@@ -290,7 +290,7 @@ public class Comments {
 
             /**
              * @param text
-             *            the comment text
+             *        the comment text
              * @return this {@link Builder}
              */
             public Builder text(String text) {

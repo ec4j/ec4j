@@ -40,7 +40,7 @@ public interface EditorConfigHandler {
      * Start of a document event
      *
      * @param context
-     *            the {@link ParseContext}
+     *        the {@link ParseContext}
      */
     void startDocument(ParseContext context);
 
@@ -48,7 +48,7 @@ public interface EditorConfigHandler {
      * End of a document event
      *
      * @param context
-     *            the {@link ParseContext}
+     *        the {@link ParseContext}
      */
     void endDocument(ParseContext context);
 
@@ -56,7 +56,7 @@ public interface EditorConfigHandler {
      * Start of a section
      *
      * @param context
-     *            the {@link ParseContext}
+     *        the {@link ParseContext}
      */
     void startSection(ParseContext context);
 
@@ -64,7 +64,7 @@ public interface EditorConfigHandler {
      * End of a section
      *
      * @param context
-     *            the {@link ParseContext}
+     *        the {@link ParseContext}
      */
     void endSection(ParseContext context);
 
@@ -72,7 +72,7 @@ public interface EditorConfigHandler {
      * Start of a glob pattern
      *
      * @param context
-     *            the {@link ParseContext}
+     *        the {@link ParseContext}
      */
     void startGlob(ParseContext context);
 
@@ -80,9 +80,9 @@ public interface EditorConfigHandler {
      * End of a glob pattern
      *
      * @param context
-     *            the {@link ParseContext}
+     *        the {@link ParseContext}
      * @param glob
-     *            the glob that ends
+     *        the glob that ends
      */
     void endGlob(ParseContext context, String glob);
 
@@ -90,7 +90,7 @@ public interface EditorConfigHandler {
      * Start of a property
      *
      * @param context
-     *            the {@link ParseContext}
+     *        the {@link ParseContext}
      */
     void startProperty(ParseContext context);
 
@@ -98,7 +98,7 @@ public interface EditorConfigHandler {
      * End of a property
      *
      * @param context
-     *            the {@link ParseContext}
+     *        the {@link ParseContext}
      */
     void endProperty(ParseContext context);
 
@@ -106,7 +106,7 @@ public interface EditorConfigHandler {
      * Start of a property name
      *
      * @param context
-     *            the {@link ParseContext}
+     *        the {@link ParseContext}
      */
     void startPropertyName(ParseContext context);
 
@@ -114,9 +114,9 @@ public interface EditorConfigHandler {
      * End of a property name
      *
      * @param context
-     *            the {@link ParseContext}
+     *        the {@link ParseContext}
      * @param name
-     *            the name
+     *        the name
      */
     void endPropertyName(ParseContext context, String name);
 
@@ -124,7 +124,7 @@ public interface EditorConfigHandler {
      * Start of a property value
      *
      * @param context
-     *            the {@link ParseContext}
+     *        the {@link ParseContext}
      */
     void startPropertyValue(ParseContext context);
 
@@ -132,9 +132,9 @@ public interface EditorConfigHandler {
      * Start of a property name
      *
      * @param context
-     *            the {@link ParseContext}
+     *        the {@link ParseContext}
      * @param value
-     *            the value
+     *        the value
      */
     void endPropertyValue(ParseContext context, String value);
 
@@ -142,7 +142,7 @@ public interface EditorConfigHandler {
      * Start of a comment line
      *
      * @param context
-     *            the {@link ParseContext}
+     *        the {@link ParseContext}
      */
     void startComment(ParseContext context);
 
@@ -150,9 +150,9 @@ public interface EditorConfigHandler {
      * End of a comment line
      *
      * @param context
-     *            the {@link ParseContext}
+     *        the {@link ParseContext}
      * @param comment
-     *            the comment text
+     *        the comment text
      */
     void endComment(ParseContext context, String comment);
 
@@ -160,7 +160,7 @@ public interface EditorConfigHandler {
      * A blank line
      *
      * @param context
-     *            the {@link ParseContext}
+     *        the {@link ParseContext}
      */
     void blankLine(ParseContext context);
 
