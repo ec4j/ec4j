@@ -288,6 +288,7 @@ limitations under the License.</inlineHeader>
                         <exclude>**/*.adoc</exclude>
                         <exclude>**/*.importorder</exclude>
                         <exclude>**/README.*</exclude>
+                        <exclude>.gitattributes/</exclude>
                         <exclude>**/.gitkeep</exclude>
                         <exclude>.mvn/wrapper/</exclude>
                         <exclude>CMakeFiles/</exclude>
