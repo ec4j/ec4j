@@ -15,9 +15,9 @@
 # limitations under the License.
 #
 
-name: Java CI
+name: verify
 
-on: [pull_request]
+on: [push, pull_request]
 
 jobs:
   linux:
