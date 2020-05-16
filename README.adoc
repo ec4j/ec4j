@@ -5,8 +5,7 @@ image::src/main/images/ec4j-logo-with-name.svg[ec4j,height=60]
 https://github.com/ec4j/ec4j/blob/master/LICENSE[image:https://img.shields.io/github/license/ec4j/ec4j.svg[License]]
 http://search.maven.org/#search%7Cga%7C1%7Corg.ec4j.core[image:https://img.shields.io/maven-central/v/org.ec4j.core/ec4j-core.svg[Maven
 Central]]
-http://travis-ci.org/ec4j/ec4j[image:https://img.shields.io/travis/ec4j/ec4j/master.svg?logo=travis&color=white&label=Travis+CI[Travis CI build status]]
-https://ci.appveyor.com/project/ppalaga/ec4j[image:https://img.shields.io/appveyor/ci/ppalaga/ec4j/master.svg?logo=appveyor&color=white&label=AppVeyor+Windows+CI[AppVeyor Windows CI build status]]
+image:https://github.com/ec4j/ec4j/workflows/Linux%20%26%20Windows%20CI/badge.svg[link="https://github.com/ec4j/ec4j/actions"]
 
 `ec4j` is an http://editorconfig.org/[EditorConfig] implementation for Java. It provides:
 
@@ -73,7 +72,7 @@ char indentChar = indentStyleValue.getIndentChar();
 Prerequisites:
 
 * Java 8+
-* Optionally Maven 3.5.4+, unless you want to use `./mvnw` or `mvnw.bat` delivered by the project
+* Optionally Maven 3.6.1+, unless you want to use `./mvnw` or `mvnw.bat` delivered by the project
 * cmake 2.6+ to run the https://github.com/editorconfig/editorconfig-core-test[editorconfig-core-test] testsuite (optional).
 
 The most common build with unit tests:
@@ -135,4 +134,3 @@ applicable to a given file, `ec4j` offers much more in addition to that:
 * All code and contributions are under link:/LICENSE[Apache License]
 * Issues and Discussions: https://github.com/ec4j/ec4j/issues
 * The `https://github.com/ec4j/ec4j[ec4j/ec4j]` repository is the reference repository for contributing to `ec4j`.
-* Continuous integration is performed for each pull request by Travis CI on Linux and by AppVeyor on Windows.
