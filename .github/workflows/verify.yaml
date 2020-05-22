@@ -32,10 +32,12 @@ jobs:
       with:
         java-version: ${{ matrix.java }}
     - name: Build with Maven
-      run: ./mvnw clean verify -B -ntp -Dinvoker.streamLogs=true
-    - name: Store test results
-      if: failure()
-      run: cat target/it/rpkg-and-run-tests/build.log target/it/rpkg-and-run-tests2/build.log
+      run: |
+        cmake --version
+        git submodule init \
+          && git submodule update \
+          && ./mvnw -Pcore-test clean install -B -ntp \
+          && ( cd core && cmake . && ctest . )
   windows:
     runs-on: windows-2019
     strategy:
@@ -47,8 +49,12 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: ${{ matrix.java }}
+    - name: Prepare
+      shell: cmd
+      run: cmake --version && git submodule init && git submodule update
     - name: Build with Maven
-      run: './mvnw clean verify -B -ntp "-Dinvoker.streamLogs=true"'
-    - name: Store test results
-      if: failure()
-      run: 'type target\it\rpkg-and-run-tests\build.log'
+      run: ./mvnw -Pcore-test clean install -B -ntp
+    - name: Core tests
+      shell: cmd
+      working-directory: core
+      run: 'cmake . && ctest -E "(utf_8_char|spaces_in_section_name)" .'
