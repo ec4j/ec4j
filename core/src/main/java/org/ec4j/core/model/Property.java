@@ -50,16 +50,6 @@ public class Property extends Adaptable {
             return new Property(sealAdapters(), type, name, value);
         }
 
-        boolean checkMax() {
-            if (name != null && name.length() > 50) {
-                return false;
-            }
-            if (value != null && value.getSource().length() > 255) {
-                return false;
-            }
-            return true;
-        }
-
         /**
          * Adds this {@link Builder} to the parent {@link Section.Builder} using parent
          * {@link Section.Builder#property(Property.Builder)} and returns the parent {@link Section.Builder}
@@ -67,10 +57,7 @@ public class Property extends Adaptable {
          * @return the parent {@link Section.Builder}
          */
         public Section.Builder closeProperty() {
-            if (checkMax()) {
-                parentBuilder.property(this);
-            }
-            return parentBuilder;
+            return parentBuilder.property(this);
         }
 
         /**
