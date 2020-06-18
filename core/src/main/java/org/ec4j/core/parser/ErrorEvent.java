@@ -16,6 +16,7 @@
  */
 package org.ec4j.core.parser;
 
+import org.ec4j.core.Resource;
 import org.ec4j.core.model.Glob;
 import org.ec4j.core.model.PropertyType;
 
@@ -64,8 +65,11 @@ public class ErrorEvent extends Span {
 
     private final String message;
 
-    public ErrorEvent(Location start, Location end, String message, ErrorType errorType) {
+    private final Resource resource;
+
+    public ErrorEvent(Location start, Location end, Resource resource, String message, ErrorType errorType) {
         super(start, end);
+        this.resource = resource;
         this.message = message;
         this.errorType = errorType;
     }
@@ -84,6 +88,13 @@ public class ErrorEvent extends Span {
      */
     public String getMessage() {
         return message;
+    }
+
+    /**
+     * @return the {@link Resource} where this {@link ErrorEvent} occurred
+     */
+    public Resource getResource() {
+        return resource;
     }
 
 }

@@ -130,8 +130,12 @@ public class EditorConfigParser implements ParseContext {
             this.reader = reader;
             readLines();
             if (!isEndOfText()) {
-                Location location = getLocation();
-                ErrorEvent e = new ErrorEvent(location, location, "Found unexpected character; expected end of input",
+                final Location location = getLocation();
+                final ErrorEvent e = new ErrorEvent(
+                        location,
+                        location,
+                        resource,
+                        "Found unexpected character; expected end of input",
                         ErrorType.EXPECTED_END_OF_INPUT);
                 errorHandler.error(this, e);
             }
@@ -210,7 +214,11 @@ public class EditorConfigParser implements ParseContext {
 
     private void globNotClosed() {
         final Location location = getLocation();
-        ErrorEvent e = new ErrorEvent(location, location, "Glob pattern not closed. Expected ']'",
+        final ErrorEvent e = new ErrorEvent(
+                location,
+                location,
+                resource,
+                "Glob pattern not closed. Expected ']'",
                 ErrorType.GLOB_NOT_CLOSED);
         errorHandler.error(this, e);
     }
@@ -264,12 +272,20 @@ public class EditorConfigParser implements ParseContext {
              */
             if (isEndOfText()) {
                 final Location location = getLocation();
-                ErrorEvent e = new ErrorEvent(location, location, "Unexpected end of input",
+                ErrorEvent e = new ErrorEvent(
+                        location,
+                        location,
+                        resource,
+                        "Unexpected end of input",
                         ErrorType.UNEXPECTED_END_OF_INPUT);
                 errorHandler.error(this, e);
             } else if (current < 0x20) {
                 final Location location = getLocation();
-                ErrorEvent e = new ErrorEvent(location, location, "Expected a valid string character",
+                ErrorEvent e = new ErrorEvent(
+                        location,
+                        location,
+                        resource,
+                        "Expected a valid string character",
                         ErrorType.EXPECTED_STRING_CHARACTER);
                 errorHandler.error(this, e);
             } else {
@@ -320,8 +336,11 @@ public class EditorConfigParser implements ParseContext {
         skipWhiteSpace();
         if (!readChar('=') && !readChar(':')) {
             final Location location = getLocation();
-            ErrorEvent e = new ErrorEvent(location, location,
-                    "Equals sign '==' missing after property name '" + name + "'",
+            ErrorEvent e = new ErrorEvent(
+                    location,
+                    location,
+                    resource,
+                    "Equals sign '=' missing after property name '" + name + "'",
                     ErrorType.PROPERTY_ASSIGNMENT_MISSING);
             errorHandler.error(this, e);
         }
@@ -331,7 +350,11 @@ public class EditorConfigParser implements ParseContext {
         String value = readString(StopReading.PropertyValue);
         if (value.length() < 1) {
             final Location location = getLocation();
-            ErrorEvent e = new ErrorEvent(location, location, "Property '" + name + "' has no value",
+            ErrorEvent e = new ErrorEvent(
+                    location,
+                    location,
+                    resource,
+                    "Property '" + name + "' has no value",
                     ErrorType.PROPERTY_VALUE_MISSING);
             errorHandler.error(this, e);
         }
