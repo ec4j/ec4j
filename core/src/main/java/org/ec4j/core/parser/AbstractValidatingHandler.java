@@ -48,9 +48,11 @@ public abstract class AbstractValidatingHandler implements EditorConfigHandler {
         final Glob glob = new Glob(globSource);
         final PatternSyntaxException e = glob.getError();
         if (e != null) {
-            final String msg = String.format("The glob '%s' is not valid: %s", globSource, e.getMessage());
+            final String msg = String.format("The glob '%s' is not valid: %s",
+                    globSource,
+                    e.getMessage());
             context.getErrorHandler().error(context,
-                    new ErrorEvent(globStart, context.getLocation(), msg, ErrorType.INVALID_GLOB));
+                    new ErrorEvent(globStart, context.getLocation(), context.getResource(), msg, ErrorType.INVALID_GLOB));
         }
         glob(context, glob);
         globStart = null;
@@ -74,8 +76,13 @@ public abstract class AbstractValidatingHandler implements EditorConfigHandler {
     public void endPropertyValue(ParseContext context, String value) {
         final PropertyValue<?> propValue = type == null ? PropertyValue.valid(value, value) : type.parse(value);
         if (!propValue.isValid()) {
-            context.getErrorHandler().error(context, new ErrorEvent(propertyValueStart, context.getLocation(),
-                    propValue.getErrorMessage(), ErrorType.INVALID_PROPERTY_VALUE));
+            context.getErrorHandler().error(context,
+                    new ErrorEvent(
+                            propertyValueStart,
+                            context.getLocation(),
+                            context.getResource(),
+                            propValue.getErrorMessage(),
+                            ErrorType.INVALID_PROPERTY_VALUE));
         }
         propertyValue(context, propValue);
         this.type = null;

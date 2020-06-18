@@ -23,6 +23,7 @@ import java.util.Iterator;
 
 import org.ec4j.core.Resource.Resources.StringResourceTree;
 import org.ec4j.core.model.Property;
+import org.ec4j.core.parser.ParseException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -256,4 +257,22 @@ public class EditorConfigParserTest {
                 .queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(0, properties.size());
     }
+
+    @Test
+    public void unfinishedGlob() throws IOException {
+        final String testFile = "root/test4";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig", "[foo")//
+                .touch(testFile) //
+                .build();
+
+        try {
+            ResourcePropertiesService.default_()
+                    .queryProperties(tree.getResource(testFile)).getProperties().values();
+            Assert.fail("ParseException expected");
+        } catch (ParseException e) {
+            Assert.assertEquals(e.getMessage(), "string:root/.editorconfig:1:3: Glob pattern not closed. Expected ']'");
+        }
+    }
+
 }

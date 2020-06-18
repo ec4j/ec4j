@@ -28,7 +28,12 @@ public class ParseException extends RuntimeException {
     private static final long serialVersionUID = -3857553902141819279L;
 
     public ParseException(ErrorEvent errorEvent) {
-        super(errorEvent.getMessage() + " at " + errorEvent.getStart());
+        super(String.format(
+                "%s:%d:%d: %s",
+                errorEvent.getResource(),
+                errorEvent.getStart().getLine(),
+                errorEvent.getStart().getColumn(),
+                errorEvent.getMessage()));
     }
 
 }
