@@ -275,4 +275,18 @@ public class EditorConfigParserTest {
         }
     }
 
+    @Test
+    public void emptyEditorConfigFile() throws IOException {
+        final String testFile = "root/test4";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig", "")//
+                .touch(testFile) //
+                .build();
+
+        Collection<Property> properties = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile)).getProperties().values();
+        Assert.assertEquals(0, properties.size());
+
+    }
+
 }

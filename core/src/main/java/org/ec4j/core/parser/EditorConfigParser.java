@@ -179,6 +179,9 @@ public class EditorConfigParser implements ParseContext {
                 // section line
                 readSection();
                 break;
+            case -1:
+                // empty line in an empty document
+                break;
             default:
                 // property line
                 readProperty();
