@@ -47,7 +47,6 @@ import java.util.regex.PatternSyntaxException;
  */
 public class Glob {
 
-    private static final int MAX_GLOB_LENGTH = 4096;
     private final PatternSyntaxException error;
     private final List<int[]> ranges;
     private final Pattern regex;
@@ -58,32 +57,24 @@ public class Glob {
     public Glob(String source) {
         this.source = source;
         this.ranges = new ArrayList<int[]>();
-        if (source.length() > MAX_GLOB_LENGTH) {
-            this.regex = null;
-            this.error = new PatternSyntaxException(
-                    "Glob length exceeds the maximal allowed length of " + MAX_GLOB_LENGTH + " characters", source,
-                    MAX_GLOB_LENGTH);
-            this.matchLastSegmentOnly = false;
-        } else {
-            source = ESCAPED_COMMENT_SIGNS.matcher(source).replaceAll("$1");
-            final int slashPos = source.indexOf('/');
-            final int doubleAsteriskPos = source.indexOf("**");
-            if (slashPos >= 0) {
-                source = (slashPos == 0 ? source.substring(1) : source);
-            }
-            this.matchLastSegmentOnly = slashPos < 0 && doubleAsteriskPos < 0;
-            final StringBuilder regex = new StringBuilder(source.length());
-            convertGlobToRegEx(source, ranges, regex);
-            PatternSyntaxException err = null;
-            Pattern pat = null;
-            try {
-                pat = Pattern.compile(regex.toString());
-            } catch (PatternSyntaxException e) {
-                err = e;
-            }
-            this.error = err;
-            this.regex = pat;
+        source = ESCAPED_COMMENT_SIGNS.matcher(source).replaceAll("$1");
+        final int slashPos = source.indexOf('/');
+        final int doubleAsteriskPos = source.indexOf("**");
+        if (slashPos >= 0) {
+            source = (slashPos == 0 ? source.substring(1) : source);
         }
+        this.matchLastSegmentOnly = slashPos < 0 && doubleAsteriskPos < 0;
+        final StringBuilder regex = new StringBuilder(source.length());
+        convertGlobToRegEx(source, ranges, regex);
+        PatternSyntaxException err = null;
+        Pattern pat = null;
+        try {
+            pat = Pattern.compile(regex.toString());
+        } catch (PatternSyntaxException e) {
+            err = e;
+        }
+        this.error = err;
+        this.regex = pat;
     }
 
     @Override

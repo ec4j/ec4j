@@ -246,7 +246,7 @@ public class EditorConfigParserTest {
     }
 
     @Test
-    public void max_section_name_ignore() throws IOException {
+    public void max_section_name_long() throws IOException {
         final String testFile = "root/test4";
         StringResourceTree tree = StringResourceTree.builder() //
                 .resource("root/.editorconfig", getClass().getResource("/parser/.editorconfig"), StandardCharsets.UTF_8)//
@@ -255,7 +255,9 @@ public class EditorConfigParserTest {
 
         Collection<Property> properties = ResourcePropertiesService.default_()
                 .queryProperties(tree.getResource(testFile)).getProperties().values();
-        Assert.assertEquals(0, properties.size());
+        Assert.assertEquals(1, properties.size());
+        Iterator<Property> it = properties.iterator();
+        Assert.assertEquals("key4 = value4", it.next().toString());
     }
 
     @Test
