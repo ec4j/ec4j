@@ -22,7 +22,7 @@
 
     <groupId>org.ec4j.core</groupId>
     <artifactId>ec4j-core-parent</artifactId>
-    <version>0.2.3-SNAPSHOT</version>
+    <version>0.3.0</version>
 
     <packaging>pom</packaging>
 
@@ -55,7 +55,7 @@
         <connection>scm:git:git@github.com:ec4j/ec4j.git</connection>
         <developerConnection>scm:git:git@github.com:ec4j/ec4j.git</developerConnection>
         <url>https://github.com/angelozerr/ec4j</url>
-      <tag>HEAD</tag>
+      <tag>0.3.0</tag>
   </scm>
 
     <modules>
@@ -131,7 +131,7 @@
             <dependency>
                 <groupId>org.ec4j.core</groupId>
                 <artifactId>ec4j-core</artifactId>
-                <version>0.2.3-SNAPSHOT</version>
+                <version>0.3.0</version>
             </dependency>
 
         </dependencies>
