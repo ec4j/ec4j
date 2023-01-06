@@ -85,7 +85,7 @@
         <version.maven-source-plugin>3.0.1</version.maven-source-plugin>
         <version.maven-surefire-plugin>3.0.0-M1</version.maven-surefire-plugin>
         <version.nexus-staging-maven-plugin>1.6.8</version.nexus-staging-maven-plugin>
-        <version.org.apache.felix.maven-bundle-plugin>4.1.0</version.org.apache.felix.maven-bundle-plugin>
+        <version.org.apache.felix.maven-bundle-plugin>5.1.8</version.org.apache.felix.maven-bundle-plugin>
         <version.org.codehaus.mojo.build-helper-maven-plugin>3.0.0</version.org.codehaus.mojo.build-helper-maven-plugin>
         <version.org.codehaus.buildnumber-maven-plugin>1.4</version.org.codehaus.buildnumber-maven-plugin>
         <version.org.codehaus.gmaven.groovy-maven-plugin>2.1</version.org.codehaus.gmaven.groovy-maven-plugin>
@@ -175,6 +175,20 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${version.maven-compiler-plugin}</version>
+                    <executions>
+                        <execution>
+                            <id>module-info-compile</id>
+                            <goals><goal>compile</goal></goals>
+                            <configuration>
+                                <release>9</release>
+                                <compileSourceRoots>${project.basedir}/src/main/java9</compileSourceRoots>
+                                <multiReleaseOutput>true</multiReleaseOutput>
+                                <jdkToolchain>
+                                    <version>[9,)</version>
+                                </jdkToolchain>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
 
                 <plugin>
@@ -370,6 +384,7 @@ limitations under the License.</inlineHeader>
                         <Built-From-Git-SHA1>${buildNumber}</Built-From-Git-SHA1>
                         <Built-On>${timestamp}</Built-On>
                         <Built-From-Git-Branch>${scmBranch}</Built-From-Git-Branch>
+                        <Multi-Release>true</Multi-Release>
                     </instructions>
                 </configuration>
             </plugin>
