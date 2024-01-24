@@ -21,11 +21,11 @@ on: [push, pull_request]
 
 jobs:
   linux:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        java: [ 8, 11, 14 ]
+        java: [ 8, 11, 17, 21 ]
     steps:
     - uses: actions/checkout@v1
     - name: Set up JDK 1.8
@@ -40,11 +40,11 @@ jobs:
           && ./mvnw -Pcore-test clean install -B -ntp \
           && ( cd core && cmake . && ctest . )
   windows:
-    runs-on: windows-2019
+    runs-on: windows-latest
     strategy:
       fail-fast: false
       matrix:
-        java: [ 8, 11, 14 ]
+        java: [ 8, 11, 17, 21 ]
     steps:
     - uses: actions/checkout@v1
     - name: Set up JDK 1.8
