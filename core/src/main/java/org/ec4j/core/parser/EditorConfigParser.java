@@ -228,7 +228,7 @@ public class EditorConfigParser implements ParseContext {
 
     private void readGlob() throws IOException {
         handler.startGlob(this);
-        String globAndLBracket = readString(StopReading.Glob);
+        String globAndLBracket = readString(StopReading.Glob, false);
         // Search ']' close section at the end of the line
         char c;
         int i = -1;
@@ -267,7 +267,7 @@ public class EditorConfigParser implements ParseContext {
         PropertyValue
     }
 
-    private String readString(StopReading stop) throws IOException {
+    private String readString(StopReading stop, boolean trimTrailing) throws IOException {
         startCapture();
         while (!isStopReading(stop)) {
             /*
@@ -295,7 +295,7 @@ public class EditorConfigParser implements ParseContext {
                 read();
             }
         }
-        return endCapture();
+        return endCapture(index, trimTrailing);
     }
 
     private boolean isStopReading(StopReading stop) {
@@ -334,7 +334,7 @@ public class EditorConfigParser implements ParseContext {
         skipWhiteSpace();
         handler.startPropertyName(this);
         // Get property property name
-        String name = preprocessPropertyName(readString(StopReading.PropertyName));
+        String name = preprocessPropertyName(readString(StopReading.PropertyName, false));
         handler.endPropertyName(this, name);
         skipWhiteSpace();
         if (!readChar('=') && !readChar(':')) {
@@ -350,17 +350,7 @@ public class EditorConfigParser implements ParseContext {
         // property value
         skipWhiteSpace();
         handler.startPropertyValue(this);
-        String value = readString(StopReading.PropertyValue);
-        if (value.length() < 1) {
-            final Location location = getLocation();
-            ErrorEvent e = new ErrorEvent(
-                    location,
-                    location,
-                    resource,
-                    "Property '" + name + "' has no value",
-                    ErrorType.PROPERTY_VALUE_MISSING);
-            errorHandler.error(this, e);
-        }
+        String value = readString(StopReading.PropertyValue, true);
         handler.endPropertyValue(this, value);
         handler.endProperty(this);
     }
@@ -408,20 +398,50 @@ public class EditorConfigParser implements ParseContext {
     }
 
     private String endCapture() {
-        return endCapture(index);
+        return endCapture(index, false);
     }
 
-    private String endCapture(int index) {
+    private String endCapture(int index, boolean trimTrailing) {
         int start = captureStart;
         int end = index - 1;
         captureStart = -1;
+
+        if (trimTrailing) {
+            while (end - 1 >= start) {
+                int c = buffer[end - 1];
+                if (isWhiteSpace(c)) {
+                    end--;
+                } else {
+                    break;
+                }
+            }
+        }
+        int len = end - start;
         if (captureBuffer.length() > 0) {
-            captureBuffer.append(buffer, start, end - start);
+            if (len > 0) {
+                captureBuffer.append(buffer, start, len);
+            }
+            if (trimTrailing) {
+                int i = captureBuffer.length();
+                while (i - 1 >= 0) {
+                    int c = captureBuffer.charAt(i - 1);
+                    if (isWhiteSpace(c)) {
+                        i--;
+                    } else {
+                        break;
+                    }
+                }
+                captureBuffer.setLength(i);
+            }
             String captured = captureBuffer.toString();
             captureBuffer.setLength(0);
             return captured;
         }
-        return new String(buffer, start, end - start);
+        if (len > 0) {
+            return new String(buffer, start, len);
+        } else {
+            return "";
+        }
     }
 
     /** {@inheritDoc} */
@@ -441,7 +461,11 @@ public class EditorConfigParser implements ParseContext {
     }
 
     private boolean isNewLine() {
-        return current == '\n' || current == '\r';
+        return isNewLine(current);
+    }
+
+    private boolean isNewLine(int c) {
+        return c == '\n' || c == '\r';
     }
 
     private boolean isEndOfText() {
