@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.ec4j.core.Resource.Resources.StringResourceTree;
 import org.ec4j.core.model.Property;
@@ -193,7 +194,7 @@ public class EditorConfigParserTest {
         Collection<Property> properties = ResourcePropertiesService.default_()
                 .queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(1, properties.size());
-        Assert.assertEquals("key = value ", properties.iterator().next().toString());
+        Assert.assertEquals("key = value", properties.iterator().next().toString());
     }
 
     private static final String BASIC_DOT_IN = "[*.a]\n" + //
@@ -288,6 +289,42 @@ public class EditorConfigParserTest {
         Collection<Property> properties = ResourcePropertiesService.default_()
                 .queryProperties(tree.getResource(testFile)).getProperties().values();
         Assert.assertEquals(0, properties.size());
+
+    }
+
+    @Test
+    public void emptyValues() throws IOException {
+        final String testFile = "root/test.txt";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig",
+                        "[*.txt]\r\n" + //
+                                "key1=\r\n" +
+                                "key2=  \r\n")//
+                .touch(testFile) //
+                .build();
+
+        Map<String, Property> props = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile)).getProperties();
+        Assert.assertEquals(2, props.size());
+        Assert.assertEquals("", props.get("key1").getValueAs());
+        Assert.assertEquals("", props.get("key2").getValueAs());
+
+    }
+
+    @Test
+    public void valueWithWhitespace() throws IOException {
+        final String testFile = "root/test.txt";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig",
+                        "[*.txt]\r\n" + //
+                                "key1= key with whitespace \r\n")//
+                .touch(testFile) //
+                .build();
+
+        Map<String, Property> props = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile)).getProperties();
+        Assert.assertEquals(1, props.size());
+        Assert.assertEquals("key with whitespace", props.get("key1").getValueAs());
 
     }
 
