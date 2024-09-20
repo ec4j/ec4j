@@ -16,10 +16,14 @@
  */
 package org.ec4j.core;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.ec4j.core.model.Ec4jPath;
 import org.ec4j.core.model.Property;
 import org.ec4j.core.model.PropertyType;
 
@@ -38,10 +42,17 @@ public class ResourceProperties {
      * A {@link ResourceProperties} builder.
      */
     public static class Builder {
-        private final Map<String, Property> properties = new LinkedHashMap<>();
+        private Map<String, Property> properties = new LinkedHashMap<>();
+        private List<Ec4jPath> editorConfigFiles = new ArrayList<>();
 
         public ResourceProperties build() {
-            return new ResourceProperties(properties);
+            final Map<String, Property> useProps = this.properties.isEmpty() ? Collections.emptyMap()
+                    : Collections.unmodifiableMap(this.properties);
+            this.properties = null;
+            final List<Ec4jPath> useEcFiles = this.editorConfigFiles.isEmpty() ? Collections.emptyList()
+                    : Collections.unmodifiableList(this.editorConfigFiles);
+            this.editorConfigFiles = null;
+            return new ResourceProperties(useProps, useEcFiles);
         }
 
         /**
@@ -107,6 +118,42 @@ public class ResourceProperties {
             this.properties.remove(property.getName());
             return this;
         }
+
+        /**
+         * Adds a single {@link Ec4jPath}.
+         *
+         * @param ec4jPath the {@link Ec4jPath} to add
+         * @return this {@link Builder}
+         */
+        public Builder editorConfigFile(Ec4jPath ec4jPath) {
+            this.editorConfigFiles.add(ec4jPath);
+            return this;
+        }
+
+        /**
+         * Adds multiple {@link Ec4jPath}s.
+         *
+         * @param ec4jPath the {@link Ec4jPath} to add
+         * @return this {@link Builder}
+         */
+        public Builder editorConfigFiles(Collection<Ec4jPath> ec4jPaths) {
+            this.editorConfigFiles.addAll(ec4jPaths);
+            return this;
+        }
+
+        /**
+         * Adds multiple {@link Ec4jPath}s.
+         *
+         * @param ec4jPath the {@link Ec4jPath} to add
+         * @return this {@link Builder}
+         */
+        public Builder editorConfigFiles(Ec4jPath... ec4jPaths) {
+            for (Ec4jPath ec4jPath : ec4jPaths) {
+                this.editorConfigFiles.add(ec4jPath);
+            }
+            return this;
+        }
+
     }
 
     /**
@@ -117,10 +164,12 @@ public class ResourceProperties {
     }
 
     private final Map<String, Property> properties;
+    private final List<Ec4jPath> editorConfigFiles;
 
-    ResourceProperties(Map<String, Property> properties) {
+    ResourceProperties(Map<String, Property> properties, List<Ec4jPath> editorConfigFiles) {
         super();
         this.properties = properties;
+        this.editorConfigFiles = editorConfigFiles;
     }
 
     /**
@@ -185,5 +234,18 @@ public class ResourceProperties {
             /* !throwInvalid && !prop.isValid() */
             return defaultValue;
         }
+    }
+
+    /**
+     * @return a {@link List} of {@link Ec4jPath}s pointing at {@code .editorconfig} files existing in the parent
+     *         hierarchy of the queried {@link Resource}. The files are ordered from the {@code .editorconfig} file
+     *         closest to the queried {@link Resource} to the root of the hierarchy. Only existing files are included.
+     *         If some of the files in the hierarchy contains {@code root = true}, then any other files higher in the
+     *         hierarchy won't be returned. Any user and/or system defaults passed via
+     *         {@link ResourcePropertiesService.Builder#defaultEditorConfig(org.ec4j.core.model.EditorConfig)} or
+     *         related methods will not be included in the returned list.
+     */
+    public List<Ec4jPath> getEditorConfigFiles() {
+        return editorConfigFiles;
     }
 }

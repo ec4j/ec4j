@@ -26,12 +26,12 @@ import org.ec4j.core.model.PropertyType.PropertyValue;
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
-public class Property extends Adaptable {
+public class Property extends Adaptable.DefaultAdaptable {
 
     /**
      * A {@link Property} builder.
      */
-    public static class Builder extends Adaptable.Builder<Builder> {
+    public static class Builder extends Adaptable.DefaultAdaptable.Builder<Builder> {
 
         String name;
         private final Section.Builder parentBuilder;

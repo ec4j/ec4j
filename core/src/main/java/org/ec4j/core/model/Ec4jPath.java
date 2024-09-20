@@ -24,7 +24,7 @@ import java.nio.file.Path;
  *
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
-public interface Ec4jPath {
+public interface Ec4jPath extends Adaptable {
 
     /**
      * Holds a few basic {@link Ec4jPath} implementations.
@@ -109,6 +109,17 @@ public interface Ec4jPath {
                 } else {
                     return path.toString();
                 }
+            }
+
+            @Override
+            public <T> T getAdapter(Class<T> type) {
+                if (type == null) {
+                    return null;
+                }
+                if (Path.class.isAssignableFrom(type)) {
+                    return (T) path;
+                }
+                return null;
             }
 
         }
@@ -222,6 +233,12 @@ public interface Ec4jPath {
             public String toString() {
                 return path;
             }
+
+            @Override
+            public <T> T getAdapter(Class<T> type) {
+                return null;
+            }
+
         }
 
         private static final Ec4jPath ROOT = new StringPath("/");

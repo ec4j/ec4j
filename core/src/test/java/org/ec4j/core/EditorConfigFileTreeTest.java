@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -77,10 +78,17 @@ public class EditorConfigFileTreeTest {
                 .touch(testFile) //
                 .build();
 
-        Collection<Property> properties = ResourcePropertiesService.default_()
-                .queryProperties(tree.getResource(testFile)).getProperties().values();
+        final ResourceProperties result = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile));
+        Collection<Property> properties = result.getProperties().values();
         Assert.assertEquals(1, properties.size());
         Assert.assertEquals("key = value", properties.iterator().next().toString());
+
+        Assert.assertEquals(
+                Arrays.asList(
+                        tree.getResource("root/parent_directory/.editorconfig").getPath(),
+                        tree.getResource("root/.editorconfig").getPath()),
+                result.getEditorConfigFiles());
     }
 
     /**

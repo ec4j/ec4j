@@ -32,12 +32,12 @@ import org.ec4j.core.model.PropertyType.IndentStyleValue;
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
-public class Section extends Adaptable {
+public class Section extends Adaptable.DefaultAdaptable {
 
     /**
      * A {@link Section} builder.
      */
-    public static class Builder extends Adaptable.Builder<Builder> {
+    public static class Builder extends Adaptable.DefaultAdaptable.Builder<Builder> {
 
         private Glob glob;
         private boolean parentAware = false;

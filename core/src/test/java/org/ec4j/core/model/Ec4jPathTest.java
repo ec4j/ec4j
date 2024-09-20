@@ -16,6 +16,9 @@
  */
 package org.ec4j.core.model;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.ec4j.core.model.Ec4jPath.Ec4jPaths;
 import org.junit.Assert;
 import org.junit.Test;
@@ -123,6 +126,17 @@ public class Ec4jPathTest {
         Assert.assertTrue(p.getParentPath() == null);
         Ec4jPath child = p.resolve("dir1");
         Assert.assertEquals("/dir1", child.toString());
+    }
+
+    @Test
+    public void nio() {
+        final Path nioPath = Paths.get("foo/bar");
+        final Ec4jPath p = Ec4jPaths.of(nioPath);
+        Assert.assertEquals(nioPath, p.getAdapter(Path.class));
+        final Ec4jPath child = p.resolve("baz");
+        Assert.assertEquals("foo/bar/baz", child.toString());
+        final Ec4jPath parent = p.getParentPath();
+        Assert.assertEquals("foo", parent.toString());
     }
 
 }

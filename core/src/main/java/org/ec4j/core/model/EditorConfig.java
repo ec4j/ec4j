@@ -27,12 +27,12 @@ import java.util.List;
  * @author <a href="mailto:angelo.zerr@gmail.com">Angelo Zerr</a>
  * @author <a href="https://github.com/ppalaga">Peter Palaga</a>
  */
-public class EditorConfig extends Adaptable {
+public class EditorConfig extends Adaptable.DefaultAdaptable {
 
     /**
      * An {@link EditorConfig} builder.
      */
-    public static class Builder extends Adaptable.Builder<Builder> {
+    public static class Builder extends Adaptable.DefaultAdaptable.Builder<Builder> {
 
         boolean parentAware;
         Boolean root;
