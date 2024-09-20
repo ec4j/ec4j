@@ -103,15 +103,7 @@ public interface Ec4jPath {
             public String toString() {
                 if (isWindows) {
                     if (toString == null) {
-                        StringBuilder result = new StringBuilder();
-                        final int len = path.getNameCount();
-                        for (int i = 0; i < len; i++) {
-                            if (i != 0 || path.isAbsolute()) {
-                                result.append('/');
-                            }
-                            result.append(path.getName(i));
-                        }
-                        toString = result.toString();
+                        toString = path.toString().replace('\\', '/');
                     }
                     return toString;
                 } else {
@@ -275,8 +267,8 @@ public interface Ec4jPath {
     Ec4jPath getParentPath();
 
     /**
-     * @return {@code true} if this {@link Ec4jPath} is absolute (i.e. starting with a slash {@code /}) or {@code false}
-     *         otherwise
+     * @return {@code true} if this {@link Ec4jPath} is absolute (i.e. starting with a slash {@code /} or any other
+     *         implementation specific way) or {@code false} otherwise
      */
     boolean isAbsolute();
 
