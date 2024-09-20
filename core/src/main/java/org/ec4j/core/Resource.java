@@ -166,7 +166,7 @@ public interface Resource {
          * @param inputStream {@link InputStream} to process
          * @param charset the encoding of the {@code in}
          * @return {@code in}
-         * @throws IOException
+         * @throws IOException if there are i/o issues
          * @since 0.0.4
          */
         public static InputStream skipBom(InputStream inputStream, Charset charset) throws IOException {
@@ -203,7 +203,7 @@ public interface Resource {
          * @param outpuStream the {@link OutputStream} to write to
          * @param charset the {@link Charset} of the given {@code outputStream}
          * @return {@code outpuStream}
-         * @throws IOException
+         * @throws IOException if there are i/o issues
          * @since 0.0.4
          */
         public static OutputStream writeBom(OutputStream outpuStream, Charset charset) throws IOException {

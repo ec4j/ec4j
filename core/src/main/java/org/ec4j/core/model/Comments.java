@@ -34,12 +34,12 @@ public class Comments {
     /**
      * A collection of contiguous {@link CommentLine}s.
      */
-    public static class CommentBlock extends Adaptable {
+    public static class CommentBlock extends Adaptable.DefaultAdaptable {
 
         /**
          * A {@link CommentBlock} builder.
          */
-        public static class Builder extends Adaptable.Builder<Builder> {
+        public static class Builder extends Adaptable.DefaultAdaptable.Builder<Builder> {
             private List<CommentLine> commentLines = new ArrayList<>();
             private final CommentBlocks.Builder parentBuilder;
             private Location start;
@@ -171,12 +171,12 @@ public class Comments {
     /**
      * A collection of {@link CommentBlock}s.
      */
-    public static class CommentBlocks extends Adaptable {
+    public static class CommentBlocks extends Adaptable.DefaultAdaptable {
 
         /**
          * A {@link CommentBlocks} builder.
          */
-        public static class Builder extends Adaptable.Builder<Builder> {
+        public static class Builder extends Adaptable.DefaultAdaptable.Builder<Builder> {
             private List<CommentBlock> commentBlocks = new ArrayList<>();
 
             /**
@@ -257,12 +257,12 @@ public class Comments {
     /**
      * A single comment line.
      */
-    public static class CommentLine extends Adaptable {
+    public static class CommentLine extends Adaptable.DefaultAdaptable {
 
         /**
          * A {@link CommentLine} builder.
          */
-        public static class Builder extends Adaptable.Builder<Builder> {
+        public static class Builder extends Adaptable.DefaultAdaptable.Builder<Builder> {
             private final CommentBlock.Builder parentBuilder;
             private String text;
 

@@ -119,8 +119,8 @@ public class ResourcePropertiesService {
         /**
          * Adds multiple {@link EditorConfig} models that contain default settings beyond the ones set in the
          * filesystem. This can be used to implement user or system defaults. The order of the added files matters: the
-         * file added as the last one will least significant. In other words, you should add user defaults before system
-         * defaults.
+         * file added as the last one will be least significant. In other words, you should add user defaults before
+         * system defaults.
          *
          * @param defaultEditorConfigs a collection of default {@link EditorConfig} models to add
          * @return this {@link Builder}
@@ -133,8 +133,8 @@ public class ResourcePropertiesService {
         /**
          * Adds multiple {@link EditorConfig} models that contain default settings beyond the ones set in the
          * filesystem. This can be used to implement user or system defaults. The order of the added files matters: the
-         * file added as the last one will least significant. In other words, you should add user defaults before system
-         * defaults.
+         * file added as the last one will be least significant. In other words, you should add user defaults before
+         * system defaults.
          *
          * @param defaultEditorConfigs default {@link EditorConfig} models to add
          * @return this {@link Builder}
@@ -321,6 +321,7 @@ public class ResourcePropertiesService {
             Resource configFile = dir.resolve(configFileName);
             if (configFile.exists()) {
                 EditorConfig config = cache.get(configFile, loader);
+                result.editorConfigFile(configFile.getPath());
                 root = config.isRoot();
                 editorConfigs.add(new DirEditorConfigPair(configFile.getParent(), config));
             }
