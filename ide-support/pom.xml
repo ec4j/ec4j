@@ -23,7 +23,7 @@
     <parent>
         <groupId>org.ec4j.core</groupId>
         <artifactId>ec4j-core-parent</artifactId>
-        <version>0.3.1-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <artifactId>ec4j-ide-support</artifactId>
