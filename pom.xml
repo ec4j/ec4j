@@ -84,11 +84,11 @@
         <version.maven-site-plugin>3.7.1</version.maven-site-plugin>
         <version.maven-source-plugin>3.0.1</version.maven-source-plugin>
         <version.maven-surefire-plugin>3.0.0-M1</version.maven-surefire-plugin>
-        <version.nexus-staging-maven-plugin>1.6.8</version.nexus-staging-maven-plugin>
         <version.org.apache.felix.maven-bundle-plugin>5.1.9</version.org.apache.felix.maven-bundle-plugin>
         <version.org.codehaus.mojo.build-helper-maven-plugin>3.0.0</version.org.codehaus.mojo.build-helper-maven-plugin>
         <version.org.codehaus.buildnumber-maven-plugin>1.4</version.org.codehaus.buildnumber-maven-plugin>
         <version.org.codehaus.gmaven.groovy-maven-plugin>2.1</version.org.codehaus.gmaven.groovy-maven-plugin>
+        <version.org.sonatype.central.central-publishing-maven-plugin>0.7.0</version.org.sonatype.central.central-publishing-maven-plugin>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -108,15 +108,6 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
-
-        <!-- nexus-staging-maven-plugin -->
-        <autoReleaseAfterClose>true</autoReleaseAfterClose>
-
-        <!-- Repository Deployment URLs -->
-        <oss.nexus.base.url>https://s01.oss.sonatype.org</oss.nexus.base.url>
-        <releases.repo.url>${oss.nexus.base.url}/service/local/staging/deploy/maven2/</releases.repo.url>
-        <snapshots.repo.url>${oss.nexus.base.url}/content/repositories/snapshots/</snapshots.repo.url>
-
     </properties>
 
     <dependencyManagement>
@@ -256,9 +247,15 @@
                 </plugin>
 
                 <plugin>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>${version.nexus-staging-maven-plugin}</version>
+                    <groupId>org.sonatype.central</groupId>
+                    <artifactId>central-publishing-maven-plugin</artifactId>
+                    <version>${version.org.sonatype.central.central-publishing-maven-plugin}</version>
+                    <configuration>
+                        <publishingServerId>central</publishingServerId>
+                        <autoPublish>true</autoPublish>
+                        <waitUntil>published</waitUntil>
+                        <waitMaxTime>7200</waitMaxTime>
+                    </configuration>
                 </plugin>
 
             </plugins>
@@ -419,14 +416,9 @@ limitations under the License.</inlineHeader>
             </plugin>
 
             <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
                 <extensions>true</extensions>
-                <configuration>
-                    <nexusUrl>${oss.nexus.base.url}</nexusUrl>
-                    <!-- The server "id" element from settings.xml to use authentication from -->
-                    <serverId>ossrh</serverId>
-                </configuration>
             </plugin>
 
             <plugin>
