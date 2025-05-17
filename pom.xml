@@ -288,6 +288,7 @@ limitations under the License.</inlineHeader>
                         <exclude>.gitattributes/</exclude>
                         <exclude>**/.gitkeep</exclude>
                         <exclude>.mvn/wrapper/</exclude>
+                        <exclude>.sdkmanrc</exclude>
                         <exclude>CMakeFiles/</exclude>
                         <exclude>CMakeCache.txt</exclude>
                         <exclude>CMakeLists.txt</exclude>
