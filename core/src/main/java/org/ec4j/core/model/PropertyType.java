@@ -605,7 +605,7 @@ public class PropertyType<T> {
      * @return the {@link PropertyValue}
      */
     public PropertyValue<T> parse(String value) {
-        return parser.parse(name, value);
+        return parser.parse(name, value == null ? null : value.trim());
     }
 
     /** {@inheritDoc} */
