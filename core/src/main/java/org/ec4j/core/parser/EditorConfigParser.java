@@ -311,7 +311,7 @@ public class EditorConfigParser implements ParseContext {
                 }
                 return false;
             case PropertyName:
-                return isColonSeparator() || isWhiteSpace();
+                return isColonSeparator();
             case PropertyValue:
                 if ((current == ';' || current == '#') && isWhiteSpace(last)) {
                     // Inline comment
@@ -334,7 +334,7 @@ public class EditorConfigParser implements ParseContext {
         skipWhiteSpace();
         handler.startPropertyName(this);
         // Get property property name
-        String name = preprocessPropertyName(readString(StopReading.PropertyName, false));
+        String name = preprocessPropertyName(readString(StopReading.PropertyName, true));
         handler.endPropertyName(this, name);
         skipWhiteSpace();
         if (!readChar('=') && !readChar(':')) {
