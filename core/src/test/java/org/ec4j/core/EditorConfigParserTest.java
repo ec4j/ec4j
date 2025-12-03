@@ -328,4 +328,37 @@ public class EditorConfigParserTest {
 
     }
 
+    @Test
+    public void spaceInTheMiddleKey() throws IOException {
+        final String testFile = "root/test.txt";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig",
+                        "[*.txt]\r\n" + //
+                                "ke y1=val1\r\n")//
+                .touch(testFile) //
+                .build();
+
+        Map<String, Property> props = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile)).getProperties();
+        Assert.assertEquals(1, props.size());
+        Assert.assertEquals("val1", props.get("ke y1").getValueAs());
+
+    }
+
+    @Test
+    public void spaceInTheMiddleKeyWithLeadingAndTrailingWs() throws IOException {
+        final String testFile = "root/test.txt";
+        StringResourceTree tree = StringResourceTree.builder() //
+                .resource("root/.editorconfig",
+                        "[*.txt]\r\n" + //
+                                " ke y1 = val1 \r\n")//
+                .touch(testFile) //
+                .build();
+
+        Map<String, Property> props = ResourcePropertiesService.default_()
+                .queryProperties(tree.getResource(testFile)).getProperties();
+        Assert.assertEquals(1, props.size());
+        Assert.assertEquals("val1", props.get("ke y1").getValueAs());
+
+    }
 }
